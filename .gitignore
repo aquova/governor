@@ -1,0 +1,11 @@
+# Python virtualenv files
+**/bin
+**/include
+**/lib
+
+# Private files
+**/private
+*.json
+
+# VSCode files
+*.code-workspace
