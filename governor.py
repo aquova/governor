@@ -2,7 +2,9 @@
 # Written by aquova, 2020
 # https://github.com/aquova/governor
 
-import discord, json
+import discord, json, sqlite3
+
+DB_PATH="private/sdv_data.db"
 
 # Read values from config file
 with open('private/config.json') as config_file:
@@ -35,7 +37,17 @@ async def on_message(message):
 
     try:
         chan = message.channel
-        await chan.send(message.content)
+        sqlconn = sqlite3.connect(DB_PATH)
+
+        if message.content.upper() == "!XP":
+            foundUser = sqlconn.execute("SELECT xp FROM xp WHERE id=?", [message.author.id]).fetchall()
+
+            if foundUser == []:
+                await chan.send("You have no XP :\(")
+            else:
+                await chan.send("You have {} XP".format(foundUser[0][0]))
+
+        sqlconn.close()
     except discord.errors.HTTPException as e:
         print("HTTPException: {}".format(str(e)))
         pass
