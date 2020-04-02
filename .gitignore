@@ -6,6 +6,7 @@
 # Private files
 **/private
 *.json
+*.db
 
 # VSCode files
 *.code-workspace
