@@ -1,8 +1,7 @@
 import discord
 import utils
 from math import floor
-
-XP_PER_LVL = 300
+from config import XP_PER_LVL
 
 def get_xp(message):
     xp = utils.fetch_user_xp(message.author.id)

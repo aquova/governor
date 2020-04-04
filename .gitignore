@@ -11,3 +11,5 @@
 
 # VSCode files
 *.code-workspace
+# Do allow debugging files
+!launch.json

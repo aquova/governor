@@ -41,7 +41,10 @@ async def on_message(message):
 
     try:
         command = message.content.upper()
-        tr.user_speaks(message.author.id)
+        lvl_up_message = await tr.user_speaks(message.author)
+
+        if lvl_up_message != None:
+            await message.channel.send(lvl_up_message)
 
         if command in FUNC_DICT:
             output_message = FUNC_DICT[command](message)
@@ -49,5 +52,7 @@ async def on_message(message):
     except discord.errors.HTTPException as e:
         print("HTTPException: {}".format(str(e)))
         pass
+    except Exception as e:
+        print(str(e))
 
 client.run(DISCORD_KEY)
