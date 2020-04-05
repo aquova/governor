@@ -13,9 +13,10 @@ tr = Tracker()
 # Dictionary of function pointers
 # Maps commands (in all caps) to functions that are called by them
 FUNC_DICT = {
-    "XP": commands.get_xp,
+    "DEFINE": commands.define_cmd,
+    "LIST": commands.list_cmds,
     "LVL": commands.get_level,
-    "DEFINE": commands.define_cmd
+    "XP": commands.get_xp,
 }
 
 """

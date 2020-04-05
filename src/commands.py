@@ -26,6 +26,15 @@ def define_cmd(message):
 
     return "New command added!"
 
+def list_cmds(_message):
+    output = "```\n"
+    cmds = cc.cmd_dict.keys()
+    for cmd in cmds:
+        output += "{}\n".format(cmd.lower())
+
+    output += "```"
+    return output
+
 def get_xp(message):
     xp = db.fetch_user_xp(message.author.id)
     if xp == None:

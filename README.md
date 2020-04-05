@@ -21,8 +21,9 @@ My personal hosting of the bot will be private, but users are free to host a ver
     - [x] Import from Mayor Lewis
 - [ ] Display image with user avatar and level
 - [ ] Online leaderboard
-- [ ] Custom commands
+- [x] Custom commands
     - [x] Import from Mayor Lewis
+    - [ ] Support for mentioning a user in command
 - [ ] Speak through bot
 - [ ] Easy setup script
 - [ ] Event utilities
