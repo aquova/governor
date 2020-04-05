@@ -38,7 +38,7 @@ class CustomCommands:
         return cmd in self.cmd_dict
 
     def add_cmd(self, name, response):
-        self.cmd_dict[name.upper()] = formatted_response
+        self.cmd_dict[name.upper()] = response
         db.set_new_custom_cmd(name, response)
 
     def parse_response(self, message):
@@ -63,7 +63,17 @@ class CustomCommands:
         response = utils.remove_command(new_cmd)
         self.add_cmd(cmd, response)
 
-        return "New command added!"
+        # Format confirmation to the user
+        output_message = "New command added! You can use it like `{}{}`. ".format(CMD_PREFIX, cmd)
+
+        if "%mention%" in response:
+            author = message.author
+            user_id = author.id
+            user_name = "{}#{}".format(author.name, author.discriminator)
+            output_message += "You can also use it as `{prefix}{cmd} {id}`, `{prefix}{cmd} {name}`, or `{prefix}{cmd} @{name}`".format(
+                prefix=CMD_PREFIX, cmd=cmd, id=user_id, name=user_name)
+
+        return output_message
 
     def list_cmds(self, _message):
         output = "```\n"
