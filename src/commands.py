@@ -8,7 +8,7 @@ class CustomCommands:
         self.cmd_dict = db.get_custom_cmds()
 
     def add_cmd(self, name, response):
-        self.cmd_dict[name] = response
+        self.cmd_dict[name.upper()] = response
         db.set_new_custom_cmd(name, response)
 
 cc = CustomCommands()
@@ -17,9 +17,14 @@ def get_custom_commands():
     return cc.cmd_dict
 
 def define_cmd(message):
-    cmd = utils.get_command(message)
-    response = utils.remove_command(message)
+    # First remove the "define" command
+    new_cmd = utils.remove_command(message.content)
+    # Then parse the new command
+    cmd = utils.get_command(new_cmd)
+    response = utils.remove_command(new_cmd)
     cc.add_cmd(cmd, response)
+
+    return "New command added!"
 
 def get_xp(message):
     xp = db.fetch_user_xp(message.author.id)

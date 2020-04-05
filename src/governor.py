@@ -46,7 +46,8 @@ async def on_message(message):
             await message.channel.send(lvl_up_message)
 
         if message.content[0] == CMD_PREFIX:
-            command = utils.get_command(message.content).upper()
+            phrase = utils.strip_prefix(message.content)
+            command = utils.get_command(phrase).upper()
             if command in FUNC_DICT:
                 output_message = FUNC_DICT[command](message)
                 await message.channel.send(output_message)
