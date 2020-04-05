@@ -1,5 +1,5 @@
 import datetime, discord
-import utils
+import db
 
 from config import RANKS, XP_PER_LVL
 from dataclasses import dataclass
@@ -28,7 +28,7 @@ class Tracker:
 
         if user_id not in self.user_cache:
             # First, if user is not in cache, try and fetch from DB
-            xp_db = utils.fetch_user_xp(user_id)
+            xp_db = db.fetch_user_xp(user_id)
 
             if xp_db is not None:
                 # If user is in the DB, use that value
@@ -72,7 +72,7 @@ class Tracker:
         # Update their entry in the cache
         self.user_cache[user_id] = UserData(xp, curr_time, next_role)
         # Update their entry in the database
-        utils.set_user_xp(user_id, xp)
+        db.set_user_xp(user_id, xp)
 
         return out_message
 

@@ -3,8 +3,8 @@
 # https://github.com/aquova/governor
 
 import discord
-import commands
-from config import DISCORD_KEY
+import commands, utils
+from config import DISCORD_KEY, CMD_PREFIX
 from tracker import Tracker
 
 client = discord.Client()
@@ -13,8 +13,9 @@ tr = Tracker()
 # Dictionary of function pointers
 # Maps commands (in all caps) to functions that are called by them
 FUNC_DICT = {
-    "!XP": commands.get_xp,
-    "!LVL": commands.get_level
+    "XP": commands.get_xp,
+    "LVL": commands.get_level,
+    "DEFINE": commands.define_cmd
 }
 
 """
@@ -40,15 +41,19 @@ async def on_message(message):
         return
 
     try:
-        command = message.content.upper()
         lvl_up_message = await tr.user_speaks(message.author)
-
         if lvl_up_message != None:
             await message.channel.send(lvl_up_message)
 
-        if command in FUNC_DICT:
-            output_message = FUNC_DICT[command](message)
-            await message.channel.send(output_message)
+        if message.content[0] == CMD_PREFIX:
+            command = utils.get_command(message.content).upper()
+            if command in FUNC_DICT:
+                output_message = FUNC_DICT[command](message)
+                await message.channel.send(output_message)
+            elif command in commands.get_custom_commands():
+                cmd_output = commands.get_custom_commands()[command]
+                await message.channel.send(cmd_output)
+
     except discord.errors.HTTPException as e:
         print("HTTPException: {}".format(str(e)))
         pass

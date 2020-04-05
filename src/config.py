@@ -8,6 +8,7 @@ with open('private/config.json') as config_file:
 
 DISCORD_KEY = cfg['discord']
 DB_PATH = cfg['db_path']
+CMD_PREFIX = cfg['command_prefix']
 
 with open(cfg['ranks_path']) as ranks_file:
     RANKS = json.load(ranks_file)['ranks']

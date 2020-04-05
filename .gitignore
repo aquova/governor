@@ -6,10 +6,6 @@
 
 # Private files
 **/private
-*.json
-*.db
 
 # VSCode files
 *.code-workspace
-# Do allow debugging files
-!launch.json
