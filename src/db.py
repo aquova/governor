@@ -24,6 +24,15 @@ def set_user_xp(user_id, xp, user_name, user_avatar):
     sqlconn.commit()
     sqlconn.close()
 
+def get_leaders():
+    sqlconn = sqlite3.connect(DB_PATH)
+
+    leaders = sqlconn.execute("SELECT * FROM xp ORDER BY xp DESC LIMIT 100").fetchall()
+
+    sqlconn.close()
+
+    return leaders
+
 def get_custom_cmds():
     sqlconn = sqlite3.connect(DB_PATH)
 

@@ -21,6 +21,22 @@ class Tracker:
         self.user_cache = {}
         self.xp_multiplier = 1
 
+    # Make sure the database has up to date data, for the leaderboard
+    async def refresh_db(self, server):
+        leaders = db.get_leaders()
+
+        for leader in leaders:
+            leader_id = leader[0]
+            user = discord.utils.get(server.members, id=leader_id)
+
+            if user != None:
+                leader_xp = leader[1]
+                leader_name = "{}#{}".format(user.name, user.discriminator)
+                leader_avatar = user.avatar
+
+                # NOTE: May be worth to populate the cache here as well
+                db.set_user_xp(leader_id, leader_xp, leader_name, leader_avatar)
+
     async def user_speaks(self, user):
         user_id = user.id
         xp = 0
@@ -46,7 +62,7 @@ class Tracker:
             user_data = self.user_cache[user_id]
 
             # Check their last timestamp.
-            # Note: Mayor Lewis used to only give XP if they spoke in a "new" minute. But that would involve rounding a datetime, and I can't be bothered.
+            # NOTE: Mayor Lewis used to only give XP if they spoke in a "new" minute. But that would involve rounding a datetime, and I can't be bothered.
             last_mes_time = user_data.timestamp
             dt = curr_time - last_mes_time
             # Users only get XP every minute, so if not enough time has elapsed, ignore them

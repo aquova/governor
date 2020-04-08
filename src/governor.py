@@ -32,6 +32,10 @@ async def on_ready():
     print(client.user.name)
     print(client.user.id)
 
+    # Currently, this will only be one guild, but this is here for future proofing
+    for guild in client.guilds:
+        await tr.refresh_db(guild)
+
 """
 On Message
 
