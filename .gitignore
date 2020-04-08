@@ -9,3 +9,6 @@
 
 # VSCode files
 *.code-workspace
+
+# Web files
+*.map
