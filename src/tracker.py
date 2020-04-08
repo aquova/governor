@@ -12,6 +12,8 @@ STARTING_XP = 270
 class UserData:
     xp: int
     timestamp: datetime
+    username: str
+    avatar: str
     next_role_at: int
 
 class Tracker:
@@ -69,10 +71,13 @@ class Tracker:
 
             next_role = await self.check_roles(user, xp)
 
+        username = "{}#{}".format(user.name, user.discriminator)
+        avatar = user.avatar
+
         # Update their entry in the cache
-        self.user_cache[user_id] = UserData(xp, curr_time, next_role)
+        self.user_cache[user_id] = UserData(xp, curr_time, username, avatar, next_role)
         # Update their entry in the database
-        db.set_user_xp(user_id, xp)
+        db.set_user_xp(user_id, xp, username, avatar)
 
         return out_message
 

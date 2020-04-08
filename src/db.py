@@ -13,10 +13,13 @@ def fetch_user_xp(user_id):
     else:
         return foundUser[0][0]
 
-def set_user_xp(user_id, xp):
+def set_user_xp(user_id, xp, user_name, user_avatar):
     sqlconn = sqlite3.connect(DB_PATH)
 
-    sqlconn.execute("REPLACE INTO xp (id, xp) VALUES (?, ?)", [user_id, xp])
+    # We store username and avatar only for the leaderboard
+    if user_avatar == None:
+        user_avatar = ""
+    sqlconn.execute("REPLACE INTO xp (id, xp, username, avatar) VALUES (?, ?, ?, ?)", [user_id, xp, user_name, user_avatar])
 
     sqlconn.commit()
     sqlconn.close()

@@ -9,7 +9,7 @@ CMD_PATH="../private/mayor_lewis_data/sdv_custom_commands.csv"
 def main():
     # Create DB and tables
     sqlconn = sqlite3.connect(DB_PATH)
-    sqlconn.execute("CREATE TABLE IF NOT EXISTS xp (id INT PRIMARY KEY, xp INT);")
+    sqlconn.execute("CREATE TABLE IF NOT EXISTS xp (id INT PRIMARY KEY, xp INT, username TEXT, avatar TEXT);")
     sqlconn.execute("CREATE TABLE IF NOT EXISTS commands (name TEXT, response TEXT);")
     sqlconn.commit()
 
@@ -18,7 +18,7 @@ def main():
         xpreader = csv.reader(xpfile, delimiter=',')
         for row in xpreader:
             params = (int(row[0]), int(row[1]))
-            sqlconn.execute("INSERT INTO xp (id, xp) VALUES (?, ?);", params)
+            sqlconn.execute("INSERT INTO xp (id, xp, username, avatar) VALUES (?, ?, NULL, NULL);", params)
 
     sqlconn.commit()
 
