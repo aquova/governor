@@ -1,29 +1,16 @@
 <?php
-    class MyDB extends SQLite3 {
-        function __construct($db_path) {
-            $this->open($db_path);
-        }
-    }
-
-    $config_file = "../private/config.json";
     $xp_per_lvl = 300;
 
     // Parse JSON file
+    $config_file = "../private/config.json";
     $raw_json = file_get_contents($config_file);
     $cfg = json_decode($raw_json, true);
 
-    $db = new MyDB("../" . $cfg["db_path"]);
-    if (!$db) {
-        echo $db->lastErrorMsg();
-    }
+    $db = new SQLite3("../" . $cfg["db_path"]);
+    $ret = $db->query('SELECT * FROM xp ORDER BY xp DESC LIMIT 100');
 
-    $sql =<<< EOF
-        SELECT * FROM xp ORDER BY xp DESC LIMIT 100;
-    EOF;
-
-    $ret = $db->query($sql);
     $rank = 0;
-    while ($row = $ret->fetchArray(SQLITE3_ASSOC)) {
+    while ($row = $ret->fetchArray()) {
         $rank += 1;
         $id = $row['id'];
         $xp = $row['xp'] . "xp";
