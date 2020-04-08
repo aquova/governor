@@ -40,7 +40,6 @@
     EOF;
 
     $ret = $db->query($sql);
-    $row = $ret->fetchArray(SQLITE3_ASSOC);
     $rank = 0;
     while ($row = $ret->fetchArray(SQLITE3_ASSOC)) {
         $rank += 1;
@@ -55,8 +54,12 @@
         $raw_user = fetch_user($id, $cfg["discord"]);
         $user_data = json_decode($raw_user, true);
 
-        $avatar_img = "https://cdn.discordapp.com/avatars/" . $user_data['id'] . "/" . $user_data['avatar'] . ".png";
         $username = $user_data['username'] . "#" . $user_data['discriminator'];
+        if ($user_data['avatar'] == "") {
+            $avatar_img = "default_avatar.png";
+        } else {
+            $avatar_img = "https://cdn.discordapp.com/avatars/" . $user_data['id'] . "/" . $user_data['avatar'] . ".png";
+        }
 
         echo "<li class='user'>";
         echo "<span class='user-rank'>$rank</span>";
