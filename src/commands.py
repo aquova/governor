@@ -34,16 +34,15 @@ class CustomCommands:
     def __init__(self):
         self.cmd_dict = db.get_custom_cmds()
 
+    def set_protected_keywords(self, keywords):
+        self.keywords = keywords
+
     def command_available(self, cmd):
         return cmd in self.cmd_dict
 
-    def add_cmd(self, name, response):
-        self.cmd_dict[name.upper()] = response
-        db.set_new_custom_cmd(name, response)
-
     def parse_response(self, message):
         prefix_removed = utils.strip_prefix(message.content)
-        command = utils.get_command(prefix_removed).upper()
+        command = utils.get_command(prefix_removed)
         response = self.cmd_dict[command]
 
         mentioned_id = parse_mention(message)
@@ -61,7 +60,13 @@ class CustomCommands:
         # Then parse the new command
         cmd = utils.get_command(new_cmd)
         response = utils.remove_command(new_cmd)
-        self.add_cmd(cmd, response)
+        if response == "":
+            return "...You didn't specify what that command should do."
+        elif cmd in self.keywords:
+            return "`{}` is already in use as a built-in function. Please choose another name.".format(cmd)
+
+        self.cmd_dict[cmd] = response
+        db.set_new_custom_cmd(cmd, response)
 
         # Format confirmation to the user
         output_message = "New command added! You can use it like `{}{}`. ".format(CMD_PREFIX, cmd)
@@ -75,11 +80,23 @@ class CustomCommands:
 
         return output_message
 
+    def remove_cmd(self, message):
+        # First remove the "define" command
+        new_cmd = utils.remove_command(message.content)
+        # Then parse the command to remove
+        cmd = utils.get_command(new_cmd)
+
+        if self.command_available(cmd):
+            del self.cmd_dict[cmd]
+            db.remove_custom_cmd(cmd)
+
+        return "`{}` removed as a custom command!".format(cmd)
+
     def list_cmds(self, _message):
         output = "```\n"
         cmds = self.cmd_dict.keys()
         for cmd in cmds:
-            output += "{}\n".format(cmd.lower())
+            output += "{}\n".format(cmd)
 
         output += "```"
         return output

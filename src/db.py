@@ -43,9 +43,17 @@ def get_custom_cmds():
     cmd_dict = {}
 
     for cmd in cmds:
-        cmd_dict[cmd[0].upper()] = cmd[1]
+        cmd_dict[cmd[0]] = cmd[1]
 
     return cmd_dict
+
+def remove_custom_cmd(name):
+    sqlconn = sqlite3.connect(DB_PATH)
+
+    sqlconn.execute("DELETE FROM commands WHERE name=?", [name])
+
+    sqlconn.commit()
+    sqlconn.close()
 
 def set_new_custom_cmd(name, response):
     sqlconn = sqlite3.connect(DB_PATH)

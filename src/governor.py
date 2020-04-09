@@ -14,12 +14,15 @@ cc = commands.CustomCommands()
 # Dictionary of function pointers
 # Maps commands (in all caps) to functions that are called by them
 FUNC_DICT = {
-    "DEFINE": cc.define_cmd,
-    "HELP": commands.print_help,
-    "LIST": cc.list_cmds,
-    "LVL": commands.get_level,
-    "XP": commands.get_xp,
+    "define": cc.define_cmd,
+    "help": commands.print_help,
+    "list": cc.list_cmds,
+    "lvl": commands.get_level,
+    "remove": cc.remove_cmd,
+    "xp": commands.get_xp,
 }
+
+cc.set_protected_keywords(FUNC_DICT.keys())
 
 """
 On Ready
@@ -52,9 +55,9 @@ async def on_message(message):
         if lvl_up_message != None:
             await message.channel.send(lvl_up_message)
 
-        if message.content[0] == CMD_PREFIX:
+        if message.content != "" and message.content[0] == CMD_PREFIX:
             prefix_removed = utils.strip_prefix(message.content)
-            command = utils.get_command(prefix_removed).upper()
+            command = utils.get_command(prefix_removed)
             if command in FUNC_DICT:
                 output_message = FUNC_DICT[command](message)
                 await message.channel.send(output_message)

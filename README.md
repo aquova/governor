@@ -26,14 +26,17 @@ My personal hosting of the bot will be private, but users are free to host a ver
 - [x] Give ranks & roles upon level up
     - [x] Import from Mayor Lewis
 - [ ] Display image with user avatar and level
-- [x] Online leaderboard
+- [ ] Online leaderboard
+    - [x] Basic functionality
+    - [ ] Custom domain
 - [ ] Custom commands
     - [x] Basic support
     - [x] Import from Mayor Lewis
     - [x] Support for mentioning a user in command
     - [ ] Add permissions so not anyone can add a command
-    - [ ] Add ability to remove commands
+    - [x] Add ability to remove commands
 - [ ] Speak through bot
+- [ ] Debugging instance
 - [ ] Easy setup script
 - [ ] Event utilities
 - [ ] Badge Overhaul
