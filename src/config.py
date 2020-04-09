@@ -10,5 +10,6 @@ DISCORD_KEY = cfg['discord']
 DB_PATH = cfg['db_path']
 CMD_PREFIX = cfg['command_prefix']
 
+# Import ranks from their configuration
 with open(cfg['ranks_path']) as ranks_file:
     RANKS = json.load(ranks_file)['ranks']

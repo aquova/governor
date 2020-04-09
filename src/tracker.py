@@ -21,14 +21,22 @@ class Tracker:
         self.user_cache = {}
         self.xp_multiplier = 1
 
-    # Make sure the database has up to date data, for the leaderboard
+    """
+    Refresh database
+
+    Collects up-to-date data for leaderboard members
+
+    Input: server - Discord server object
+    """
     async def refresh_db(self, server):
         leaders = db.get_leaders()
 
+        # Iterate thru every leader on the leaderboard and collect data
         for leader in leaders:
             leader_id = leader[0]
             user = discord.utils.get(server.members, id=leader_id)
 
+            # Currently, only bother with users that are still in the server
             if user != None:
                 leader_xp = leader[1]
                 leader_name = "{}#{}".format(user.name, user.discriminator)
@@ -37,6 +45,13 @@ class Tracker:
                 # NOTE: May be worth to populate the cache here as well
                 db.set_user_xp(leader_id, leader_xp, leader_name, leader_avatar)
 
+    """
+    Process user message
+
+    Updates user XP, levels, and roles if they speak
+
+    Input: user - Discord user object
+    """
     async def user_speaks(self, user):
         user_id = user.id
         xp = 0
@@ -97,6 +112,15 @@ class Tracker:
 
         return out_message
 
+    """
+    Check roles
+
+    Make sure the user has the correct roles, given their XP
+
+    Inputs:
+        user - Discord user object
+        xp - User's XP value - int
+    """
     async def check_roles(self, user, xp):
         user_roles = user.roles
         user_role_ids = [x.id for x in user.roles]
@@ -106,6 +130,7 @@ class Tracker:
         # This doesn't require RANKS to be in order
         for rank in RANKS:
             role_id = rank["role_id"]
+            # If they're missing a role, check if they qualify
             if role_id not in user_role_ids:
                 role_xp = rank["level"] * XP_PER_LVL
                 # If user has enough XP, give them the role
@@ -126,8 +151,18 @@ class Tracker:
 
         return lowest_missing_xp
 
+    """
+    Set bonus XP
+
+    Sets the XP multiplier
+    """
     async def set_bonus_xp(self):
         self.xp_multiplier = 2
 
+    """
+    Reset bonus XP
+
+    Resets the XP multiplier
+    """
     async def reset_bonus_xp(self):
         self.xp_multiplier = 1

@@ -22,6 +22,7 @@ FUNC_DICT = {
     "xp": commands.get_xp,
 }
 
+# The keys in the function dict cannot be used as custom commands
 cc.set_protected_keywords(FUNC_DICT.keys())
 
 """
@@ -51,17 +52,22 @@ async def on_message(message):
         return
 
     try:
+        # Check if we need to congratulate a user on getting a new role
         lvl_up_message = await tr.user_speaks(message.author)
         if lvl_up_message != None:
             await message.channel.send(lvl_up_message)
 
+        # Check if someone is trying to use a bot command
         if message.content != "" and message.content[0] == CMD_PREFIX:
             prefix_removed = utils.strip_prefix(message.content)
             command = utils.get_command(prefix_removed)
+
             if command in FUNC_DICT:
+                # First, check if they're using a built-in command
                 output_message = FUNC_DICT[command](message)
                 await message.channel.send(output_message)
             elif cc.command_available(command):
+                # Check if they're using a user-defined command
                 cmd_output = cc.parse_response(message)
                 await message.channel.send(cmd_output)
 
