@@ -17,7 +17,7 @@ class Point:
         return (self.x, self.y)
 
     def shadow_tuple(self):
-        return (self.x - 1, self.y - 1)
+        return (self.x - 1, self.y + 1)
 
 IMG_BG = "assets/bg_rank.png"
 IMG_FRAME = "assets/bg_rank_border_square.png"
