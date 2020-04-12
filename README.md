@@ -37,6 +37,6 @@ My personal hosting of the bot will be private, but users are free to host a ver
     - [x] Add ability to remove commands
 - [x] Speak through bot
 - [ ] Debugging instance
-- [ ] Easy setup script
+- [x] Easy setup script
 - [ ] Event utilities
 - [ ] Badge Overhaul
