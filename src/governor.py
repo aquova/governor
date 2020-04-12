@@ -3,7 +3,7 @@
 # https://github.com/aquova/governor
 
 import discord
-import commands, utils
+import commands, utils, xp
 from config import DISCORD_KEY, CMD_PREFIX
 from tracker import Tracker
 
@@ -17,9 +17,10 @@ FUNC_DICT = {
     "define": cc.define_cmd,
     "help": commands.print_help,
     "list": cc.list_cmds,
-    "lvl": commands.get_level,
+    "lvl": xp.render_lvl_image,
+    "level": xp.render_lvl_image,
     "remove": cc.remove_cmd,
-    "xp": commands.get_xp,
+    "xp": xp.get_xp,
 }
 
 # The keys in the function dict cannot be used as custom commands
@@ -64,8 +65,9 @@ async def on_message(message):
 
             if command in FUNC_DICT:
                 # First, check if they're using a built-in command
-                output_message = FUNC_DICT[command](message)
-                await message.channel.send(output_message)
+                output_message = await FUNC_DICT[command](message)
+                if output_message != None:
+                    await message.channel.send(output_message)
             elif cc.command_available(command):
                 # Check if they're using a user-defined command
                 cmd_output = cc.parse_response(message)

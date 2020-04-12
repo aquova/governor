@@ -25,7 +25,7 @@ My personal hosting of the bot will be private, but users are free to host a ver
 - [x] Deliver XP with 1 minute cooldown
 - [x] Give ranks & roles upon level up
     - [x] Import from Mayor Lewis
-- [ ] Display image with user avatar and level
+- [x] Display image with user avatar and level
 - [ ] Online leaderboard
     - [x] Basic functionality
     - [ ] Custom domain

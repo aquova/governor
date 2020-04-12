@@ -5,7 +5,7 @@ from config import RANKS, XP_PER_LVL
 from dataclasses import dataclass
 from math import floor
 
-XP_PER_MINUTE = 30
+XP_PER_MINUTE = 10
 STARTING_XP = 270
 
 @dataclass

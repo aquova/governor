@@ -1,7 +1,7 @@
 import discord
 import db, utils
 from math import floor
-from config import CMD_PREFIX, XP_PER_LVL
+from config import CMD_PREFIX
 from user import parse_mention
 
 HELP_MES = (
@@ -18,35 +18,8 @@ Print Help
 
 Prints the help message
 """
-def print_help(message):
+async def print_help(message):
     return HELP_MES
-
-"""
-Get XP
-
-Returns the given user's XP value, as a formatted string
-"""
-def get_xp(message):
-    xp = db.fetch_user_xp(message.author.id)
-    if xp == None:
-        # TODO: This shouldn't be possible, raise some sort of exception
-        return "You have no XP :("
-    else:
-        return "You have {} XP".format(xp)
-
-"""
-Get Level
-
-Returns the given user's level, as a formatted string
-"""
-def get_level(message):
-    xp = db.fetch_user_xp(message.author.id)
-    if xp == None:
-        # TODO: This shouldn't be possible, raise some sort of exception
-        return "You have no xp :("
-    else:
-        lvl = floor(xp / XP_PER_LVL)
-        return "You are level {}".format(lvl)
 
 class CustomCommands:
     def __init__(self):
@@ -101,7 +74,7 @@ class CustomCommands:
 
     Input: message - Discord message object
     """
-    def define_cmd(self, message):
+    async def define_cmd(self, message):
         # First remove the "define" command
         new_cmd = utils.remove_command(message.content)
         # Then parse the new command
@@ -139,7 +112,7 @@ class CustomCommands:
 
     Input: message - Discord message object
     """
-    def remove_cmd(self, message):
+    async def remove_cmd(self, message):
         # First remove the "define" command
         new_cmd = utils.remove_command(message.content)
         # Then parse the command to remove
@@ -157,7 +130,7 @@ class CustomCommands:
 
     Give a list of all user-defined commands
     """
-    def list_cmds(self, _message):
+    async def list_cmds(self, _message):
         output = "```\n"
         cmds = self.cmd_dict.keys()
         for cmd in cmds:

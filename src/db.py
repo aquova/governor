@@ -106,3 +106,16 @@ def set_new_custom_cmd(name, response):
 
     sqlconn.commit()
     sqlconn.close()
+
+def get_rank(userid):
+    sqlconn = sqlite3.connect(DB_PATH)
+
+    # I'm quite proud of this SQL query
+    results = sqlconn.execute("SELECT * FROM (SELECT id, RANK() OVER(ORDER BY xp DESC) FROM xp) WHERE id=?", [userid]).fetchone()
+
+    sqlconn.close()
+
+    if results == []:
+        return None
+
+    return results[1]
