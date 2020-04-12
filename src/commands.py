@@ -1,14 +1,22 @@
 import discord
 import db, utils
 from math import floor
-from config import CMD_PREFIX, SERVER_URL
+from config import ADMIN_ACCESS, CMD_PREFIX, SERVER_URL
 from user import parse_mention
 
-HELP_MES = (
+ADMIN_HELP_MES = (
     "Define a custom message: `{prefix}define NAME [%mention%]`\n"
+    "Edit a message spoken by the bot: `{prefix}edit MESSAGE_ID new_message`\n"
     "List custom commands: `{prefix}list`\n"
     "View your level: `{prefix}lvl`\n"
     "Remove a custom message: `{prefix}remove NAME`\n"
+    "Speak a message as the bot: `{prefix}say CHAN_ID message`\n"
+    "View your XP: `{prefix}xp`\n"
+    "\nView this message: `{prefix}help`".format(prefix=CMD_PREFIX)
+)
+
+HELP_MES = (
+    "View your level: `{prefix}lvl`\n"
     "View your XP: `{prefix}xp`\n"
     "\nView this message: `{prefix}help`\n".format(prefix=CMD_PREFIX)
 )
@@ -19,7 +27,12 @@ Print Help
 Prints the help message
 """
 async def print_help(message):
-    return HELP_MES
+    # Print different message if user has advanced permissions
+    roles = [x.id for x in message.author.roles]
+    if ADMIN_ACCESS in roles:
+        return ADMIN_HELP_MES
+    else:
+        return HELP_MES
 
 """
 Show leaderboard
@@ -35,6 +48,11 @@ Say
 Speaks a message to the specified channel as the bot
 """
 async def say(message):
+    # Only allow if user has correct permissions
+    roles = [x.id for x in message.author.roles]
+    if ADMIN_ACCESS not in roles:
+        return None
+
     try:
         payload = utils.remove_command(message.content)
         channel_id = utils.get_command(payload)
@@ -61,6 +79,11 @@ Edit message
 Edits a message spoken by the bot, by message ID
 """
 async def edit(message):
+    # Only allow if user has correct permissions
+    roles = [x.id for x in message.author.roles]
+    if ADMIN_ACCESS not in roles:
+        return None
+
     try:
         payload = utils.remove_command(message.content)
         edit_id = utils.get_command(payload)
@@ -145,6 +168,11 @@ class CustomCommands:
     Input: message - Discord message object
     """
     async def define_cmd(self, message):
+        # Only allow if user has correct permissions
+        roles = [x.id for x in message.author.roles]
+        if ADMIN_ACCESS not in roles:
+            return None
+
         # First remove the "define" command
         new_cmd = utils.remove_command(message.content)
         # Then parse the new command
@@ -183,6 +211,11 @@ class CustomCommands:
     Input: message - Discord message object
     """
     async def remove_cmd(self, message):
+        # Only allow if user has correct permissions
+        roles = [x.id for x in message.author.roles]
+        if ADMIN_ACCESS not in roles:
+            return None
+
         # First remove the "define" command
         new_cmd = utils.remove_command(message.content)
         # Then parse the command to remove
@@ -200,7 +233,12 @@ class CustomCommands:
 
     Give a list of all user-defined commands
     """
-    async def list_cmds(self, _message):
+    async def list_cmds(self, message):
+        # Only allow if user has correct permissions
+        roles = [x.id for x in message.author.roles]
+        if ADMIN_ACCESS not in roles:
+            return None
+
         output = "```\n"
         cmds = self.cmd_dict.keys()
         for cmd in cmds:

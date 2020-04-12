@@ -36,6 +36,9 @@ cat << EOF > src/private/config.json
     "db_path": "private/database.db",
     "ranks_path": "private/ranks.json",
     "command_prefix": "!",
+    "roles": {
+        "admin_access": 1234567890
+    },
     "server_url": "https://example.com"
 }
 EOF

@@ -16,9 +16,9 @@ My personal hosting of the bot will be private, but users are free to host a ver
 
 ## Installation
 
-- Running the Discord bot itself requires Python 3. The Python libraries needed can be installed via: `python3 -m pip install -r requirements.txt`
+- A bash script is included for automatic setup, given a Debian-based server. Simply run `./setup.sh`
 
-- In order to run the leaderboard page on a webserver, PHP must be installed, along with the php-json, and php-sqlite3 packages.
+- In order to run the leaderboard page on a webserver, you must symlink the `web` directory into the desired location on your publicly hosted filesystem.
 
 ## TODO
 
@@ -29,11 +29,11 @@ My personal hosting of the bot will be private, but users are free to host a ver
 - [ ] Online leaderboard
     - [x] Basic functionality
     - [ ] Custom domain
-- [ ] Custom commands
+- [x] Custom commands
     - [x] Basic support
     - [x] Import from Mayor Lewis
     - [x] Support for mentioning a user in command
-    - [ ] Add permissions so not anyone can add a command
+    - [x] Add permissions so not anyone can add a command
     - [x] Add ability to remove commands
 - [x] Speak through bot
 - [ ] Debugging instance

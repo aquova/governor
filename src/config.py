@@ -9,6 +9,7 @@ with open('private/config.json') as config_file:
 DISCORD_KEY = cfg['discord']
 DB_PATH = cfg['db_path']
 CMD_PREFIX = cfg['command_prefix']
+ADMIN_ACCESS = cfg['roles']['admin_access']
 SERVER_URL = cfg['server_url']
 
 # Import ranks from their configuration
