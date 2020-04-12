@@ -1,7 +1,7 @@
 import discord
 import db, utils
 from math import floor
-from config import CMD_PREFIX
+from config import CMD_PREFIX, SERVER_URL
 from user import parse_mention
 
 HELP_MES = (
@@ -20,6 +20,9 @@ Prints the help message
 """
 async def print_help(message):
     return HELP_MES
+
+async def show_lb(message):
+    return "{}/leaderboard".format(SERVER_URL)
 
 class CustomCommands:
     def __init__(self):

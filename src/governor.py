@@ -16,9 +16,10 @@ cc = commands.CustomCommands()
 FUNC_DICT = {
     "define": cc.define_cmd,
     "help": commands.print_help,
+    "lb": commands.show_lb,
+    "level": xp.render_lvl_image,
     "list": cc.list_cmds,
     "lvl": xp.render_lvl_image,
-    "level": xp.render_lvl_image,
     "remove": cc.remove_cmd,
     "xp": xp.get_xp,
 }
