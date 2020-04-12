@@ -21,8 +21,75 @@ Prints the help message
 async def print_help(message):
     return HELP_MES
 
+"""
+Show leaderboard
+
+Posts the URL for the online leaderboard
+"""
 async def show_lb(message):
     return "{}/leaderboard".format(SERVER_URL)
+
+"""
+Say
+
+Speaks a message to the specified channel as the bot
+"""
+async def say(message):
+    try:
+        payload = utils.remove_command(message.content)
+        channel_id = utils.get_command(payload)
+        channel = discord.utils.get(message.guild.channels, id=int(channel_id))
+        m = utils.remove_command(payload)
+        if m == "":
+            return "You cannot send empty messages."
+
+        await channel.send(m)
+        return "Message sent."
+    except (IndexError, ValueError):
+        return "I was unable to find a channel ID in that message. `{prefix}say CHAN_ID message`".format(prefix=CMD_PREFIX)
+    except AttributeError:
+        return "Are you sure that was a channel ID?"
+    except discord.errors.HTTPException as e:
+        if e.code == 50013:
+            return "You do not have permissions to post in that channel."
+        else:
+            return "Oh god something went wrong, everyone panic! {}".format(str(e))
+
+"""
+Edit message
+
+Edits a message spoken by the bot, by message ID
+"""
+async def edit(message):
+    try:
+        payload = utils.remove_command(message.content)
+        edit_id = utils.get_command(payload)
+        edit_message = None
+        for channel in message.guild.channels:
+            try:
+                if type(channel) == discord.TextChannel:
+                    edit_message = await channel.fetch_message(int(edit_id))
+                    break
+            except discord.errors.HTTPException as e:
+                if e.code == 10008:
+                    pass
+
+        if edit_message == None:
+            return "I was unable to find a message with that ID."
+
+        m = utils.remove_command(payload)
+        if m == "":
+            return "You cannot replace a message with nothing."
+
+        await edit_message.edit(content=m)
+        return "Message edited."
+    except (IndexError, ValueError):
+        return "I was unable to find a message ID in that message. `{prefix}edit MES_ID message`".format(prefix=CMD_PREFIX)
+    except discord.errors.HTTPException as e:
+        if e.code == 50005:
+            return "You cannot edit a message from another user."
+        else:
+            return "Oh god something went wrong, everyone panic! {}".format(str(e))
 
 class CustomCommands:
     def __init__(self):

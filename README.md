@@ -35,7 +35,7 @@ My personal hosting of the bot will be private, but users are free to host a ver
     - [x] Support for mentioning a user in command
     - [ ] Add permissions so not anyone can add a command
     - [x] Add ability to remove commands
-- [ ] Speak through bot
+- [x] Speak through bot
 - [ ] Debugging instance
 - [ ] Easy setup script
 - [ ] Event utilities

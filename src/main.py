@@ -15,12 +15,14 @@ cc = commands.CustomCommands()
 # Maps commands (in all caps) to functions that are called by them
 FUNC_DICT = {
     "define": cc.define_cmd,
+    "edit": commands.edit,
     "help": commands.print_help,
     "lb": commands.show_lb,
     "level": xp.render_lvl_image,
     "list": cc.list_cmds,
     "lvl": xp.render_lvl_image,
     "remove": cc.remove_cmd,
+    "say": commands.say,
     "xp": xp.get_xp,
 }
 
