@@ -5,7 +5,7 @@ from config import ADMIN_ACCESS, CMD_PREFIX, SERVER_URL
 from user import parse_mention
 
 ADMIN_HELP_MES = (
-    "Define a custom message: `{prefix}define NAME [%mention%]`\n"
+    "Define a custom message: `{prefix}define NAME [%mention%] MESSAGE`\n"
     "Edit a message spoken by the bot: `{prefix}edit MESSAGE_ID new_message`\n"
     "List custom commands: `{prefix}list`\n"
     "View your level: `{prefix}lvl`\n"
@@ -16,6 +16,7 @@ ADMIN_HELP_MES = (
 )
 
 HELP_MES = (
+    "List custom commands: `{prefix}list`\n"
     "View your level: `{prefix}lvl`\n"
     "View your XP: `{prefix}xp`\n"
     "\nView this message: `{prefix}help`\n".format(prefix=CMD_PREFIX)
@@ -234,15 +235,12 @@ class CustomCommands:
     Give a list of all user-defined commands
     """
     async def list_cmds(self, message):
-        # Only allow if user has correct permissions
-        roles = [x.id for x in message.author.roles]
-        if ADMIN_ACCESS not in roles:
-            return None
-
         output = "```\n"
-        cmds = self.cmd_dict.keys()
+        cmds = sorted(self.cmd_dict.keys(), key=str.lower)
         for cmd in cmds:
             output += "{}, ".format(cmd)
 
+        # Remove trailing comma
+        output = output[:-2]
         output += "\n```"
         return output
