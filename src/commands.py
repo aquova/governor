@@ -1,7 +1,7 @@
 import discord
 import db, utils
 from math import floor
-from config import ADMIN_ACCESS, CMD_PREFIX, SERVER_URL
+from config import ADMIN_ACCESS, CMD_PREFIX, RANKS, SERVER_URL
 from user import parse_mention
 
 ADMIN_HELP_MES = (
@@ -9,6 +9,7 @@ ADMIN_HELP_MES = (
     "Edit a message spoken by the bot: `{prefix}edit MESSAGE_ID new_message`\n"
     "List custom commands: `{prefix}list`\n"
     "View your level: `{prefix}lvl`\n"
+    "View available ranks: `{prefix}ranks`\n"
     "Remove a custom message: `{prefix}remove NAME`\n"
     "Speak a message as the bot: `{prefix}say CHAN_ID message`\n"
     "View your XP: `{prefix}xp`\n"
@@ -18,6 +19,7 @@ ADMIN_HELP_MES = (
 HELP_MES = (
     "List custom commands: `{prefix}list`\n"
     "View your level: `{prefix}lvl`\n"
+    "View available ranks: `{prefix}ranks`\n"
     "View your XP: `{prefix}xp`\n"
     "\nView this message: `{prefix}help`\n".format(prefix=CMD_PREFIX)
 )
@@ -42,6 +44,18 @@ Posts the URL for the online leaderboard
 """
 async def show_lb(message):
     return "{}/leaderboard".format(SERVER_URL)
+
+"""
+List ranks
+
+Lists the available earnable rank roles, and their levels
+"""
+async def list_ranks(message):
+    output = ""
+    for rank in RANKS:
+        output += "Level {}: {}\n".format(rank['level'], rank['name'])
+
+    return output
 
 """
 Say

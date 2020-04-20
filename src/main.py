@@ -21,6 +21,7 @@ FUNC_DICT = {
     "level": xp.render_lvl_image,
     "list": cc.list_cmds,
     "lvl": xp.render_lvl_image,
+    "ranks": commands.list_ranks,
     "remove": cc.remove_cmd,
     "say": commands.say,
     "xp": xp.get_xp,
