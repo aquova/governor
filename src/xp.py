@@ -3,6 +3,7 @@ from config import XP_PER_LVL
 from dataclasses import dataclass
 from math import ceil, floor
 from PIL import Image, ImageDraw, ImageFont
+from user import parse_mention
 
 @dataclass
 class Point:
@@ -55,15 +56,25 @@ async def render_lvl_image(message):
     if not os.path.exists("private/tmp"):
         os.makedirs("private/tmp")
 
-    userid = message.author.id
-    username = message.author.name
+    # First, check if the user wants to look up someone else
+    author = None
+    other_id = parse_mention(message)
+    if other_id != None:
+        author = discord.utils.get(message.guild.members, id=other_id)
+
+    # If we couldn't find a user, use the message author
+    if author == None:
+        author = message.author
+
+    userid = author.id
+    username = author.name
     xp = db.fetch_user_xp(userid)
     lvl = floor(xp / XP_PER_LVL)
     # Calculate what percentage we are to the next level, as a range from 0-10
     bar_num = ceil(10 * (xp - (lvl * XP_PER_LVL)) / XP_PER_LVL)
     rank = db.get_rank(userid) # This *can* return None, but I don't know how it could in actuality
 
-    avatar_url = "https://cdn.discordapp.com/avatars/{}/{}.png".format(userid, message.author.avatar)
+    avatar_url = "https://cdn.discordapp.com/avatars/{}/{}.png".format(userid, author.avatar)
     avatar_filename = "private/tmp/{}.png".format(userid)
 
     # Download the user's avatar image to private/tmp
@@ -102,7 +113,7 @@ async def render_lvl_image(message):
     # The discriminator needs to be appended on the end of the username, but in a different font size
     username_width = font_22.getsize(username)[0]
     y_offset = font_22.getsize(username)[1] / 6
-    draw.text((USERNAME_POS.x + username_width, USERNAME_POS.y + y_offset), "#{}".format(message.author.discriminator), BACK_COLOR, font=font_14)
+    draw.text((USERNAME_POS.x + username_width, USERNAME_POS.y + y_offset), "#{}".format(author.discriminator), BACK_COLOR, font=font_14)
 
     draw.text(LEVEL_POS.shadow_tuple(), "Level {}".format(lvl), BACK_COLOR, font=font_22)
     draw.text(LEVEL_POS.as_tuple(), "Level {}".format(lvl), FONT_COLOR, font=font_22)

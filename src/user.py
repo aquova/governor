@@ -46,18 +46,17 @@ def check_username(message):
         return None
 
 def check_id(message):
-    checkID = remove_command(message.content)
+    content = remove_command(message.content)
 
     try:
         # If ping is typed out by user using their ID, it doesn't count as a mention
         # Thus, try and match with regex
-        checkPing = re.search(r"<@!?(\d+)>", checkID)
+        checkPing = re.search(r"<@!?(\d+)>", content)
         if checkPing != None:
-            return checkPing.group(1)
+            return int(checkPing.group(1))
 
         # Simply verify by attempting to cast to an int. If it doesn't raise an error, return it
-        # Lengths of Discord IDs seem to be no longer a constant length, so difficult to verify that way
-        int(checkID)
-        return checkID
+        checkID = content.split()[0]
+        return int(checkID)
     except (IndexError, ValueError):
         return None
