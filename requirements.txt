@@ -1,4 +1,4 @@
 dataclasses; python_version < '3.7'
-discord.py==1.3.2
+discord.py==1.3.3
 pillow==7.1.1
 requests==2.23.0

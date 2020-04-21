@@ -144,7 +144,8 @@ class Tracker:
             # Go through our new role IDs, and get the actual role objects
             for role_id in new_roles:
                 role = discord.utils.get(user.guild.roles, id=role_id)
-                user_roles.append(role)
+                if role != None:
+                    user_roles.append(role)
 
             # The role list *replaces* the old list, not appends to it
             await user.edit(roles=user_roles)
