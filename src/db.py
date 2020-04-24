@@ -16,7 +16,7 @@ def fetch_user_xp(user_id):
     sqlconn.close()
 
     if foundUser == []:
-        return None
+        return 0
     else:
         return foundUser[0][0]
 

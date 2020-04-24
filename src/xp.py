@@ -74,14 +74,19 @@ async def render_lvl_image(message):
     bar_num = ceil(10 * (xp - (lvl * XP_PER_LVL)) / XP_PER_LVL)
     rank = db.get_rank(userid) # This *can* return None, but I don't know how it could in actuality
 
-    avatar_url = "https://cdn.discordapp.com/avatars/{}/{}.png".format(userid, author.avatar)
-    avatar_filename = "private/tmp/{}.png".format(userid)
+    out_filename = "private/tmp/{}.png".format(userid)
+    avatar_filename = out_filename
 
-    # Download the user's avatar image to private/tmp
-    response = requests.get(avatar_url, stream=True)
-    with open(avatar_filename, 'wb') as outfile:
-        shutil.copyfileobj(response.raw, outfile)
-    del response
+    if author.avatar == None:
+        avatar_filename = "assets/default_avatar.png"
+    else:
+        avatar_url = "https://cdn.discordapp.com/avatars/{}/{}.png".format(userid, author.avatar)
+
+        # Download the user's avatar image to private/tmp
+        response = requests.get(avatar_url, stream=True)
+        with open(avatar_filename, 'wb') as outfile:
+            shutil.copyfileobj(response.raw, outfile)
+        del response
 
     # Open image, paste the avatar image, then the frame
     bg = Image.open(IMG_BG)
@@ -120,7 +125,7 @@ async def render_lvl_image(message):
     draw.text(RANK_POS.as_tuple(), "Server Rank : {}".format(rank), BACK_COLOR, font=font_14)
 
     # Save and close images
-    bg.save(avatar_filename)
+    bg.save(out_filename)
     bg.close()
     avatar.close()
     frame.close()
@@ -128,7 +133,7 @@ async def render_lvl_image(message):
     large_bar.close()
 
     # Send image to channel
-    with open(avatar_filename, 'rb') as af:
+    with open(out_filename, 'rb') as af:
         df = discord.File(af)
         await message.channel.send(file=df)
 
