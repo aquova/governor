@@ -53,8 +53,8 @@ Runs when a user posts a message
 """
 @client.event
 async def on_message(message):
-    # Don't react to your message
-    if message.author.id == client.user.id:
+    # Ignore bots completely (including ourself)
+    if message.author.bot:
         return
 
     try:
