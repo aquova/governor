@@ -43,7 +43,7 @@ Show leaderboard
 Posts the URL for the online leaderboard
 """
 async def show_lb(message):
-    return "{}/leaderboard".format(SERVER_URL)
+    return "{}".format(SERVER_URL)
 
 """
 List ranks
