@@ -17,8 +17,12 @@
         $lvl = "Lvl " . floor($row['xp'] / $xp_per_lvl);
 
         $username = $row['username'];
+        if ($username == "") {
+            $username = "???";
+        }
+
         if ($row['avatar'] == "") {
-            $avatar_img = "../assets/default_avatar.png";
+            $avatar_img = "default_avatar.png";
         } else {
             $avatar_img = "https://cdn.discordapp.com/avatars/" . $id . "/" . $row['avatar'] . ".png";
         }
