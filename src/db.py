@@ -118,3 +118,50 @@ def get_rank(userid):
         return None
 
     return results[0]
+
+"""
+Add game
+
+Adds a new stored game to the database
+
+Inputs:
+    - game - A link to the game plus any additional info about the game - str
+"""
+def add_game(game):
+    sqlconn = sqlite3.connect(DB_PATH)
+
+    sqlconn.execute("INSERT INTO games (game) VALUES (?)", [game])
+
+    sqlconn.commit()
+    sqlconn.close()
+
+"""
+Get games
+
+Gets all games stored
+"""
+def get_games():
+    sqlconn = sqlite3.connect(DB_PATH)
+
+    # get games as a list of 1-tuples
+    raw_results = sqlconn.execute("SELECT game FROM games").fetchall()
+
+    # convert games into a list of strings
+    results = [game[0] for game in raw_results]
+
+    sqlconn.close()
+
+    return results
+
+"""
+Clear games
+
+Removes all currently stored games
+"""
+def clear_games():
+    sqlconn = sqlite3.connect(DB_PATH)
+
+    sqlconn.execute("DELETE FROM games")
+
+    sqlconn.commit()
+    sqlconn.close()

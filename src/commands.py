@@ -13,6 +13,9 @@ ADMIN_HELP_MES = (
     "Remove a custom message: `{prefix}remove NAME`\n"
     "Speak a message as the bot: `{prefix}say CHAN_ID message`\n"
     "View your XP: `{prefix}xp`\n"
+    "\nAdd a game to be announced: `{prefix}addgame game_info`\n"
+    "View all games to be announced: `{prefix}getgames`\n"
+    "Remove all games to be announced: `{prefix}cleargames`\n"
     "\nView this message: `{prefix}help`".format(prefix=CMD_PREFIX)
 )
 
