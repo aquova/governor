@@ -1,6 +1,6 @@
 import discord, db, requests, os, shutil
 from config import XP_PER_LVL
-from dataclasses import dataclass
+from dataclasses import dataclass, astuple
 from math import ceil, floor
 from PIL import Image, ImageDraw, ImageFont
 from user import parse_mention
@@ -14,9 +14,6 @@ class Point:
         self.x = x
         self.y = y
 
-    def as_tuple(self):
-        return (self.x, self.y)
-
     def shadow_tuple(self):
         return (self.x - 1, self.y + 1)
 
@@ -29,7 +26,7 @@ FONT_COLOR = (208, 80, 84)
 BACK_COLOR = (82, 31, 33)
 USERNAME_POS = Point(90, 8)
 LEVEL_POS = Point(90, 63)
-RANK_POS = Point(275, 68)
+RANK_POS = Point(385, 68)
 BAR_X = [133, 153, 173, 193, 213, 247, 267, 287, 307, 327]
 BAR_Y = 37
 
@@ -40,11 +37,7 @@ Returns the given user's XP value, as a formatted string
 """
 async def get_xp(message):
     xp = db.fetch_user_xp(message.author.id)
-    if xp == None:
-        # TODO: This shouldn't be possible, raise some sort of exception
-        return "You have no XP :("
-    else:
-        return "You have {} XP".format(xp)
+    return "You have {} XP".format(xp)
 
 """
 Render level image
@@ -114,15 +107,19 @@ async def render_lvl_image(message):
 
     # Draw shadow one pixel down and left
     draw.text(USERNAME_POS.shadow_tuple(), username, BACK_COLOR, font=font_22)
-    draw.text(USERNAME_POS.as_tuple(), username, FONT_COLOR, font=font_22)
+    draw.text(astuple(USERNAME_POS), username, FONT_COLOR, font=font_22)
     # The discriminator needs to be appended on the end of the username, but in a different font size
     username_width = font_22.getsize(username)[0]
     y_offset = font_22.getsize(username)[1] / 6
     draw.text((USERNAME_POS.x + username_width, USERNAME_POS.y + y_offset), "#{}".format(author.discriminator), BACK_COLOR, font=font_14)
 
     draw.text(LEVEL_POS.shadow_tuple(), "Level {}".format(lvl), BACK_COLOR, font=font_22)
-    draw.text(LEVEL_POS.as_tuple(), "Level {}".format(lvl), FONT_COLOR, font=font_22)
-    draw.text(RANK_POS.as_tuple(), "Server Rank : {}".format(rank), BACK_COLOR, font=font_14)
+    draw.text(astuple(LEVEL_POS), "Level {}".format(lvl), FONT_COLOR, font=font_22)
+
+    # Since the ranks can be (currentnly) up to 5 digits, adjust dynamically
+    rank_text = "Server Rank : {}".format(rank)
+    rank_width = font_14.getsize(rank_text)[0]
+    draw.text((RANK_POS.x - rank_width, RANK_POS.y), rank_text, BACK_COLOR, font=font_14)
 
     # Save and close images
     bg.save(out_filename)
