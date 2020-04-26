@@ -4,18 +4,21 @@
 
 import discord
 import commands, utils, xp
-from config import DISCORD_KEY, CMD_PREFIX
+from config import CMD_PREFIX, DISCORD_KEY
+from debug import Debug
 from tracker import Tracker
 
 client = discord.Client()
 tr = Tracker()
 cc = commands.CustomCommands()
+dbg = Debug()
 
 # Dictionary of function pointers
 # Maps commands (in all caps) to functions that are called by them
 FUNC_DICT = {
     "custom": commands.print_help,
     "define": cc.define_cmd,
+    "debug": dbg.toggle_debug,
     "edit": commands.edit,
     "help": commands.print_help,
     "lb": commands.show_lb,
@@ -55,6 +58,9 @@ Runs when a user posts a message
 async def on_message(message):
     # Ignore bots completely (including ourself)
     if message.author.bot:
+        return
+
+    if dbg.should_ignore_message(message):
         return
 
     try:

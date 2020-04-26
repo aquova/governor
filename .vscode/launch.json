@@ -6,7 +6,8 @@
             "type": "python",
             "request": "launch",
             "program": "${workspaceFolder}/src/main.py",
-            "cwd": "${workspaceFolder}/src"
+            "cwd": "${workspaceFolder}/src",
+            "pythonPath": "${workspaceFolder}/bin/python3"
         },
     ]
 }

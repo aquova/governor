@@ -11,6 +11,8 @@ DB_PATH = cfg['db_path']
 CMD_PREFIX = cfg['command_prefix']
 ADMIN_ACCESS = cfg['roles']['admin_access']
 SERVER_URL = cfg['server_url']
+OWNER = cfg['owner']
+DEBUG_BOT = (cfg['debug'].upper() == "TRUE")
 
 # Import ranks from their configuration
 with open(cfg['ranks_path']) as ranks_file:

@@ -33,11 +33,13 @@ mkdir -p src/private;
 cat << EOF > src/private/config.json
 {
     "discord": "YOUR DISCORD TOKEN HERE",
+    "debug": "False",
     "db_path": "private/database.db",
     "ranks_path": "private/ranks.json",
     "command_prefix": "!",
+    "owner": 0
     "roles": {
-        "admin_access": 1234567890
+        "admin_access": 0
     },
     "server_url": "https://example.com"
 }
@@ -50,7 +52,7 @@ cat << EOF > src/private/ranks.json
             "name": "Rank Name",
             "level": 1,
             "message": "This is the message that will be posted when a user earns this rank",
-            "role_id": 1234567890
+            "role_id": 0
         }
     ]
 }
