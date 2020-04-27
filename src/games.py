@@ -19,7 +19,8 @@ class GameTimer:
     def start(self, channel):
         self._channel = channel
 
-        asyncio.create_task(self._announce_games())
+        # If I ever upgrade to Python 3.7+, it's recommended this become `asyncio.create_task`
+        asyncio.ensure_future(self._announce_games())
 
     async def _announce_games(self):
         while True:
@@ -122,5 +123,5 @@ def get_delta_to_next_announcement():
 
     if announcement <= now:
         announcement += timedelta(days=1)
-    
+
     return announcement - now
