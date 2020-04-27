@@ -1,7 +1,7 @@
-import db, utils, config
+import db, utils
 from datetime import datetime, timedelta, timezone
 import asyncio, random
-from config import ADMIN_ACCESS
+from config import GAME_ANNOUNCE_TIME
 
 ANNOUNCE_MESSAGES = [
     "Oh ho ho, what are all these free games I've found?",
@@ -47,25 +47,11 @@ class GameTimer:
 
 
 """
-Requires admin
-
-Wrapper function for commands that has them do nothing if the author doesn't have the admin role
-"""
-def requires_admin(func):
-    async def wrapper(message):
-        roles = [x.id for x in message.author.roles]
-        if ADMIN_ACCESS not in roles:
-            return None
-
-        return await func(message)
-    return wrapper
-
-"""
 Add game
 
 Adds a game to be announced
 """
-@requires_admin
+@utils.requires_admin
 async def add_game(message):
     game = utils.remove_command(message.content).strip()
     if len(game) == 0:
@@ -84,7 +70,7 @@ Get games
 
 Returns the list of games to be announced
 """
-@requires_admin
+@utils.requires_admin
 async def get_games(message):
     games = db.get_games()
 
@@ -102,7 +88,7 @@ Clear games
 
 Clears all games that are being announced
 """
-@requires_admin
+@utils.requires_admin
 async def clear_games(message):
     db.clear_games()
 
@@ -115,7 +101,7 @@ Get next announcement info
 Returns a string representing the time when the next game announcement will happen. Inlcudes the UTC time and duration until that time.
 """
 def get_next_announcement_info():
-    time_utc = config.GAME_ANNOUNCE_TIME.strftime("%H:%M UTC")
+    time_utc = GAME_ANNOUNCE_TIME.strftime("%H:%M UTC")
     remaining = get_delta_to_next_announcement()
 
     hours, remainder = divmod(remaining.total_seconds(), 3600)
@@ -128,11 +114,11 @@ Get delta to next announcement
 
 Gets a timedelta to the next announcement time.
 
-If the current time today is before the configured time, the timedelta will be to the announcement time today. Otherwill it will be for the announcement time tomorrow.
+If the current time today is before the configured time, the timedelta will be to the announcement time today. Otherwise it will be for the announcement time tomorrow.
 """
 def get_delta_to_next_announcement():
     now = datetime.now(timezone.utc)
-    announcement = now.replace(day=now.day, hour=config.GAME_ANNOUNCE_TIME.hour, minute=config.GAME_ANNOUNCE_TIME.minute)
+    announcement = now.replace(hour=GAME_ANNOUNCE_TIME.hour, minute=GAME_ANNOUNCE_TIME.minute)
 
     if announcement <= now:
         announcement += timedelta(days=1)
