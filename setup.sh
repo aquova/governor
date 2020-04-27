@@ -41,7 +41,11 @@ cat << EOF > src/private/config.json
     "roles": {
         "admin_access": 0
     },
-    "server_url": "https://example.com"
+    "server_url": "https://example.com",
+    "games": {
+        "announcement_channel": 0,
+        "announcement_time": "12:00 AM"
+    }
 }
 EOF
 

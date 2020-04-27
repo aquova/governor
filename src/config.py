@@ -1,3 +1,4 @@
+from datetime import datetime
 import json
 
 XP_PER_LVL = 300
@@ -13,6 +14,9 @@ ADMIN_ACCESS = cfg['roles']['admin_access']
 SERVER_URL = cfg['server_url']
 OWNER = cfg['owner']
 DEBUG_BOT = (cfg['debug'].upper() == "TRUE")
+
+GAME_ANNOUNCEMENT_CHANNEL = cfg['games']['announcement_channel']
+GAME_ANNOUNCE_TIME = datetime.strptime(cfg['games']['announcement_time'], "%I:%M %p")
 
 # Import ranks from their configuration
 with open(cfg['ranks_path']) as ranks_file:

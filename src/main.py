@@ -3,8 +3,8 @@
 # https://github.com/aquova/governor
 
 import discord
-import commands, utils, xp
-from config import CMD_PREFIX, DISCORD_KEY
+import commands, utils, xp, games
+from config import CMD_PREFIX, DISCORD_KEY, GAME_ANNOUNCEMENT_CHANNEL
 from debug import Debug
 from tracker import Tracker
 
@@ -12,6 +12,7 @@ client = discord.Client()
 tr = Tracker()
 cc = commands.CustomCommands()
 dbg = Debug()
+game_timer = games.GameTimer()
 
 # Dictionary of function pointers
 # Maps commands (in all caps) to functions that are called by them
@@ -29,6 +30,9 @@ FUNC_DICT = {
     "remove": cc.remove_cmd,
     "say": commands.say,
     "xp": xp.get_xp,
+    "addgame": games.add_game,
+    "cleargames": games.clear_games,
+    "getgames": games.get_games,
 }
 
 # The keys in the function dict cannot be used as custom commands
@@ -45,9 +49,23 @@ async def on_ready():
     print(client.user.name)
     print(client.user.id)
 
+    game_channel = None
+
     # Currently, this will only be one guild, but this is here for future proofing
     for guild in client.guilds:
         await tr.refresh_db(guild)
+
+        if game_channel is None:
+            game_channel = discord.utils.get(guild.text_channels, id=GAME_ANNOUNCEMENT_CHANNEL)
+
+            if game_channel is not None:
+                print(f"Announcing games in server '{guild.name}' channel '{game_channel.name}'")
+
+    if game_channel is None:
+        await client.close()
+        raise Exception(f"Game announcement error: couldn't find channel {GAME_ANNOUNCEMENT_CHANNEL}")
+
+    game_timer.start(game_channel)
 
 """
 On Message

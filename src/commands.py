@@ -13,6 +13,9 @@ ADMIN_HELP_MES = (
     "Remove a custom message: `{prefix}remove NAME`\n"
     "Speak a message as the bot: `{prefix}say CHAN_ID message`\n"
     "View your XP: `{prefix}xp`\n"
+    "\nAdd a game to be announced: `{prefix}addgame game_info`\n"
+    "View all games to be announced: `{prefix}getgames`\n"
+    "Remove all games to be announced: `{prefix}cleargames`\n"
     "\nView this message: `{prefix}help`".format(prefix=CMD_PREFIX)
 )
 
@@ -62,12 +65,8 @@ Say
 
 Speaks a message to the specified channel as the bot
 """
+@utils.requires_admin
 async def say(message):
-    # Only allow if user has correct permissions
-    roles = [x.id for x in message.author.roles]
-    if ADMIN_ACCESS not in roles:
-        return None
-
     try:
         payload = utils.remove_command(message.content)
         channel_id = utils.get_command(payload)
@@ -93,12 +92,8 @@ Edit message
 
 Edits a message spoken by the bot, by message ID
 """
+@utils.requires_admin
 async def edit(message):
-    # Only allow if user has correct permissions
-    roles = [x.id for x in message.author.roles]
-    if ADMIN_ACCESS not in roles:
-        return None
-
     try:
         payload = utils.remove_command(message.content)
         edit_id = utils.get_command(payload)
@@ -182,12 +177,8 @@ class CustomCommands:
 
     Input: message - Discord message object
     """
+    @utils.requires_admin
     async def define_cmd(self, message):
-        # Only allow if user has correct permissions
-        roles = [x.id for x in message.author.roles]
-        if ADMIN_ACCESS not in roles:
-            return None
-
         # First remove the "define" command
         new_cmd = utils.remove_command(message.content)
         # Then parse the new command
@@ -225,12 +216,8 @@ class CustomCommands:
 
     Input: message - Discord message object
     """
+    @utils.requires_admin
     async def remove_cmd(self, message):
-        # Only allow if user has correct permissions
-        roles = [x.id for x in message.author.roles]
-        if ADMIN_ACCESS not in roles:
-            return None
-
         # First remove the "define" command
         new_cmd = utils.remove_command(message.content)
         # Then parse the command to remove
