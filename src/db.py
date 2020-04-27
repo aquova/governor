@@ -2,6 +2,19 @@ import sqlite3
 from config import DB_PATH
 
 """
+Initialize database
+
+Generates database with needed tables if doesn't exist
+"""
+def initialize():
+    sqlconn = sqlite3.connect(DB_PATH)
+    sqlconn.execute("CREATE TABLE IF NOT EXISTS xp (id INT PRIMARY KEY, xp INT, username TEXT, avatar TEXT)")
+    sqlconn.execute("CREATE TABLE IF NOT EXISTS commands (name TEXT, response TEXT)")
+    sqlconn.execute("CREATE TABLE IF NOT EXISTS games (game TEXT)")
+    sqlconn.commit()
+    sqlconn.close()
+
+"""
 Fetch user XP
 
 Collects the XP database entry for a given user

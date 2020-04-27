@@ -3,12 +3,14 @@
 # https://github.com/aquova/governor
 
 import discord
-import commands, utils, xp, games
+import db, commands, utils, xp, games
 from config import CMD_PREFIX, DISCORD_KEY, GAME_ANNOUNCEMENT_CHANNEL
 from debug import Debug
 from tracker import Tracker
 
 client = discord.Client()
+
+db.initialize()
 tr = Tracker()
 cc = commands.CustomCommands()
 dbg = Debug()
