@@ -51,19 +51,24 @@ async def on_ready():
     print(client.user.name)
     print(client.user.id)
 
-    game_channel = None
-
     # Currently, this will only be one guild, but this is here for future proofing
     for guild in client.guilds:
         await tr.refresh_db(guild)
 
-        if game_channel is None:
-            game_channel = discord.utils.get(guild.text_channels, id=GAME_ANNOUNCEMENT_CHANNEL)
+"""
+On Guild Available
 
-            if game_channel is not None:
-                print(f"Announcing games in server '{guild.name}' channel '{game_channel.name}'")
+Runs when a guild (server) that the bot is connected to becomes ready
+"""
+@client.event
+async def on_guild_available(guild):
+    # This is 100% going to cause issues if we ever want to host on more than one server
+    # TODO: If we want to fix this, make announcement channels a list in config.json, and add a server ID column to DB
+    game_channel = discord.utils.get(guild.text_channels, id=GAME_ANNOUNCEMENT_CHANNEL)
 
-    if game_channel is None:
+    if game_channel is not None:
+        print(f"Announcing games in server '{guild.name}' channel '{game_channel.name}'")
+    else:
         await client.close()
         raise Exception(f"Game announcement error: couldn't find channel {GAME_ANNOUNCEMENT_CHANNEL}")
 

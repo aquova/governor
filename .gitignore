@@ -3,6 +3,7 @@
 **/include
 **/lib
 **/__pycache__
+pyvenv.cfg
 
 # Private files
 **/private
