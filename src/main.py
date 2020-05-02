@@ -97,6 +97,8 @@ async def on_message(message):
         # Check if someone is trying to use a bot command
         if message.content != "" and message.content[0] == CMD_PREFIX:
             prefix_removed = utils.strip_prefix(message.content)
+            if prefix_removed == "":
+                return
             command = utils.get_command(prefix_removed)
 
             if command in FUNC_DICT:
