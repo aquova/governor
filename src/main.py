@@ -51,10 +51,6 @@ async def on_ready():
     print(client.user.name)
     print(client.user.id)
 
-    # Currently, this will only be one guild, but this is here for future proofing
-    for guild in client.guilds:
-        await tr.refresh_db(guild)
-
 """
 On Guild Available
 
@@ -62,6 +58,8 @@ Runs when a guild (server) that the bot is connected to becomes ready
 """
 @client.event
 async def on_guild_available(guild):
+    await tr.refresh_db(guild)
+
     # This is 100% going to cause issues if we ever want to host on more than one server
     # TODO: If we want to fix this, make announcement channels a list in config.json, and add a server ID column to DB
     game_channel = discord.utils.get(guild.text_channels, id=GAME_ANNOUNCEMENT_CHANNEL)
@@ -73,6 +71,11 @@ async def on_guild_available(guild):
         raise Exception(f"Game announcement error: couldn't find channel {GAME_ANNOUNCEMENT_CHANNEL}")
 
     game_timer.start(game_channel)
+
+    # Set Bouncer's status
+    activity_mes = "{} members!".format(guild.member_count)
+    activity_object = discord.Activity(name=activity_mes, type=discord.ActivityType.watching)
+    await client.change_presence(activity=activity_object)
 
 """
 On Message
