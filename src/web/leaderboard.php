@@ -15,7 +15,7 @@
             <ul>
             <?php
                 include 'db.php';
-                populate_leaderboard();
+                $populate_leaderboard();
             ?>
             </ul>
         </main>

@@ -244,4 +244,5 @@ class CustomCommands:
         # Remove trailing comma
         output = output[:-2]
         output += "\n```"
+        output += "\nYou can also see a full list of commands and their responses here: {}/commands.php".format(SERVER_URL)
         return output
