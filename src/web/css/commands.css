@@ -1,0 +1,12 @@
+img {
+    max-width: 300px;
+    max-height: 300px;
+}
+
+table, th, td {
+    border: 1px solid black;
+}
+
+a {
+    color: #3391ff;
+}

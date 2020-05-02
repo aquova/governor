@@ -5,17 +5,11 @@
         <meta charset="utf-8">
         <link rel="icon" href="cojiro.png" type="image/png">
         <link rel="stylesheet" href="css/base.css" type="text/css">
-
-        <style>
-            img {
-                max-width: 300px;
-                max-height: 300px;
-            }
-        </style>
+        <link rel="stylesheet" href="css/commands.css" type="text/css">
     </head>
     <body>
         <header>
-            <h1></h1>
+            <h1>Discord Custom Commands</h1>
         </header>
         <main>
             <table>
