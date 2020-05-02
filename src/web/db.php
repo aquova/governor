@@ -9,7 +9,7 @@
         $cfg = json_decode($raw_json, true);
 
         $db = new SQLite3("../" . $cfg["db_path"]);
-        $ret = $db->query('SELECT * FROM xp ORDER BY xp DESC LIMIT 100');
+        $ret = $db->query('SELECT * FROM xp WHERE username IS NOT NULL ORDER BY xp DESC LIMIT 100');
 
         $rank = 0;
         while ($row = $ret->fetchArray()) {

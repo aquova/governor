@@ -123,7 +123,7 @@ def set_new_custom_cmd(name, response):
 def get_rank(userid):
     sqlconn = sqlite3.connect(DB_PATH)
 
-    results = sqlconn.execute("SELECT COUNT()+1 FROM xp WHERE xp > (SELECT xp FROM xp WHERE id=?)", [userid]).fetchone()
+    results = sqlconn.execute("SELECT COUNT()+1 FROM xp WHERE xp > (SELECT xp FROM xp WHERE id=?) and username IS NOT NULL", [userid]).fetchone()
 
     sqlconn.close()
 
