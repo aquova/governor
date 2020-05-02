@@ -36,36 +36,3 @@ main .user .user-id {
 main .user .user-xp {
   font-size: 12px;
 }
-
-@media (max-width: 720px) {
-  main {
-    width: 100%;
-    padding: 10px 20px 0 20px;
-  }
-}
-.subnav {
-  margin: 12px 0;
-}
-.subnav li {
-  display: inline-block;
-  padding: 12px 6px;
-}
-.subnav li > * {
-  text-decoration: none;
-  padding: 12px;
-  border: 2px solid #F4F4F4;
-  border-radius: 12px;
-}
-.subnav li > *.current {
-  background: #F4F4F4;
-  color: #1E2124;
-}
-.subnav a {
-  cursor: pointer;
-  color: #F4F4F4;
-}
-.subnav a:hover {
-  background: #4A4D4F;
-}
-
-/*# sourceMappingURL=leaderboard.css.map */

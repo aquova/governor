@@ -16,15 +16,6 @@ body {
   height: 100%;
   margin: 0;
 }
-body.js-nav-main-open {
-  grid-template-columns: 200px calc(100% - 250px) 50px;
-}
-body.js-nav-admin-open {
-  grid-template-columns: 50px calc(100% - 250px) 200px;
-}
-body.js-nav-main-open.js-nav-admin-open {
-  grid-template-columns: 200px calc(100% - 400px) 200px;
-}
 
 header {
   background: #2a2e33;
@@ -33,91 +24,12 @@ header {
   grid-template-columns: 50px 1fr 50px;
   grid-template-rows: 50px;
 }
+
 header h1 {
   grid-column: 2;
   margin: 0;
   justify-self: center;
   align-self: center;
-}
-header button {
-  outline: none;
-  width: 50px;
-  height: 50px;
-  background: inherit;
-  border: none;
-  grid-row: 1;
-  color: #F4F4F4;
-  cursor: pointer;
-}
-header button#nav-main-toggle {
-  grid-column: 1;
-}
-header button#nav-admin-toggle {
-  grid-column: 3;
-}
-
-nav {
-  background: #2a2e33;
-  overflow: hidden;
-}
-nav#nav-admin {
-  grid-column: 3;
-}
-nav svg, nav img {
-  width: 48px;
-  height: 48px;
-  padding: 10px;
-}
-nav ul {
-  display: grid;
-  list-style-type: none;
-  margin: 0;
-  padding: 0;
-  align-items: center;
-}
-nav li {
-  white-space: nowrap;
-}
-nav li span {
-  background: #F4F4F4;
-  color: #1E2124;
-}
-nav li span svg {
-  color: #1E2124;
-}
-nav li a, nav li span {
-  line-height: 48px;
-  width: 100%;
-  display: flex;
-  font-size: 14px;
-  border: 2px solid transparent;
-}
-nav li a svg, nav li span svg {
-  border-right: 2px solid transparent;
-  margin-right: 10px;
-}
-nav li a.current, nav li span.current {
-  background: #F4F4F4;
-  color: #1E2124;
-}
-nav li a:not(.current), nav li span:not(.current) {
-  cursor: pointer;
-}
-nav li a:not(.current):hover, nav li span:not(.current):hover {
-  background: #4A4D4F;
-}
-nav li a:not(.current):focus, nav li span:not(.current):focus {
-  border-color: #0076C8;
-  outline: none;
-}
-nav li a:not(.current):focus svg, nav li span:not(.current):focus svg {
-  border-color: #0076C8;
-}
-nav a {
-  text-decoration: none;
-}
-nav a, nav a:visited {
-  color: #F4F4F4;
 }
 
 main {
@@ -125,55 +37,3 @@ main {
   grid-row: 2;
   padding: 30px 30px 0 30px;
 }
-
-@media (max-width: 799px) {
-  header h1 {
-    font-size: 1em;
-  }
-
-  body,
-body.js-nav-main-open,
-body.js-nav-admin-open,
-body.js-nav-main-open.js-nav-admin-open {
-    grid-template-columns: 100%;
-  }
-
-  nav#nav-main {
-    transition: left 0.4s ease-out;
-  }
-
-  nav#nav-admin {
-    transition: right 0.4s ease-out;
-  }
-
-  body.js-nav-main-open nav#nav-main {
-    left: 0;
-  }
-
-  body.js-nav-admin-open nav#nav-admin {
-    right: 0;
-  }
-
-  nav {
-    background: #2a2e33;
-    overflow: hidden;
-    position: absolute;
-    top: 50px;
-    z-index: 99;
-    width: 200px;
-    bottom: 0;
-  }
-  nav#nav-main {
-    left: -200px;
-  }
-  nav#nav-admin {
-    right: -200px;
-  }
-
-  body main {
-    width: 100%;
-    grid-column: 1;
-  }
-}
-
-/*# sourceMappingURL=base.css.map */
