@@ -13,7 +13,10 @@
         </header>
         <main>
             <ul>
-            <?php include 'db.php'; ?>
+            <?php
+                include 'db.php';
+                populate_leaderboard();
+            ?>
             </ul>
         </main>
     </body>
