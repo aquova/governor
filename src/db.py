@@ -63,7 +63,7 @@ Returns a list of database entries for the top 100 highest XP holders
 def get_leaders():
     sqlconn = sqlite3.connect(DB_PATH)
 
-    leaders = sqlconn.execute("SELECT * FROM xp ORDER BY xp DESC LIMIT 100").fetchall()
+    leaders = sqlconn.execute("SELECT * FROM xp WHERE username IS NOT NULL ORDER BY xp DESC LIMIT 100").fetchall()
 
     sqlconn.close()
 

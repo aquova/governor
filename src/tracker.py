@@ -34,16 +34,19 @@ class Tracker:
         # Iterate thru every leader on the leaderboard and collect data
         for leader in leaders:
             leader_id = leader[0]
+            leader_xp = leader[1]
             user = discord.utils.get(server.members, id=leader_id)
 
-            # Currently, only bother with users that are still in the server
+            # Update users that are still in the server
             if user != None:
-                leader_xp = leader[1]
                 leader_name = "{}#{}".format(user.name, user.discriminator)
                 leader_avatar = user.avatar
 
                 # NOTE: May be worth to populate the cache here as well
                 db.set_user_xp(leader_id, leader_xp, leader_name, leader_avatar)
+            # Otherwise, prune their username/avatar so that they don't appear on the leaderboard
+            else:
+                db.set_user_xp(leader_id, leader_xp, None, None)
 
     """
     Process user message
