@@ -41,6 +41,16 @@ FUNC_DICT = {
 cc.set_protected_keywords(FUNC_DICT.keys())
 
 """
+Update User Count
+
+Updates the bot's 'activity' to reflect the number of users
+"""
+async def update_user_count(guild):
+    activity_mes = "{} members!".format(guild.member_count)
+    activity_object = discord.Activity(name=activity_mes, type=discord.ActivityType.watching)
+    await client.change_presence(activity=activity_object)
+
+"""
 On Ready
 
 Runs when Discord bot is first brought online
@@ -73,9 +83,25 @@ async def on_guild_available(guild):
     game_timer.start(game_channel)
 
     # Set Bouncer's status
-    activity_mes = "{} members!".format(guild.member_count)
-    activity_object = discord.Activity(name=activity_mes, type=discord.ActivityType.watching)
-    await client.change_presence(activity=activity_object)
+    await update_user_count(guild)
+
+"""
+On Member Join
+
+Runs when a user joins the server
+"""
+@client.event
+async def on_member_join(user):
+    await update_user_count(user.guild)
+
+"""
+On Member Leave
+
+Runs when a member leaves the server
+"""
+@client.event
+async def on_member_leave(user):
+    await update_user_count(user.guild)
 
 """
 On Message
