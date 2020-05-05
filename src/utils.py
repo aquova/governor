@@ -30,8 +30,10 @@ Removes the command invocation, to return just the payload, if any
 Input: mes - message to modify - str
 """
 def remove_command(mes):
-    request = mes.split()[1:]
-    return " ".join(request)
+    first = mes.split()[0]
+    # Want to simply chop off first word rather than split, to preserve whitespace
+    start = len(first) + 1
+    return mes[start:]
 
 """
 Requires admin
