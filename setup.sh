@@ -45,6 +45,9 @@ cat << EOF > src/private/config.json
     "games": {
         "announcement_channel": 0,
         "announcement_time": "12:00 AM"
+    },
+    "channels": {
+        "lvl_allowed": [0]
     }
 }
 EOF

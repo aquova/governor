@@ -1,5 +1,5 @@
-import discord, db, requests, os, shutil
-from config import XP_PER_LVL
+import discord, db, requests, os, shutil, utils
+from config import XP_PER_LVL, LVL_CHANS
 from dataclasses import dataclass, astuple
 from math import ceil, floor
 from PIL import Image, ImageDraw, ImageFont
@@ -45,6 +45,10 @@ Render level image
 Creates a customized image for the user, showing avatar image, level, name, and rank
 """
 async def render_lvl_image(message):
+    # Only allow this command if in whitelisted channels
+    if not utils.is_valid_channel(message.channel.id, LVL_CHANS):
+        return
+
     # Make image tmp folder if needed
     if not os.path.exists("private/tmp"):
         os.makedirs("private/tmp")

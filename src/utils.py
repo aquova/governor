@@ -49,3 +49,12 @@ def requires_admin(func):
 
         return await func(*args, **kwargs)
     return wrapper
+
+"""
+Is valid channel
+
+Determines if allowed to post in the current channel
+Does what it says on the tin
+"""
+def is_valid_channel(chan, chan_list):
+    return chan in chan_list

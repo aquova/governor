@@ -15,6 +15,8 @@ SERVER_URL = cfg['server_url']
 OWNER = cfg['owner']
 DEBUG_BOT = (cfg['debug'].upper() == "TRUE")
 
+LVL_CHANS = cfg['channels']['lvl_allowed']
+
 GAME_ANNOUNCEMENT_CHANNEL = cfg['games']['announcement_channel']
 GAME_ANNOUNCE_TIME = datetime.strptime(cfg['games']['announcement_time'], "%I:%M %p")
 
