@@ -11,7 +11,7 @@ ADMIN_HELP_MES = (
     "View your level: `{prefix}lvl`\n"
     "View available ranks: `{prefix}ranks`\n"
     "Remove a custom message: `{prefix}remove NAME`\n"
-    "Speak a message as the bot: `{prefix}say CHAN_ID message`\n"
+    "Speak a message as the bot: `{prefix}say CHAN_ID message`. If you want to send images they must be attachments *not URLs*.\n"
     "View your XP: `{prefix}xp`\n"
     "\nAdd a game to be announced: `{prefix}addgame game_info`\n"
     "View all games to be announced: `{prefix}getgames`\n"
@@ -72,10 +72,16 @@ async def say(message):
         channel_id = utils.get_command(payload)
         channel = discord.utils.get(message.guild.channels, id=int(channel_id))
         m = utils.remove_command(payload)
-        if m == "":
+        if m == "" and len(message.attachments) == 0:
             return "You cannot send empty messages."
 
-        await channel.send(m)
+        for item in message.attachments:
+            f = await item.to_file()
+            await channel.send(file=f)
+
+        if m != "":
+            await channel.send(m)
+
         return "Message sent."
     except (IndexError, ValueError):
         return "I was unable to find a channel ID in that message. `{prefix}say CHAN_ID message`".format(prefix=CMD_PREFIX)
