@@ -246,11 +246,7 @@ class CustomCommands:
     async def list_cmds(self, message):
         output = "```\n"
         cmds = sorted(self.cmd_dict.keys(), key=str.lower)
-        for cmd in cmds:
-            output += "{}, ".format(cmd)
-
-        # Remove trailing comma
-        output = output[:-2]
+        output += ", ".join(cmds)
         output += "\n```"
         output += "\nYou can also see a full list of commands and their responses here: {}/commands.php".format(SERVER_URL)
         return output
