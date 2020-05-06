@@ -17,7 +17,7 @@ dbg = Debug()
 game_timer = games.GameTimer()
 
 # Dictionary of function pointers
-# Maps commands (in all caps) to functions that are called by them
+# Maps commands to functions that are called by them
 FUNC_DICT = {
     "custom": commands.print_help,
     "define": cc.define_cmd,
@@ -31,6 +31,7 @@ FUNC_DICT = {
     "ranks": commands.list_ranks,
     "remove": cc.remove_cmd,
     "say": commands.say,
+    "userinfo": xp.userinfo,
     "xp": xp.get_xp,
     "addgame": games.add_game,
     "cleargames": games.clear_games,

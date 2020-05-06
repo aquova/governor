@@ -40,6 +40,53 @@ async def get_xp(message):
     return "You have {} XP".format(xp)
 
 """
+Userinfo
+
+Returns a 'rich' post with some of the user's information in it
+"""
+async def userinfo(message):
+    # First, check if the user wants to look up someone else
+    author = None
+    other_id = parse_mention(message)
+    if other_id != None:
+        author = discord.utils.get(message.guild.members, id=other_id)
+
+    # If we couldn't find a user, use the message author
+    if author == None:
+        author = message.author
+
+    username = "{}#{}".format(author.name, author.discriminator)
+    # https://strftime.org/ is great if you ever want to change this, FYI
+    create_time = author.created_at.strftime("%c")
+    join_time = author.joined_at.strftime("%c")
+    boost_time = author.premium_since
+    is_owner = message.guild.owner == author
+
+    # The first role is always @everyone, so omit it
+    roles = [x.name for x in author.roles[1:]]
+    role_str = ", ".join(roles)
+
+    embed = discord.Embed(title=username, type="rich", color=author.color)
+    if author.nick != None:
+        embed.description = "aka {}".format(author.nick)
+    embed.set_thumbnail(url=author.avatar_url)
+    embed.add_field(name="ID", value=author.id, inline=False)
+    if author.bot:
+        embed.add_field(name="Bot?", value="🤖")
+
+    if is_owner:
+        embed.add_field(name="Owner?", value="👑")
+
+    embed.add_field(name="created", value=create_time)
+    embed.add_field(name="joined", value=join_time)
+    if boost_time != None:
+        embed.add_field(name="boosted", value=boost_time.strftime("%c"))
+
+    embed.add_field(name="roles", value=role_str, inline=False)
+
+    await message.channel.send(embed=embed)
+
+"""
 Render level image
 
 Creates a customized image for the user, showing avatar image, level, name, and rank

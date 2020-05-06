@@ -12,6 +12,7 @@ ADMIN_HELP_MES = (
     "View available ranks: `{prefix}ranks`\n"
     "Remove a custom message: `{prefix}remove NAME`\n"
     "Speak a message as the bot: `{prefix}say CHAN_ID message`. If you want to send images they must be attachments *not URLs*.\n"
+    "Display info on a user: `{prefix}userinfo [USER]`\n"
     "View your XP: `{prefix}xp`\n"
     "\nAdd a game to be announced: `{prefix}addgame game_info`\n"
     "View all games to be announced: `{prefix}getgames`\n"
@@ -23,6 +24,7 @@ HELP_MES = (
     "List custom commands: `{prefix}list`\n"
     "View your level: `{prefix}lvl`\n"
     "View available ranks: `{prefix}ranks`\n"
+    "Display info on a user: `{prefix}userinfo [USER]`\n"
     "View your XP: `{prefix}xp`\n"
     "\nView this message: `{prefix}help`\n".format(prefix=CMD_PREFIX)
 )
