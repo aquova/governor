@@ -95,12 +95,12 @@ async def on_member_join(user):
     await update_user_count(user.guild)
 
 """
-On Member Leave
+On Member Remove
 
 Runs when a member leaves the server
 """
 @client.event
-async def on_member_leave(user):
+async def on_member_remove(user):
     await update_user_count(user.guild)
 
 """
