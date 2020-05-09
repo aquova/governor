@@ -58,13 +58,15 @@ async def add_game(message):
     if len(game) == 0:
         return "Can't add game: no message provided."
 
-    db.add_game(game)
-
-    total_games = len(db.get_games())
-
+    games = db.get_games()
     time_info = get_next_announcement_info()
 
-    return f"Game added! {total_games} game(s) will be announced at {time_info}."
+    if game in games:
+       return f"That game (and {len(games) - 1} other(s)) is already going to be announced at {time_info}."
+
+    db.add_game(game)
+
+    return f"Game added! {len(games) + 1} game(s) will be announced at {time_info}."
 
 """
 Get games
