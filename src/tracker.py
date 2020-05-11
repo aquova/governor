@@ -100,7 +100,7 @@ class Tracker:
             for rank in RANKS:
                 rank_xp = rank["level"] * XP_PER_LVL
                 if rank_xp == next_role:
-                    out_message = rank["message"]
+                    out_message = "<@{}> {}".format(user_id, rank["message"])
                     break
 
             next_role = await self.check_roles(user, xp)
