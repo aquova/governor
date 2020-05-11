@@ -15,6 +15,30 @@ def initialize():
     sqlconn.close()
 
 """
+Database read
+
+Helper function to perform database reads
+"""
+def _db_read(query):
+    sqlconn = sqlite3.connect(DB_PATH)
+    # The * operator in Python expands a tuple into function params
+    results = sqlconn.execute(*query).fetchall()
+    sqlconn.close()
+
+    return results
+
+"""
+Database write
+
+Helper function to perform database writes
+"""
+def _db_write(query):
+    sqlconn = sqlite3.connect(DB_PATH)
+    sqlconn.execute(*query)
+    sqlconn.commit()
+    sqlconn.close()
+
+"""
 Fetch user XP
 
 Collects the XP database entry for a given user
@@ -22,16 +46,13 @@ Collects the XP database entry for a given user
 Input: user_id - User ID in question - int
 """
 def fetch_user_xp(user_id):
-    sqlconn = sqlite3.connect(DB_PATH)
+    query = ("SELECT xp FROM xp WHERE id=?", [user_id])
+    found_user = _db_read(query)
 
-    foundUser = sqlconn.execute("SELECT xp FROM xp WHERE id=?", [user_id]).fetchall()
-
-    sqlconn.close()
-
-    if foundUser == []:
+    if found_user == []:
         return 0
     else:
-        return foundUser[0][0]
+        return found_user[0][0]
 
 """
 Set User XP
@@ -45,15 +66,12 @@ Inputs:
     - user_avatar - Hash for user's avatar image, used in the URL - str
 """
 def set_user_xp(user_id, xp, user_name, user_avatar):
-    sqlconn = sqlite3.connect(DB_PATH)
-
     # We store username and avatar only for the leaderboard
     if user_avatar == None:
         user_avatar = ""
-    sqlconn.execute("REPLACE INTO xp (id, xp, username, avatar) VALUES (?, ?, ?, ?)", [user_id, xp, user_name, user_avatar])
 
-    sqlconn.commit()
-    sqlconn.close()
+    query = ("REPLACE INTO xp (id, xp, username, avatar) VALUES (?, ?, ?, ?)", [user_id, xp, user_name, user_avatar])
+    _db_write(query)
 
 """
 Get leaders
@@ -61,11 +79,8 @@ Get leaders
 Returns a list of database entries for the top 100 highest XP holders
 """
 def get_leaders():
-    sqlconn = sqlite3.connect(DB_PATH)
-
-    leaders = sqlconn.execute("SELECT * FROM xp WHERE username IS NOT NULL ORDER BY xp DESC LIMIT 100").fetchall()
-
-    sqlconn.close()
+    query = ("SELECT * FROM xp WHERE username IS NOT NULL ORDER BY xp DESC LIMIT 100",)
+    leaders = _db_read(query)
 
     return leaders
 
@@ -75,11 +90,8 @@ Get custom commands
 Returns the user-set custom commands
 """
 def get_custom_cmds():
-    sqlconn = sqlite3.connect(DB_PATH)
-
-    cmds = sqlconn.execute("SELECT * FROM commands").fetchall()
-
-    sqlconn.close()
+    query = ("SELECT * FROM commands",)
+    cmds = _db_read(query)
 
     cmd_dict = {}
 
@@ -96,12 +108,8 @@ Removes a previously set custom command from the database
 Input: name - Name of custom command - str
 """
 def remove_custom_cmd(name):
-    sqlconn = sqlite3.connect(DB_PATH)
-
-    sqlconn.execute("DELETE FROM commands WHERE name=?", [name])
-
-    sqlconn.commit()
-    sqlconn.close()
+    query = ("DELETE FROM commands WHERE name=?", [name])
+    _db_write(query)
 
 """
 Set new custom command
@@ -113,19 +121,17 @@ Inputs:
     - response - Reply upon successful invocation - str
 """
 def set_new_custom_cmd(name, response):
-    sqlconn = sqlite3.connect(DB_PATH)
+    query = ("INSERT OR REPLACE INTO commands (name, response) VALUES (?, ?)", [name, response])
+    _db_write(query)
 
-    sqlconn.execute("INSERT OR REPLACE INTO commands (name, response) VALUES (?, ?)", [name, response])
+"""
+Get rank
 
-    sqlconn.commit()
-    sqlconn.close()
-
+Returns the server rank for the user in question
+"""
 def get_rank(userid):
-    sqlconn = sqlite3.connect(DB_PATH)
-
-    results = sqlconn.execute("SELECT COUNT()+1 FROM xp WHERE xp > (SELECT xp FROM xp WHERE id=?) and username IS NOT NULL", [userid]).fetchone()
-
-    sqlconn.close()
+    query = ("SELECT COUNT()+1 FROM xp WHERE xp > (SELECT xp FROM xp WHERE id=?) and username IS NOT NULL", [userid])
+    results = _db_read(query)
 
     if results == []:
         return None
@@ -141,12 +147,8 @@ Inputs:
     - game - A link to the game plus any additional info about the game - str
 """
 def add_game(game):
-    sqlconn = sqlite3.connect(DB_PATH)
-
-    sqlconn.execute("INSERT INTO games (game) VALUES (?)", [game])
-
-    sqlconn.commit()
-    sqlconn.close()
+    query = ("INSERT INTO games (game) VALUES (?)", [game])
+    _db_write(query)
 
 """
 Get games
@@ -154,15 +156,12 @@ Get games
 Gets all games stored
 """
 def get_games():
-    sqlconn = sqlite3.connect(DB_PATH)
-
     # get games as a list of 1-tuples
-    raw_results = sqlconn.execute("SELECT game FROM games").fetchall()
+    query = ("SELECT game FROM games",)
+    raw_results = _db_read(query)
 
     # convert games into a list of strings
     results = [game[0] for game in raw_results]
-
-    sqlconn.close()
 
     return results
 
@@ -172,9 +171,5 @@ Clear games
 Removes all currently stored games
 """
 def clear_games():
-    sqlconn = sqlite3.connect(DB_PATH)
-
-    sqlconn.execute("DELETE FROM games")
-
-    sqlconn.commit()
-    sqlconn.close()
+    query = ("DELETE FROM games",)
+    _db_write(query)
