@@ -117,7 +117,8 @@ async def on_message(message):
     # Check first if we're toggling debug mode
     # Need to do this before we discard a message
     if dbg.check_toggle(message):
-        return dbg.toggle_debug(message)
+        await dbg.toggle_debug(message)
+        return
     elif dbg.should_ignore_message(message):
         return
 
