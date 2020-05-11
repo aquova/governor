@@ -145,6 +145,8 @@ class CustomCommands:
     """
     def set_protected_keywords(self, keywords):
         self.keywords = keywords
+        # "Debug" isn't in the command list, but also needs to be protected
+        self.keywords.append('debug')
 
     """
     Command Available

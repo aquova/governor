@@ -19,10 +19,12 @@ game_timer = games.GameTimer()
 # Dictionary of function pointers
 # Maps commands to functions that are called by them
 FUNC_DICT = {
+    "addgame": games.add_game,
+    "cleargames": games.clear_games,
     "custom": commands.print_help,
     "define": cc.define_cmd,
-    "debug": dbg.toggle_debug,
     "edit": commands.edit,
+    "getgames": games.get_games,
     "help": commands.print_help,
     "lb": commands.show_lb,
     "level": xp.render_lvl_image,
@@ -33,13 +35,10 @@ FUNC_DICT = {
     "say": commands.say,
     "userinfo": xp.userinfo,
     "xp": xp.get_xp,
-    "addgame": games.add_game,
-    "cleargames": games.clear_games,
-    "getgames": games.get_games,
 }
 
 # The keys in the function dict cannot be used as custom commands
-cc.set_protected_keywords(FUNC_DICT.keys())
+cc.set_protected_keywords(list(FUNC_DICT.keys()))
 
 """
 Update User Count
@@ -115,7 +114,11 @@ async def on_message(message):
     if message.author.bot:
         return
 
-    if dbg.should_ignore_message(message):
+    # Check first if we're toggling debug mode
+    # Need to do this before we discard a message
+    if dbg.check_toggle(message):
+        return dbg.toggle_debug(message)
+    elif dbg.should_ignore_message(message):
         return
 
     try:

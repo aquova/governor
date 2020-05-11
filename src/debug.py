@@ -1,11 +1,19 @@
 import discord
 from config import DEBUG_BOT, OWNER
+from utils import strip_prefix, get_command
 
 class Debug:
     def __init__(self):
         self.debugging = False
 
-    async def toggle_debug(self, message):
+    def check_toggle(self, message):
+        prefix_removed = strip_prefix(message.content)
+        if prefix_removed == "":
+            return False
+        command = get_command(prefix_removed)
+        return command == "debug"
+
+    def toggle_debug(self, message):
         if message.author.id == OWNER and not DEBUG_BOT:
             self.debugging = not self.debugging
             return "Debugging {}".format("enabled" if self.debugging else "disabled")
