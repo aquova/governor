@@ -136,7 +136,7 @@ def get_rank(userid):
     if results == []:
         return None
 
-    return results[0]
+    return results[0][0]
 
 """
 Add game
