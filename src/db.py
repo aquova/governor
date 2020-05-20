@@ -79,7 +79,7 @@ Get leaders
 Returns a list of database entries for the top 100 highest XP holders
 """
 def get_leaders():
-    query = ("SELECT * FROM xp WHERE username IS NOT NULL ORDER BY xp DESC LIMIT 100",)
+    query = ("SELECT * FROM xp ORDER BY xp DESC LIMIT 100",)
     leaders = _db_read(query)
 
     return leaders
