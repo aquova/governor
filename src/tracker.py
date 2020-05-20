@@ -49,13 +49,15 @@ class Tracker:
                 db.set_user_xp(leader_id, leader_xp, None, None)
 
     """
-    Process user message
+    Grant user xp
 
-    Updates user XP, levels, and roles if they speak
+    Updates user XP, levels, and roles
 
-    Input: user - Discord user object
+    Inputs:
+    user - Discord user object
+    xp_add - Amount of xp to add. If None, award automatic amount from speaking
     """
-    async def user_speaks(self, user):
+    async def give_xp(self, user, xp_add=None):
         user_id = user.id
         xp = 0
         next_role = None
@@ -79,19 +81,23 @@ class Tracker:
             # If user is in cache, get that value instead
             user_data = self.user_cache[user_id]
 
-            # Check their last timestamp.
+            # Check their last timestamp if we aren't manually adding XP
             # NOTE: Mayor Lewis used to only give XP if they spoke in a "new" minute. But that would involve rounding a datetime, and I can't be bothered.
-            last_mes_time = user_data.timestamp
-            dt = curr_time - last_mes_time
-            # Users only get XP every minute, so if not enough time has elapsed, ignore them
-            if dt < datetime.timedelta(minutes=1):
-                return None
+            if xp_add == None:
+                last_mes_time = user_data.timestamp
+                dt = curr_time - last_mes_time
+                # Users only get XP every minute, so if not enough time has elapsed, ignore them
+                if dt < datetime.timedelta(minutes=1):
+                    return None
 
             # Else, grab their data
             xp = user_data.xp
             next_role = user_data.next_role_at
 
-        xp += XP_PER_MINUTE * self.xp_multiplier
+        if xp_add:
+            xp += xp_add
+        else:
+            xp += XP_PER_MINUTE * self.xp_multiplier
 
         # If we have earned enough XP to level up, award and find next role
         if next_role != None and xp >= next_role:

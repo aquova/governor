@@ -3,7 +3,7 @@
 # https://github.com/aquova/governor
 
 import discord
-import db, commands, utils, xp, games
+import db, commands, events, games, utils, xp
 from config import CMD_PREFIX, DISCORD_KEY, GAME_ANNOUNCEMENT_CHANNEL
 from debug import Debug
 from tracker import Tracker
@@ -104,6 +104,17 @@ async def on_member_remove(user):
     await update_user_count(user.guild)
 
 """
+On Reaction Add
+
+Runs when a member reacts to a message with an emoji
+"""
+@client.event
+async def on_reaction_add(reaction, user):
+    # TODO: This only needs to be called during an event
+    # Ideally, have some way of setting this up in config.json
+    await events.award_event_prize(reaction, user, tr)
+
+"""
 On Message
 
 Runs when a user posts a message
@@ -124,7 +135,7 @@ async def on_message(message):
 
     try:
         # Check if we need to congratulate a user on getting a new role
-        lvl_up_message = await tr.user_speaks(message.author)
+        lvl_up_message = await tr.give_xp(message.author)
         if lvl_up_message != None:
             await message.channel.send(lvl_up_message)
 
