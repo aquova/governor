@@ -131,8 +131,14 @@ class Tracker:
         xp - User's XP value - int
     """
     async def check_roles(self, user, xp):
-        user_roles = user.roles
-        user_role_ids = [x.id for x in user.roles]
+        try:
+            user_roles = user.roles
+            user_role_ids = [x.id for x in user.roles]
+        except AttributeError:
+            user_role_ids = []
+            traceback.print_exc()
+            print("User in question: {}".format(user.name))
+
         new_roles = []
         lowest_missing_xp = None
 
