@@ -136,7 +136,7 @@ class Tracker:
             user_role_ids = [x.id for x in user.roles]
         except AttributeError:
             user_role_ids = []
-            traceback.print_exc()
+            print("Attribute Error")
             print("User in question: {}".format(user.name))
 
         new_roles = []
