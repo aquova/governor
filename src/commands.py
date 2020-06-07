@@ -5,6 +5,7 @@ from config import ADMIN_ACCESS, CMD_PREFIX, RANKS, SERVER_URL
 from user import parse_mention
 
 ADMIN_HELP_MES = (
+    "Give XP to a user: `{prefix}addxp USER XP`\n"
     "Define a custom message: `{prefix}define NAME [%mention%] MESSAGE`\n"
     "Edit a message spoken by the bot: `{prefix}edit MESSAGE_ID new_message`\n"
     "List custom commands: `{prefix}list`\n"

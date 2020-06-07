@@ -20,6 +20,7 @@ game_timer = games.GameTimer()
 # Maps commands to functions that are called by them
 FUNC_DICT = {
     "addgame": games.add_game,
+    "addxp": tr.add_xp,
     "cleargames": games.clear_games,
     "custom": commands.print_help,
     "define": cc.define_cmd,

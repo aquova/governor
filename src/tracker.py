@@ -1,9 +1,10 @@
 import datetime, discord
-import db
+import db, utils
 
-from config import RANKS, XP_PER_LVL
+from config import CMD_PREFIX, RANKS, XP_PER_LVL
 from dataclasses import dataclass
 from math import floor
+from user import parse_mention
 
 XP_PER_MINUTE = 10
 STARTING_XP = 270
@@ -166,6 +167,25 @@ class Tracker:
             await user.edit(roles=user_roles)
 
         return lowest_missing_xp
+
+    @utils.requires_admin
+    async def add_xp(self, message):
+        try:
+            payload = utils.remove_command(message.content)
+            # Treat last word as XP to be awarded
+            xp = int(payload.split(" ")[-1])
+            userid = parse_mention(message)
+            # Incase they didn't give an XP, don't parse ID as XP lol
+            if xp == userid:
+                return "Was unable to find XP value in that message"
+            user = discord.utils.get(message.guild.members, id=userid)
+            if user != None:
+                await self.give_xp(user, xp)
+                return "{} XP given to {}#{}".format(xp, user.name, user.discriminator)
+            else:
+                return "Was unable to find that user in the server"
+        except (IndexError, ValueError):
+            return "`{prefix}addxp XP USER`".format(prefix=CMD_PREFIX)
 
     """
     Set bonus XP
