@@ -47,7 +47,8 @@ cat << EOF > src/private/config.json
         "announcement_time": "12:00 AM"
     },
     "channels": {
-        "lvl_allowed": [0]
+        "lvl_allowed": [],
+        "xp_disabled": []
     }
 }
 EOF

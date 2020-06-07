@@ -4,7 +4,7 @@
 
 import discord
 import db, commands, events, games, utils, xp
-from config import CMD_PREFIX, DISCORD_KEY, GAME_ANNOUNCEMENT_CHANNEL
+from config import CMD_PREFIX, DISCORD_KEY, GAME_ANNOUNCEMENT_CHANNEL, XP_OFF
 from debug import Debug
 from tracker import Tracker
 
@@ -135,9 +135,11 @@ async def on_message(message):
 
     try:
         # Check if we need to congratulate a user on getting a new role
-        lvl_up_message = await tr.give_xp(message.author)
-        if lvl_up_message != None:
-            await message.channel.send(lvl_up_message)
+        # Don't award XP if posting in specified disabled channels
+        if message.channel.id not in XP_OFF:
+            lvl_up_message = await tr.give_xp(message.author)
+            if lvl_up_message != None:
+                await message.channel.send(lvl_up_message)
 
         # Check if someone is trying to use a bot command
         if message.content != "" and message.content[0] == CMD_PREFIX:
