@@ -40,7 +40,7 @@ class Tracker:
 
             # Update users that are still in the server
             if user != None:
-                leader_name = "{}#{}".format(user.name, user.discriminator)
+                leader_name = f"{user.name}#{user.discriminator}"
                 leader_avatar = user.avatar
 
                 # NOTE: May be worth to populate the cache here as well
@@ -107,12 +107,12 @@ class Tracker:
             for rank in RANKS:
                 rank_xp = rank["level"] * XP_PER_LVL
                 if rank_xp == next_role:
-                    out_message = "<@{}> {}".format(user_id, rank["message"])
+                    out_message = f"<@{user_id}> {rank['message']}"
                     break
 
             next_role = await self.check_roles(user, xp)
 
-        username = "{}#{}".format(user.name, user.discriminator)
+        username = f"{user.name}#{user.discriminator}"
         avatar = user.avatar
 
         # Update their entry in the cache
@@ -138,7 +138,7 @@ class Tracker:
         except AttributeError:
             user_role_ids = []
             print("Attribute Error")
-            print("User in question: {}".format(user.name))
+            print(f"User in question: {user.name}")
 
         new_roles = []
         lowest_missing_xp = None
@@ -181,11 +181,11 @@ class Tracker:
             user = discord.utils.get(message.guild.members, id=userid)
             if user != None:
                 await self.give_xp(user, xp)
-                return "{} XP given to {}#{}".format(xp, user.name, user.discriminator)
+                return f"{xp} XP given to {user.name}#{user.discriminator}"
             else:
                 return "Was unable to find that user in the server"
         except (IndexError, ValueError):
-            return "`{prefix}addxp XP USER`".format(prefix=CMD_PREFIX)
+            return f"`{CMD_PREFIX}addxp XP USER`"
 
     """
     Set bonus XP

@@ -5,29 +5,29 @@ from config import ADMIN_ACCESS, CMD_PREFIX, RANKS, SERVER_URL
 from user import parse_mention
 
 ADMIN_HELP_MES = (
-    "Give XP to a user: `{prefix}addxp USER XP`\n"
-    "Define a custom message: `{prefix}define NAME [%mention%] MESSAGE`\n"
-    "Edit a message spoken by the bot: `{prefix}edit MESSAGE_ID new_message`\n"
-    "List custom commands: `{prefix}list`\n"
-    "View your level: `{prefix}lvl`\n"
-    "View available ranks: `{prefix}ranks`\n"
-    "Remove a custom message: `{prefix}remove NAME`\n"
-    "Speak a message as the bot: `{prefix}say CHAN_ID message`. If you want to send images they must be attachments *not URLs*.\n"
-    "Display info on a user: `{prefix}userinfo [USER]`\n"
-    "View your XP: `{prefix}xp`\n"
-    "\nAdd a game to be announced: `{prefix}addgame game_info`\n"
-    "View all games to be announced: `{prefix}getgames`\n"
-    "Remove all games to be announced: `{prefix}cleargames`\n"
-    "\nView this message: `{prefix}help`".format(prefix=CMD_PREFIX)
+    f"Give XP to a user: `{CMD_PREFIX}addxp USER XP` (Can be negative)\n"
+    f"Define a custom message: `{CMD_PREFIX}define NAME [%mention%] MESSAGE`\n"
+    f"Edit a message spoken by the bot: `{CMD_PREFIX}edit MESSAGE_ID new_message`\n"
+    f"List custom commands: `{CMD_PREFIX}list`\n"
+    f"View your level: `{CMD_PREFIX}lvl`\n"
+    f"View available ranks: `{CMD_PREFIX}ranks`\n"
+    f"Remove a custom message: `{CMD_PREFIX}remove NAME`\n"
+    f"Speak a message as the bot: `{CMD_PREFIX}say CHAN_ID message`. If you want to send images they must be attachments *not URLs*.\n"
+    f"Display info on a user: `{CMD_PREFIX}userinfo [USER]`\n"
+    f"View your XP: `{CMD_PREFIX}xp`\n"
+    f"\nAdd a game to be announced: `{CMD_PREFIX}addgame game_info`\n"
+    f"View all games to be announced: `{CMD_PREFIX}getgames`\n"
+    f"Remove all games to be announced: `{CMD_PREFIX}cleargames`\n"
+    f"\nView this message: `{CMD_PREFIX}help`"
 )
 
 HELP_MES = (
-    "List custom commands: `{prefix}list`\n"
-    "View your level: `{prefix}lvl`\n"
-    "View available ranks: `{prefix}ranks`\n"
-    "Display info on a user: `{prefix}userinfo [USER]`\n"
-    "View your XP: `{prefix}xp`\n"
-    "\nView this message: `{prefix}help`\n".format(prefix=CMD_PREFIX)
+    f"List custom commands: `{CMD_PREFIX}list`\n"
+    f"View your level: `{CMD_PREFIX}lvl`\n"
+    f"View available ranks: `{CMD_PREFIX}ranks`\n"
+    f"Display info on a user: `{CMD_PREFIX}userinfo [USER]`\n"
+    f"View your XP: `{CMD_PREFIX}xp`\n"
+    f"\nView this message: `{CMD_PREFIX}help`\n"
 )
 
 """
@@ -49,7 +49,7 @@ Show leaderboard
 Posts the URL for the online leaderboard
 """
 async def show_lb(message):
-    return "{}/leaderboard.php".format(SERVER_URL)
+    return f"{SERVER_URL}/leaderboard.php"
 
 """
 List ranks
@@ -59,7 +59,7 @@ Lists the available earnable rank roles, and their levels
 async def list_ranks(message):
     output = ""
     for rank in RANKS:
-        output += "Level {}: {}\n".format(rank['level'], rank['name'])
+        output += f"Level {rank['level']}: {rank['name']}\n"
 
     return output
 
@@ -87,14 +87,14 @@ async def say(message):
 
         return "Message sent."
     except (IndexError, ValueError):
-        return "I was unable to find a channel ID in that message. `{prefix}say CHAN_ID message`".format(prefix=CMD_PREFIX)
+        return f"I was unable to find a channel ID in that message. `{CMD_PREFIX}say CHAN_ID message`"
     except AttributeError:
         return "Are you sure that was a channel ID?"
     except discord.errors.HTTPException as e:
         if e.code == 50013:
             return "You do not have permissions to post in that channel."
         else:
-            return "Oh god something went wrong, everyone panic! {}".format(str(e))
+            return f"Oh god something went wrong, everyone panic! {str(e)}"
 
 """
 Edit message
@@ -126,12 +126,12 @@ async def edit(message):
         await edit_message.edit(content=m)
         return "Message edited."
     except (IndexError, ValueError):
-        return "I was unable to find a message ID in that message. `{prefix}edit MES_ID message`".format(prefix=CMD_PREFIX)
+        return "I was unable to find a message ID in that message. `{CMD_PREFIX}edit MES_ID message`"
     except discord.errors.HTTPException as e:
         if e.code == 50005:
             return "You cannot edit a message from another user."
         else:
-            return "Oh god something went wrong, everyone panic! {}".format(str(e))
+            return f"Oh god something went wrong, everyone panic! {str(e)}"
 
 class CustomCommands:
     def __init__(self):
@@ -167,14 +167,14 @@ class CustomCommands:
     Input: message - Discord message object
     """
     def parse_response(self, message):
-        prefix_removed = utils.strip_prefix(message.content)
-        command = utils.get_command(prefix_removed)
+        CMD_PREFIX_removed = utils.strip_CMD_PREFIX(message.content)
+        command = utils.get_command(CMD_PREFIX_removed)
         response = self.cmd_dict[command]
 
         # Check if they want to embed a ping within the response
         mentioned_id = parse_mention(message)
         if mentioned_id != None:
-            ping = "<@!{}>".format(mentioned_id)
+            ping = f"<@!{mentioned_id}>"
         else:
             ping = ""
 
@@ -201,22 +201,21 @@ class CustomCommands:
             return "...You didn't specify what that command should do."
         elif cmd in self.keywords:
             # Don't allow users to set commands with protected keywords
-            return "`{}` is already in use as a built-in function. Please choose another name.".format(cmd)
+            return f"`{cmd}` is already in use as a built-in function. Please choose another name."
 
         # Set new command in cache and database
         self.cmd_dict[cmd] = response
         db.set_new_custom_cmd(cmd, response)
 
         # Format confirmation to the user
-        output_message = "New command added! You can use it like `{}{}`. ".format(CMD_PREFIX, cmd)
+        output_message = f"New command added! You can use it like `{CMD_PREFIX}{cmd}`. "
 
         # If user allows embedding of a ping, list various ways this can be done
         if "%mention%" in response:
             author = message.author
             user_id = author.id
-            user_name = "{}#{}".format(author.name, author.discriminator)
-            output_message += "You can also use it as `{prefix}{cmd} {id}`, `{prefix}{cmd} {name}`, or `{prefix}{cmd} @{name}`".format(
-                prefix=CMD_PREFIX, cmd=cmd, id=user_id, name=user_name)
+            user_name = f"{author.name}#{author.discriminator}"
+            output_message += f"You can also use it as `{CMD_PREFIX}{cmd} {user_id}`, `{CMD_PREFIX}{cmd} {user_name}`, or `{CMD_PREFIX}{cmd} @{user_name}`"
 
         return output_message
 
@@ -239,7 +238,7 @@ class CustomCommands:
             del self.cmd_dict[cmd]
             db.remove_custom_cmd(cmd)
 
-        return "`{}` removed as a custom command!".format(cmd)
+        return f"`{cmd}` removed as a custom command!"
 
     """
     List commands
@@ -251,5 +250,5 @@ class CustomCommands:
         cmds = sorted(self.cmd_dict.keys(), key=str.lower)
         output += ", ".join(cmds)
         output += "\n```"
-        output += "\nYou can also see a full list of commands and their responses here: {}/commands.php".format(SERVER_URL)
+        output += f"\nYou can also see a full list of commands and their responses here: {SERVER_URL}/commands.php"
         return output

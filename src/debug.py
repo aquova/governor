@@ -16,7 +16,8 @@ class Debug:
     async def toggle_debug(self, message):
         if message.author.id == OWNER and not DEBUG_BOT:
             self.debugging = not self.debugging
-            dbg_mes = "Debugging {}".format("enabled" if self.debugging else "disabled")
+            enable_mes = "enabled" if self.debugging else "disabled"
+            dbg_mes = f"Debugging {enable_mes}"
             await message.channel.send(dbg_mes)
 
     def should_ignore_message(self, message):

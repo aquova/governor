@@ -37,7 +37,7 @@ Returns the given user's XP value, as a formatted string
 """
 async def get_xp(message):
     xp = db.fetch_user_xp(message.author.id)
-    return "You have {} XP".format(xp)
+    return f"You have {xp} XP"
 
 """
 Userinfo
@@ -55,7 +55,7 @@ async def userinfo(message):
     if author == None:
         author = message.author
 
-    username = "{}#{}".format(author.name, author.discriminator)
+    username = f"{author.name}#{author.discriminator}"
     # https://strftime.org/ is great if you ever want to change this, FYI
     create_time = author.created_at.strftime("%c")
     join_time = author.joined_at.strftime("%c")
@@ -68,7 +68,7 @@ async def userinfo(message):
 
     embed = discord.Embed(title=username, type="rich", color=author.color)
     if author.nick != None:
-        embed.description = "aka {}".format(author.nick)
+        embed.description = f"aka {author.nick}"
     embed.set_thumbnail(url=author.avatar_url)
     embed.add_field(name="ID", value=author.id, inline=False)
     if author.bot:
@@ -118,13 +118,13 @@ async def render_lvl_image(message):
     bar_num = ceil(10 * (xp - (lvl * XP_PER_LVL)) / XP_PER_LVL)
     rank = db.get_rank(userid) # This *can* return None, but I don't know how it could in actuality
 
-    out_filename = "private/tmp/{}.png".format(userid)
+    out_filename = f"private/tmp/{userid}.png"
     avatar_filename = out_filename
 
     if author.avatar == None:
         avatar_filename = "assets/default_avatar.png"
     else:
-        avatar_url = "https://cdn.discordapp.com/avatars/{}/{}.png".format(userid, author.avatar)
+        avatar_url = f"https://cdn.discordapp.com/avatars/{userid}/{author.avatar}.png"
 
         # Download the user's avatar image to private/tmp
         response = requests.get(avatar_url, stream=True)
@@ -162,13 +162,13 @@ async def render_lvl_image(message):
     # The discriminator needs to be appended on the end of the username, but in a different font size
     username_width = font_22.getsize(username)[0]
     y_offset = font_22.getsize(username)[1] / 6
-    draw.text((USERNAME_POS.x + username_width, USERNAME_POS.y + y_offset), "#{}".format(author.discriminator), BACK_COLOR, font=font_14)
+    draw.text((USERNAME_POS.x + username_width, USERNAME_POS.y + y_offset), f"#{author.discriminator}", BACK_COLOR, font=font_14)
 
-    draw.text(LEVEL_POS.shadow_tuple(), "Level {}".format(lvl), BACK_COLOR, font=font_22)
-    draw.text(astuple(LEVEL_POS), "Level {}".format(lvl), FONT_COLOR, font=font_22)
+    draw.text(LEVEL_POS.shadow_tuple(), f"Level {lvl}", BACK_COLOR, font=font_22)
+    draw.text(astuple(LEVEL_POS), f"Level {lvl}", FONT_COLOR, font=font_22)
 
     # Since the ranks can be (currentnly) up to 5 digits, adjust dynamically
-    rank_text = "Server Rank : {}".format(rank)
+    rank_text = f"Server Rank : {rank}"
     rank_width = font_14.getsize(rank_text)[0]
     draw.text((RANK_POS.x - rank_width, RANK_POS.y), rank_text, BACK_COLOR, font=font_14)
 

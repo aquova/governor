@@ -47,7 +47,7 @@ Update User Count
 Updates the bot's 'activity' to reflect the number of users
 """
 async def update_user_count(guild):
-    activity_mes = "{} members!".format(guild.member_count)
+    activity_mes = f"{guild.member_count} members!"
     activity_object = discord.Activity(name=activity_mes, type=discord.ActivityType.watching)
     await client.change_presence(activity=activity_object)
 
@@ -160,7 +160,7 @@ async def on_message(message):
                 await message.channel.send(cmd_output)
 
     except discord.errors.HTTPException as e:
-        print("HTTPException: {}".format(str(e)))
+        print(f"HTTPException: {str(e)}")
         pass
 
 client.run(DISCORD_KEY)
