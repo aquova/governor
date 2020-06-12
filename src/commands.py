@@ -167,8 +167,8 @@ class CustomCommands:
     Input: message - Discord message object
     """
     def parse_response(self, message):
-        CMD_PREFIX_removed = utils.strip_CMD_PREFIX(message.content)
-        command = utils.get_command(CMD_PREFIX_removed)
+        prefix_removed = utils.strip_prefix(message.content)
+        command = utils.get_command(prefix_removed)
         response = self.cmd_dict[command]
 
         # Check if they want to embed a ping within the response
