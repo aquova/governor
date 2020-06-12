@@ -6,7 +6,8 @@ from tracker import Tracker
 
 async def award_event_prize(reaction, reactor, tr):
     # TODO: Put these in config.json
-    ROLE_IDS = [281902740785856513, 703675309656113252]
+    ROLE_IDS = []
+    EMOJI_NAME = ""
     author = reaction.message.author
 
     # Only give reward if giver is an admin, and correct emoji was used
@@ -14,7 +15,7 @@ async def award_event_prize(reaction, reactor, tr):
     check_roles = [x.id for x in reactor.roles]
     if ADMIN_ACCESS in check_roles:
         emoji_name = reaction.emoji if type(reaction.emoji) == str else reaction.emoji.name
-        if emoji_name == "SDVpufferspring":
+        if emoji_name == EMOJI_NAME:
             # Award three levels
             await tr.give_xp(author, 3 * XP_PER_LVL)
             user_roles = author.roles

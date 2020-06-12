@@ -109,11 +109,12 @@ On Reaction Add
 
 Runs when a member reacts to a message with an emoji
 """
-@client.event
-async def on_reaction_add(reaction, user):
-    # TODO: This only needs to be called during an event
-    # Ideally, have some way of setting this up in config.json
-    await events.award_event_prize(reaction, user, tr)
+# There is no event currently going on, so this has been commented out until it is needed again
+# @client.event
+# async def on_reaction_add(reaction, user):
+#     # TODO: This only needs to be called during an event
+#     # Ideally, have some way of setting this up in config.json
+#     await events.award_event_prize(reaction, user, tr)
 
 """
 On Message
