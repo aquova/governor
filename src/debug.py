@@ -1,5 +1,5 @@
 import discord
-from config import DEBUG_BOT, OWNER
+from config import CMD_PREFIX, DEBUG_BOT, OWNER
 from utils import strip_prefix, get_command
 
 class Debug:
@@ -8,7 +8,7 @@ class Debug:
 
     def check_toggle(self, message):
         prefix_removed = strip_prefix(message.content)
-        if prefix_removed == "":
+        if prefix_removed == "" or message.content[0] != CMD_PREFIX:
             return False
         command = get_command(prefix_removed)
         return command == "debug"
