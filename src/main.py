@@ -6,6 +6,7 @@ import discord
 import db, commands, events, games, utils, xp
 from config import CMD_PREFIX, DISCORD_KEY, GAME_ANNOUNCEMENT_CHANNEL, XP_OFF
 from debug import Debug
+from slowmode import Thermometer
 from tracker import Tracker
 
 client = discord.Client()
@@ -15,6 +16,7 @@ tr = Tracker()
 cc = commands.CustomCommands()
 dbg = Debug()
 game_timer = games.GameTimer()
+thermo = Thermometer()
 
 # Dictionary of function pointers
 # Maps commands to functions that are called by them
@@ -82,6 +84,7 @@ async def on_guild_available(guild):
         raise Exception(f"Game announcement error: couldn't find channel {GAME_ANNOUNCEMENT_CHANNEL}")
 
     game_timer.start(game_channel)
+    thermo.start(guild)
 
     # Set Bouncer's status
     await update_user_count(guild)
@@ -126,6 +129,8 @@ async def on_message(message):
     # Ignore bots completely (including ourself)
     if message.author.bot:
         return
+
+    await thermo.user_spoke(message)
 
     # Check first if we're toggling debug mode
     # Need to do this before we discard a message
