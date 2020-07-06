@@ -48,6 +48,7 @@ cat << EOF > src/private/config.json
     },
     "channels": {
         "lvl_allowed": [],
+        "slowmode_disabled: [],
         "xp_disabled": []
     }
 }

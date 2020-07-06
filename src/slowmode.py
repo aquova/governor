@@ -1,10 +1,11 @@
 import asyncio, datetime, discord
+from config import NO_SLOWMODE
 
 WAIT_TIME = 300 # How long to sleep between checks, in seconds
 MAX_SLOWMODE = 15 # In seconds
 # Threshold between slowmode levels, arbitrary units
 # NOTE: If the WAIT_TIME is adjusted, this will need to be adjusted too
-THRESHOLD = 100
+THRESHOLD = 80
 
 class Thermometer:
     def __init__(self):
@@ -30,7 +31,7 @@ class Thermometer:
             # Iterate thru each channel, generating weighted value for each channel and adjusting slowmode if necessary
             for channel in self.channels:
                 channel_id = channel.id
-                if channel_id not in self.channel_dict:
+                if (channel_id not in self.channel_dict) or (channel_id in NO_SLOWMODE):
                     continue
 
                 spoken_list = self.channel_dict[channel_id]
