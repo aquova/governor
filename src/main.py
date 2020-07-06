@@ -130,8 +130,6 @@ async def on_message(message):
     if message.author.bot:
         return
 
-    await thermo.user_spoke(message)
-
     # Check first if we're toggling debug mode
     # Need to do this before we discard a message
     if dbg.check_toggle(message):
@@ -141,6 +139,8 @@ async def on_message(message):
         return
 
     try:
+        # Keep track of the user's message for dynamic slowmode
+        await thermo.user_spoke(message)
         # Check if we need to congratulate a user on getting a new role
         # Don't award XP if posting in specified disabled channels
         if message.channel.id not in XP_OFF:
