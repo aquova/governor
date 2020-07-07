@@ -37,10 +37,13 @@ Prints the help message
 """
 async def print_help(message):
     # Print different message if user has advanced permissions
-    roles = [x.id for x in message.author.roles]
-    if ADMIN_ACCESS in roles:
-        return ADMIN_HELP_MES
-    else:
+    try:
+        roles = [x.id for x in message.author.roles]
+        if ADMIN_ACCESS in roles:
+            return ADMIN_HELP_MES
+        else:
+            return HELP_MES
+    except AttributeError:
         return HELP_MES
 
 """

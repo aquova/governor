@@ -137,8 +137,6 @@ class Tracker:
             user_role_ids = [x.id for x in user.roles]
         except AttributeError:
             user_role_ids = []
-            print("Attribute Error")
-            print(f"User in question: {user.name}")
 
         new_roles = []
         lowest_missing_xp = None
