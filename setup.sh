@@ -74,6 +74,14 @@ echo "source bin/activate";
 echo "cd src";
 echo "python3 main.py";
 echo "";
+echo -e "${RED}"
+echo "Things you still need to do:"
+echo -e "${NC}"
+echo "Get a Discord bot token if you haven't yet"
+echo "Go to 'https://discord.com/developers/applications' and make a new app."
+echo "Go to 'Bot' on the sidebar, and Add bot."
+echo "Copy the Token and go into private/config.json with your favorite text editor, and paste that in place of 'YOUR DISCORD TOKEN HERE'."
+echo "Replace some of the other settings to your preferences as well (particularly the ones set to '0')."
 echo -e "${BLUE}If you have a webserver, make a symlink to the file path of where you want the leaderboard page to be:";
 echo -e "${GREEN}ln -s path/to/governor/src/web path/to/webserver";
 echo -e "${NC}"
