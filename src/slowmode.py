@@ -1,11 +1,15 @@
 import asyncio, datetime, discord
 from config import NO_SLOWMODE
 
-WAIT_TIME = 300 # How long to sleep between checks, in seconds
+WAIT_TIME = 150 # How long to sleep between checks, in seconds
 MAX_SLOWMODE = 15 # In seconds
 # Threshold between slowmode levels, arbitrary units
 # NOTE: If the WAIT_TIME is adjusted, this will need to be adjusted too
-THRESHOLD = 80
+THRESHOLD = 40
+
+# The max amount slowmode can increase per cycle, in seconds
+INCREASE_MAX = 3
+DECREASE_MAX = 2
 
 class Thermometer:
     def __init__(self):
@@ -31,16 +35,20 @@ class Thermometer:
             # Iterate thru each channel, generating weighted value for each channel and adjusting slowmode if necessary
             for channel in self.channels:
                 channel_id = channel.id
-                if (channel_id not in self.channel_dict) or (channel_id in NO_SLOWMODE):
-                    continue
+                slowmode = 0
+                if (channel_id in self.channel_dict) and (channel_id not in NO_SLOWMODE):
+                    spoken_list = self.channel_dict[channel_id]
+                    spoken_set = set(spoken_list)
+                    metric = len(spoken_list) * (len(spoken_list) / len(spoken_set))
+                    slowmode = int(metric / THRESHOLD)
 
-                spoken_list = self.channel_dict[channel_id]
-                spoken_set = set(spoken_list)
-                metric = len(spoken_list) * (len(spoken_list) / len(spoken_set))
-                slowmode = min(MAX_SLOWMODE, int(metric / THRESHOLD))
+                old_slowmode = channel.slowmode_delay
+                # Ensure that new setting is below the max, and also within the increase/decrease window we allow
+                slowmode = min(MAX_SLOWMODE, slowmode, old_slowmode + INCREASE_MAX)
+                slowmode = max(slowmode, old_slowmode - DECREASE_MAX)
 
                 try:
-                    if channel.slowmode_delay != slowmode:
+                    if old_slowmode != slowmode:
                         await channel.edit(slowmode_delay=slowmode)
                 except Exception as e:
                     print(f"Exception: {str(e)}")
