@@ -35,8 +35,12 @@ class Thermometer:
             # Iterate thru each channel, generating weighted value for each channel and adjusting slowmode if necessary
             for channel in self.channels:
                 channel_id = channel.id
+                # Don't modify slowmode in protected channels
+                if channel_id in NO_SLOWMODE:
+                    return
+
                 slowmode = 0
-                if (channel_id in self.channel_dict) and (channel_id not in NO_SLOWMODE):
+                if channel_id in self.channel_dict:
                     spoken_list = self.channel_dict[channel_id]
                     spoken_set = set(spoken_list)
                     metric = len(spoken_list) * (len(spoken_list) / len(spoken_set))
