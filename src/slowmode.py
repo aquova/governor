@@ -37,7 +37,7 @@ class Thermometer:
                 channel_id = channel.id
                 # Don't modify slowmode in protected channels
                 if channel_id in NO_SLOWMODE:
-                    return
+                    continue
 
                 slowmode = 0
                 if channel_id in self.channel_dict:
