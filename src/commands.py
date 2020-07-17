@@ -15,6 +15,8 @@ ADMIN_HELP_MES = (
     f"Speak a message as the bot: `{CMD_PREFIX}say CHAN_ID message`. If you want to send images they must be attachments *not URLs*.\n"
     f"Display info on a user: `{CMD_PREFIX}userinfo [USER]`\n"
     f"View your XP: `{CMD_PREFIX}xp`\n"
+    f"Set XP to be x2: `{CMD_PREFIX}bonusxp`\n"
+    f"Reset XP multiplier: `{CMD_PREFIX}nobonusxp`\n"
     f"\nAdd a game to be announced: `{CMD_PREFIX}addgame game_info`\n"
     f"View all games to be announced: `{CMD_PREFIX}getgames`\n"
     f"Remove all games to be announced: `{CMD_PREFIX}cleargames`\n"

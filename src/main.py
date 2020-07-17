@@ -23,6 +23,7 @@ thermo = Thermometer()
 FUNC_DICT = {
     "addgame": games.add_game,
     "addxp": tr.add_xp,
+    "bonusxp": tr.set_bonus_xp,
     "cleargames": games.clear_games,
     "custom": commands.print_help,
     "define": cc.define_cmd,
@@ -33,6 +34,7 @@ FUNC_DICT = {
     "level": xp.render_lvl_image,
     "list": cc.list_cmds,
     "lvl": xp.render_lvl_image,
+    "nobonusxp": tr.reset_bonus_xp,
     "ranks": commands.list_ranks,
     "remove": cc.remove_cmd,
     "say": commands.say,

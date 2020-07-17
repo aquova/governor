@@ -166,6 +166,11 @@ class Tracker:
 
         return lowest_missing_xp
 
+    """
+    Add XP
+
+    Adds the specified amout of XP to a user
+    """
     @utils.requires_admin
     async def add_xp(self, message):
         try:
@@ -190,13 +195,17 @@ class Tracker:
 
     Sets the XP multiplier
     """
-    async def set_bonus_xp(self):
+    @utils.requires_admin
+    async def set_bonus_xp(self, _):
         self.xp_multiplier = 2
+        return "XP multiplier is now x2!"
 
     """
     Reset bonus XP
 
     Resets the XP multiplier
     """
-    async def reset_bonus_xp(self):
+    @utils.requires_admin
+    async def reset_bonus_xp(self, _):
         self.xp_multiplier = 1
+        return "XP multiplier has been reset"
