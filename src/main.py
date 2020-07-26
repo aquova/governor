@@ -166,6 +166,9 @@ async def on_message(message):
                 # Check if they're using a user-defined command
                 cmd_output = cc.parse_response(message)
                 await message.channel.send(cmd_output)
+        else:
+            # Else, check if they are posting in an event channel
+            await events.perform_hidden_task(message)
 
     except discord.errors.HTTPException as e:
         print(f"HTTPException: {str(e)}")

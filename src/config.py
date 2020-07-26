@@ -33,6 +33,9 @@ if GAME_ANNOUNCEMENT_CHANNEL == DEFAULT_CONFIG_SETTING:
 
 GAME_ANNOUNCE_TIME = datetime.strptime(cfg['games']['announcement_time'], "%I:%M %p")
 
+# Event related channels
+PUZZLE_EVENTS = cfg['channels']['events']['puzzle'] # Events where submissions shouldn't be seen by other members
+
 # Import ranks from their configuration
 with open(cfg['ranks_path']) as ranks_file:
     RANKS = json.load(ranks_file)['ranks']
