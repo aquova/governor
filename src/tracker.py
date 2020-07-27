@@ -167,6 +167,15 @@ class Tracker:
         return lowest_missing_xp
 
     """
+    Remove item from cache
+
+    Removes a user from the user cache, in the event they leave the server
+    """
+    def remove_from_cache(self, user_id):
+        if user_id in self.user_cache:
+            del self.user_cache[userid]
+
+    """
     Add XP
 
     Adds the specified amout of XP to a user

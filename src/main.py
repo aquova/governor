@@ -107,6 +107,7 @@ Runs when a member leaves the server
 """
 @client.event
 async def on_member_remove(user):
+    tr.remove_from_cache(user.id)
     await update_user_count(user.guild)
 
 """
