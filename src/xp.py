@@ -1,5 +1,5 @@
 import discord, db, requests, os, shutil, utils
-from config import XP_PER_LVL, LVL_CHANS
+from config import XP_PER_LVL, LVL_CHANS, OWNER
 from dataclasses import dataclass, astuple
 from math import ceil, floor
 from PIL import Image, ImageDraw, ImageFont
@@ -127,10 +127,15 @@ async def render_lvl_image(message):
         avatar_url = f"https://cdn.discordapp.com/avatars/{userid}/{author.avatar}.png"
 
         # Download the user's avatar image to private/tmp
-        response = requests.get(avatar_url, stream=True)
-        with open(avatar_filename, 'wb') as outfile:
-            shutil.copyfileobj(response.raw, outfile)
-        del response
+        try:
+            response = requests.get(avatar_url, stream=True)
+            with open(avatar_filename, 'wb') as outfile:
+                shutil.copyfileobj(response.raw, outfile)
+            del response
+        except requests.exceptions.ConnectionError as e:
+            print(f"Issue downloading avatar {avatar_url}. Aborting")
+            print(str(e))
+            return f"Error accessing avatar URL has occurred. Pinging <@{OWNER}>"
 
     # Open image, paste the avatar image, then the frame
     bg = Image.open(IMG_BG)
