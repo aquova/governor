@@ -173,7 +173,7 @@ class Tracker:
     """
     def remove_from_cache(self, user_id):
         if user_id in self.user_cache:
-            del self.user_cache[userid]
+            del self.user_cache[user_id]
 
     """
     Add XP
