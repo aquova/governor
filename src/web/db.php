@@ -1,5 +1,5 @@
 <?php
-    $config_file = "../private/config.json";
+    $config_file = "../../private/config.json";
 
     $populate_leaderboard = function () use ($config_file) {
         $xp_per_lvl = 300;

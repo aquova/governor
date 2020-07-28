@@ -39,7 +39,7 @@ async def perform_hidden_task(message):
         return
 
     # Make the events folder if it doesn't exist
-    folder = f"private/events/{message.channel.name}"
+    folder = f"../private/events/{message.channel.name}"
     if not os.path.exists(folder):
         os.makedirs(folder)
 

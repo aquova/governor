@@ -6,7 +6,7 @@ PLACEHOLDER_TOKEN = "YOUR DISCORD TOKEN HERE"
 DEFAULT_CONFIG_SETTING = 0
 
 # Read values from config file
-with open('private/config.json') as config_file:
+with open('../private/config.json') as config_file:
     cfg = json.load(config_file)
 
 DISCORD_KEY = cfg['discord']

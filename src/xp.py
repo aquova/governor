@@ -97,8 +97,8 @@ async def render_lvl_image(message):
         return
 
     # Make image tmp folder if needed
-    if not os.path.exists("private/tmp"):
-        os.makedirs("private/tmp")
+    if not os.path.exists("../private/tmp"):
+        os.makedirs("../private/tmp")
 
     # First, check if the user wants to look up someone else
     author = None
@@ -118,7 +118,7 @@ async def render_lvl_image(message):
     bar_num = ceil(10 * (xp - (lvl * XP_PER_LVL)) / XP_PER_LVL)
     rank = db.get_rank(userid) # This *can* return None, but I don't know how it could in actuality
 
-    out_filename = f"private/tmp/{userid}.png"
+    out_filename = f"../private/tmp/{userid}.png"
     avatar_filename = out_filename
 
     if author.avatar == None:
