@@ -35,6 +35,7 @@ GAME_ANNOUNCE_TIME = datetime.strptime(cfg['games']['announcement_time'], "%I:%M
 
 # Event related channels
 PUZZLE_EVENTS = cfg['channels']['events']['puzzle'] # Events where submissions shouldn't be seen by other members
+CURRENT_EVENTS = cfg['roles']['events']
 
 # Import ranks from their configuration
 with open(cfg['ranks_path']) as ranks_file:

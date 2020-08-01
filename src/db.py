@@ -11,6 +11,7 @@ def initialize():
     sqlconn.execute("CREATE TABLE IF NOT EXISTS xp (id INT PRIMARY KEY, xp INT, username TEXT, avatar TEXT)")
     sqlconn.execute("CREATE TABLE IF NOT EXISTS commands (name TEXT PRIMARY KEY, response TEXT)")
     sqlconn.execute("CREATE TABLE IF NOT EXISTS games (game TEXT)")
+    sqlconn.execute("CREATE TABLE IF NOT EXISTS raffle (id INT)")
     sqlconn.commit()
     sqlconn.close()
 
@@ -172,4 +173,13 @@ Removes all currently stored games
 """
 def clear_games():
     query = ("DELETE FROM games",)
+    _db_write(query)
+
+"""
+Add to raffle
+
+Adds a user's ID to the event raffle
+"""
+def add_raffle(userid):
+    query = ("INSERT INTO raffle (id) VALUES (?)", [userid])
     _db_write(query)

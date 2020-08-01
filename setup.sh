@@ -39,7 +39,13 @@ cat << EOF > private/config.json
     "command_prefix": "!",
     "owner": 0,
     "roles": {
-        "admin_access": 0
+        "admin_access": 0,
+        "events": [
+            {
+                "ids": [],
+                "emoji_name": ""
+            }
+        ]
     },
     "server_url": "https://example.com",
     "games": {

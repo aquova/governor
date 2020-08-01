@@ -116,11 +116,9 @@ On Reaction Add
 Runs when a member reacts to a message with an emoji
 """
 # There is no event currently going on, so this has been commented out until it is needed again
-# @client.event
-# async def on_reaction_add(reaction, user):
-#     # TODO: This only needs to be called during an event
-#     # Ideally, have some way of setting this up in config.json
-#     await events.award_event_prize(reaction, user, tr)
+@client.event
+async def on_reaction_add(reaction, user):
+    await events.award_event_prize(reaction, user, tr)
 
 """
 On Message
@@ -169,7 +167,7 @@ async def on_message(message):
                 await message.channel.send(cmd_output)
         else:
             # Else, check if they are posting in an event channel
-            await events.perform_hidden_task(message)
+            await events.event_check(message)
 
     except discord.errors.HTTPException as e:
         print(f"HTTPException: {str(e)}")
