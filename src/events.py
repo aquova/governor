@@ -23,10 +23,11 @@ async def award_event_prize(reaction, reactor, tr):
                         user_roles.append(new_role)
 
                 await author.edit(roles=user_roles)
-                db.add_raffle(author.id)
-                # Add our own emoji, so we can show that it went through
-                emoji = discord.utils.get(author.guild.emojis, name=emoji_name)
-                await reaction.message.add_reaction(emoji)
+                if db.add_raffle(author.id, reaction.message.channel.id):
+                    # Add our own emoji, so we can show that it went through
+                    emoji = discord.utils.get(author.guild.emojis, name=emoji_name)
+                    await reaction.message.add_reaction(emoji)
+                break
 
 async def event_check(message):
     await _check_hidden_task(message)
@@ -74,8 +75,8 @@ async def _check_hidden_task(message):
             eventfile.write(event_entry)
 
     if valid:
-        db.add_raffle(author.id)
-        await message.channel.send(f"<@{author.id}> :thumbsup:")
+        if db.add_raffle(author.id, message.channel.id):
+            await message.channel.send(f"<@{author.id}> :thumbsup:")
 
     # Valid entry or not, we want to delete it
     await message.delete()

@@ -11,7 +11,7 @@ def initialize():
     sqlconn.execute("CREATE TABLE IF NOT EXISTS xp (id INT PRIMARY KEY, xp INT, username TEXT, avatar TEXT)")
     sqlconn.execute("CREATE TABLE IF NOT EXISTS commands (name TEXT PRIMARY KEY, response TEXT)")
     sqlconn.execute("CREATE TABLE IF NOT EXISTS games (game TEXT)")
-    sqlconn.execute("CREATE TABLE IF NOT EXISTS raffle (id INT)")
+    sqlconn.execute("CREATE TABLE IF NOT EXISTS raffle (id INT, channel INT)")
     sqlconn.commit()
     sqlconn.close()
 
@@ -180,6 +180,12 @@ Add to raffle
 
 Adds a user's ID to the event raffle
 """
-def add_raffle(userid):
-    query = ("INSERT INTO raffle (id) VALUES (?)", [userid])
-    _db_write(query)
+def add_raffle(userid, chanid):
+    read_query = ("SELECT id FROM raffle WHERE id=? AND channel=?", [userid, chanid])
+    results = _db_read(read_query)
+    if results == []:
+        write_query = ("INSERT INTO raffle (id, channel) VALUES (?, ?)", [userid, chanid])
+        _db_write(write_query)
+        return True
+
+    return False
