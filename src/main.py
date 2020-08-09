@@ -118,7 +118,7 @@ Runs when a member reacts to a message with an emoji
 # There is no event currently going on, so this has been commented out until it is needed again
 @client.event
 async def on_reaction_add(reaction, user):
-    await events.award_event_prize(reaction, user, tr)
+    await events.award_event_prize(reaction, user, tr, client.user)
 
 """
 On Message
