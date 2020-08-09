@@ -1,5 +1,5 @@
 from datetime import datetime
-import json
+import json, os
 
 XP_PER_LVL = 300
 PLACEHOLDER_TOKEN = "YOUR DISCORD TOKEN HERE"
@@ -37,7 +37,6 @@ GAME_ANNOUNCE_TIME = datetime.strptime(cfg['games']['announcement_time'], "%I:%M
 
 # Event related channels
 PUZZLE_EVENTS = cfg['channels']['events']['puzzle'] # Events where submissions shouldn't be seen by other members
-LINK_EVENTS = cfg['channels']['events']['link']     # Events where submissions should contain a URL
 VERIFY_EVENTS = cfg['channels']['events']['verify'] # Channel to approve event submissions
 CURRENT_EVENTS = cfg['roles']['events']
 
