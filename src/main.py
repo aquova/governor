@@ -111,14 +111,13 @@ async def on_member_remove(user):
     await update_user_count(user.guild)
 
 """
-On Reaction Add
+On Raw Reaction Add
 
 Runs when a member reacts to a message with an emoji
 """
-# There is no event currently going on, so this has been commented out until it is needed again
 @client.event
-async def on_reaction_add(reaction, user):
-    await events.award_event_prize(reaction, user, tr, client.user)
+async def on_raw_reaction_add(payload):
+    await events.award_event_prize(payload, tr, client)
 
 """
 On Message

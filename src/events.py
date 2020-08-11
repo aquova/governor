@@ -4,37 +4,45 @@ import discord, db, requests, os, shutil
 from config import ADMIN_ACCESS, PUZZLE_EVENTS, XP_PER_LVL, CURRENT_EVENTS, VERIFY_EVENTS
 from tracker import Tracker
 
-async def award_event_prize(reaction, reactor, tr, us):
+async def award_event_prize(payload, tr, client):
     # Only give reward if giver is an admin, and correct emoji was used
     # Can't use requires_admin wrapper as there is no message object from the event
-    check_roles = [x.id for x in reactor.roles]
+    check_roles = [x.id for x in payload.member.roles]
     if ADMIN_ACCESS in check_roles:
-        emoji_name = reaction.emoji if type(reaction.emoji) == str else reaction.emoji.name
+        emoji_name = payload.emoji if type(payload.emoji) == str else payload.emoji.name
         for event in CURRENT_EVENTS:
             if emoji_name == event['emoji_name']:
-                # Need to check if we are reacting to an archived post by ourselves
-                if reaction.message.author == us and len(reaction.message.mentions) == 1:
-                    author = reaction.message.mentions[0]
-                    channel = reaction.message.channel_mentions[0].id
-                else:
-                    author = reaction.message.author
-                    channel = reaction.message.channel.id
+                # Need to know what server this is
+                server = [x for x in client.guilds if x.id == payload.guild_id][0]
+                channel = discord.utils.get(server.channels, id=payload.channel_id)
+                try:
+                    message = await channel.fetch_message(payload.message_id)
+                    # Need to check if we are reacting to an archived post by ourselves
+                    if message.author == client.user and len(message.mentions) == 1:
+                        author = message.mentions[0]
+                        channel = message.channel_mentions[0].id
+                    else:
+                        author = message.author
+                        channel = message.channel.id
 
-                # Award three levels
-                await tr.give_xp(author, 3 * XP_PER_LVL)
-                user_roles = author.roles
-                for role in event['ids']:
-                    new_role = discord.utils.get(author.guild.roles, id=role)
-                    if new_role != None and new_role not in user_roles:
-                        user_roles.append(new_role)
+                    # Award three levels
+                    await tr.give_xp(author, 3 * XP_PER_LVL)
+                    user_roles = author.roles
+                    for role in event['ids']:
+                        new_role = discord.utils.get(author.guild.roles, id=role)
+                        if new_role != None and new_role not in user_roles:
+                            user_roles.append(new_role)
 
-                await author.edit(roles=user_roles)
-                if db.add_raffle(author.id, channel):
-                    # Add our own emoji, so we can show that it went through
-                    emoji = discord.utils.get(author.guild.emojis, name=emoji_name)
-                    await reaction.message.add_reaction(emoji)
+                    await author.edit(roles=user_roles)
+                    if db.add_raffle(author.id, channel):
+                        # Add our own emoji, so we can show that it went through
+                        emoji = discord.utils.get(author.guild.emojis, name=emoji_name)
+                        await message.add_reaction(emoji)
 
-                break
+                    break
+                except Exception as e:
+                    print(f"Exception found when fetching reaction message: {str(e)}")
+                    break
 
 async def event_check(message):
     await _check_hidden_task(message)
