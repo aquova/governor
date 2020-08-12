@@ -25,8 +25,6 @@ async def award_event_prize(payload, tr, client):
                         author = message.author
                         channel = message.channel.id
 
-                    # Award three levels
-                    await tr.give_xp(author, 3 * XP_PER_LVL)
                     user_roles = author.roles
                     for role in event['ids']:
                         new_role = discord.utils.get(author.guild.roles, id=role)
@@ -34,10 +32,13 @@ async def award_event_prize(payload, tr, client):
                             user_roles.append(new_role)
 
                     await author.edit(roles=user_roles)
+                    # Add our own emoji, so we can show that it went through
+                    emoji = discord.utils.get(author.guild.emojis, name=emoji_name)
+                    await message.add_reaction(emoji)
+
                     if db.add_raffle(author.id, channel):
-                        # Add our own emoji, so we can show that it went through
-                        emoji = discord.utils.get(author.guild.emojis, name=emoji_name)
-                        await message.add_reaction(emoji)
+                        # Award three levels if this is first time they're entering this event
+                        await tr.give_xp(author, 3 * XP_PER_LVL)
 
                     break
                 except Exception as e:
