@@ -1,14 +1,14 @@
 import asyncio, datetime, discord
 from config import NO_SLOWMODE
 
-WAIT_TIME = 150 # How long to sleep between checks, in seconds
+WAIT_TIME = 300 # How long to sleep between checks, in seconds
 MAX_SLOWMODE = 15 # In seconds
 # Threshold between slowmode levels, arbitrary units
 # NOTE: If the WAIT_TIME is adjusted, this will need to be adjusted too
-THRESHOLD = 40
+THRESHOLD = 80
 
 # The max amount slowmode can increase per cycle, in seconds
-INCREASE_MAX = 3
+INCREASE_MAX = 4
 DECREASE_MAX = 2
 
 class Thermometer:
