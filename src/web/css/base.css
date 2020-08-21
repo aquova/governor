@@ -1,20 +1,8 @@
-* {
-  box-sizing: border-box;
-}
-
 html {
   font-family: Arial, sans-serif;
   background: #1E2124;
   color: #F4F4F4;
   height: 100%;
-}
-
-body {
-  display: grid;
-  grid-template-rows: 50px 1fr;
-  grid-template-columns: 50px calc(100% - 100px) 50px;
-  height: 100%;
-  margin: 0;
 }
 
 header {
@@ -30,10 +18,4 @@ header h1 {
   margin: 0;
   justify-self: center;
   align-self: center;
-}
-
-main {
-  grid-column: 2;
-  grid-row: 2;
-  padding: 30px 30px 0 30px;
 }
