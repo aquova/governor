@@ -1,14 +1,10 @@
 <?php
-    $config_file = "../../private/config.json";
+    $db_path = "../sdv_data.db";
 
-    $populate_leaderboard = function () use ($config_file) {
+    $populate_leaderboard = function () use ($db_path) {
         $xp_per_lvl = 300;
 
-        // Parse JSON file
-        $raw_json = file_get_contents($config_file);
-        $cfg = json_decode($raw_json, true);
-
-        $db = new SQLite3("../" . $cfg["db_path"]);
+        $db = new SQLite3($db_path);
         $ret = $db->query('SELECT * FROM xp WHERE username IS NOT NULL ORDER BY xp DESC LIMIT 100');
 
         $rank = 0;
@@ -49,13 +45,9 @@
         $db->close();
     };
 
-    $populate_cmd_tbl = function () use ($config_file) {
+    $populate_cmd_tbl = function () use ($db_path) {
 
-        // Parse JSON file
-        $raw_json = file_get_contents($config_file);
-        $cfg = json_decode($raw_json, true);
-
-        $db = new SQLite3("../" . $cfg["db_path"]);
+        $db = new SQLite3($db_path);
         $ret = $db->query('SELECT * FROM commands ORDER BY name');
 
         while ($row = $ret->fetchArray()) {
