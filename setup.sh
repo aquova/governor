@@ -19,7 +19,7 @@ fi
 # Install packages
 echo -e "${BLUE}Installing necessary packages${NC}";
 sudo apt update;
-sudo apt install python3 python3-pip python3-virtualenv sqlite3 php7.3 php7.3-sqlite3 php7.3-json;
+sudo apt install python3 python3-pip python3-virtualenv sqlite3;
 
 # Setup Python
 echo -e "${BLUE}Setting up Python virtual environment and libaries${NC}";
@@ -91,6 +91,4 @@ echo "Go to 'https://discord.com/developers/applications' and make a new app."
 echo "Go to 'Bot' on the sidebar, and Add bot."
 echo "Copy the Token and go into private/config.json with your favorite text editor, and paste that in place of 'YOUR DISCORD TOKEN HERE'."
 echo "Replace some of the other settings to your preferences as well (particularly the ones set to '0')."
-echo -e "${BLUE}If you have a webserver, make a symlink to the file path of where you want the leaderboard page to be:";
-echo -e "${GREEN}ln -s path/to/governor/src/web path/to/webserver";
 echo -e "${NC}"
