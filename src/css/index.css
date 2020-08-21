@@ -1,0 +1,16 @@
+.list {
+    margin-left: 25%;
+}
+
+#footer {
+    font-size: 11px;
+}
+
+a {
+    color: slategray;
+    text-decoration: none;
+}
+
+a:hover {
+    color: darkslategray;
+}
