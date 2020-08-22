@@ -1,5 +1,6 @@
 .list {
-    margin-left: 25%;
+    max-width: 500px;
+    margin: auto;
 }
 
 #footer {
