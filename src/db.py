@@ -131,11 +131,15 @@ Get rank
 Returns the server rank for the user in question
 """
 def get_rank(userid):
-    query = ("SELECT COUNT()+1 FROM xp WHERE xp > (SELECT xp FROM xp WHERE id=?) and username IS NOT NULL", [userid])
-    results = _db_read(query)
+    xp_query = ("SELECT xp FROM xp WHERE id=?", [userid])
+    xp_res = _db_read(xp_query)
+    if xp_res == []:
+        xp = 0
+    else:
+        xp = xp_res[0][0]
 
-    if results == []:
-        return None
+    count_query = ("SELECT COUNT()+1 FROM xp WHERE xp > ? and username IS NOT NULL", [xp])
+    results = _db_read(count_query)
 
     return results[0][0]
 
