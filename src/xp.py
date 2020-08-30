@@ -116,7 +116,7 @@ async def render_lvl_image(message):
     lvl = floor(xp / XP_PER_LVL)
     # Calculate what percentage we are to the next level, as a range from 0-10
     bar_num = ceil(10 * (xp - (lvl * XP_PER_LVL)) / XP_PER_LVL)
-    rank = db.get_rank(userid) # This *can* return None, but I don't know how it could in actuality
+    rank = db.get_rank(userid)
 
     out_filename = f"../private/tmp/{userid}.png"
     avatar_filename = out_filename

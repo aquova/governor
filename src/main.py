@@ -4,6 +4,7 @@
 
 import discord
 import db, commands, events, games, utils, xp
+import traceback
 from config import CMD_PREFIX, DISCORD_KEY, GAME_ANNOUNCEMENT_CHANNEL, XP_OFF
 from debug import Debug
 from slowmode import Thermometer
@@ -169,7 +170,7 @@ async def on_message(message):
             await events.event_check(message)
 
     except discord.errors.HTTPException as e:
-        print(f"HTTPException: {str(e)}")
+        print(traceback.format_exc())
         pass
 
 client.run(DISCORD_KEY)
