@@ -1,11 +1,9 @@
 import asyncio, datetime, discord
 from config import NO_SLOWMODE
 
-WAIT_TIME = 300 # How long to sleep between checks, in seconds
+WAIT_TIME = 120 # How long to sleep between checks, in seconds
 MAX_SLOWMODE = 15 # In seconds
-# Threshold between slowmode levels, arbitrary units
-# NOTE: If the WAIT_TIME is adjusted, this will need to be adjusted too
-THRESHOLD = 80
+THRESHOLD = 100 # Threshold between slowmode levels, arbitrary units
 
 # The max amount slowmode can increase per cycle, in seconds
 INCREASE_MAX = 4
@@ -42,8 +40,7 @@ class Thermometer:
                 slowmode = 0
                 if channel_id in self.channel_dict:
                     spoken_list = self.channel_dict[channel_id]
-                    spoken_set = set(spoken_list)
-                    metric = len(spoken_list) * (len(spoken_list) / len(spoken_set))
+                    metric = len(spoken_list) * len(spoken_list)
                     slowmode = int(metric / THRESHOLD)
 
                 old_slowmode = channel.slowmode_delay
