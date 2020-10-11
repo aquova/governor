@@ -15,7 +15,7 @@ DISCORD_KEY = cfg['discord']
 if DISCORD_KEY == PLACEHOLDER_TOKEN:
     print("Don't forget to set the 'discord' field in 'private/config.json' with your Discord bot key!")
 
-DB_PATH = cfg['db_path']
+DB_PATH = os.path.join(dir_path, "../private/sdv_data.db")
 CMD_PREFIX = cfg['command_prefix']
 ADMIN_ACCESS = cfg['roles']['admin_access']
 SERVER_URL = cfg['server_url']
@@ -41,5 +41,6 @@ VERIFY_EVENTS = cfg['channels']['events']['verify'] # Channel to approve event s
 CURRENT_EVENTS = cfg['roles']['events']
 
 # Import ranks from their configuration
-with open(cfg['ranks_path']) as ranks_file:
+ranks_path = os.path.join(dir_path, "../private/ranks.json")
+with open(ranks_path) as ranks_file:
     RANKS = json.load(ranks_file)['ranks']
