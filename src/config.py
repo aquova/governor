@@ -16,6 +16,9 @@ if DISCORD_KEY == PLACEHOLDER_TOKEN:
     print("Don't forget to set the 'discord' field in 'private/config.json' with your Discord bot key!")
 
 DB_PATH = os.path.join(dir_path, "../private/sdv_data.db")
+ASSETS_PATH = os.path.join(dir_path, "assets")
+FONTS_PATH = os.path.join(dir_path, "fonts")
+TMP_PATH = os.path.join(dir_path, "../private/tmp")
 CMD_PREFIX = cfg['command_prefix']
 ADMIN_ACCESS = cfg['roles']['admin_access']
 SERVER_URL = cfg['server_url']

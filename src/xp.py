@@ -1,5 +1,5 @@
 import discord, db, requests, os, shutil, utils
-from config import XP_PER_LVL, LVL_CHANS, OWNER
+from config import XP_PER_LVL, LVL_CHANS, OWNER, ASSETS_PATH, FONTS_PATH, TMP_PATH
 from dataclasses import dataclass, astuple
 from math import ceil, floor
 from PIL import Image, ImageDraw, ImageFont
@@ -17,11 +17,11 @@ class Point:
     def shadow_tuple(self):
         return (self.x - 1, self.y + 1)
 
-IMG_BG = "assets/bg_rank.png"
-IMG_FRAME = "assets/bg_rank_border_square.png"
-IMG_SM_BAR = "assets/bg_rank_bar_small.png"
-IMG_LG_BAR = "assets/bg_rank_bar_large.png"
-FONT = "fonts/Roboto/Roboto-Medium.ttf"
+IMG_BG = os.path.join(ASSETS_PATH, "bg_rank.png")
+IMG_FRAME = os.path.join(ASSETS_PATH, "bg_rank_border_square.png")
+IMG_SM_BAR = os.path.join(ASSETS_PATH, "bg_rank_bar_small.png")
+IMG_LG_BAR = os.path.join(ASSETS_PATH, "bg_rank_bar_large.png")
+FONT = os.path.join(FONTS_PATH, "Roboto/Roboto-Medium.ttf")
 FONT_COLOR = (208, 80, 84)
 BACK_COLOR = (82, 31, 33)
 USERNAME_POS = Point(90, 8)
@@ -97,8 +97,8 @@ async def render_lvl_image(message):
         return
 
     # Make image tmp folder if needed
-    if not os.path.exists("../private/tmp"):
-        os.makedirs("../private/tmp")
+    if not os.path.exists(TMP_PATH):
+        os.makedirs(TMP_PATH)
 
     # First, check if the user wants to look up someone else
     author = None
@@ -118,11 +118,11 @@ async def render_lvl_image(message):
     bar_num = ceil(10 * (xp - (lvl * XP_PER_LVL)) / XP_PER_LVL)
     rank = db.get_rank(userid)
 
-    out_filename = f"../private/tmp/{userid}.png"
+    out_filename = os.path.join(TMP_PATH, f"{userid}.png")
     avatar_filename = out_filename
 
     if author.avatar == None:
-        avatar_filename = "assets/default_avatar.png"
+        avatar_filename = os.path.join(ASSETS_PATH, "default_avatar.png")
     else:
         avatar_url = f"https://cdn.discordapp.com/avatars/{userid}/{author.avatar}.png"
 
