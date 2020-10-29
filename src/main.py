@@ -10,7 +10,10 @@ from debug import Debug
 from slowmode import Thermometer
 from tracker import Tracker
 
-client = discord.Client()
+intents = discord.Intents.default()
+intents.members = True
+
+client = discord.Client(intents=intents)
 
 db.initialize()
 tr = Tracker()
@@ -171,6 +174,8 @@ async def on_message(message):
 
     except discord.errors.HTTPException as e:
         print(traceback.format_exc())
+        pass
+    except discord.errors.Forbidden:
         pass
 
 client.run(DISCORD_KEY)
