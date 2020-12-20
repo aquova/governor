@@ -1,14 +1,14 @@
 # Functions related to Discord server events (not API events)
 
 import discord, db, requests, os, shutil
-from config import ADMIN_ACCESS, PUZZLE_EVENTS, XP_PER_LVL, CURRENT_EVENTS, VERIFY_EVENTS
+from config import ADMIN_ACCESS, EVENT_COORDINATOR, PUZZLE_EVENTS, XP_PER_LVL, CURRENT_EVENTS, VERIFY_EVENTS
 from tracker import Tracker
 
 async def award_event_prize(payload, tr, client):
     # Only give reward if giver is an admin, and correct emoji was used
     # Can't use requires_admin wrapper as there is no message object from the event
     check_roles = [x.id for x in payload.member.roles]
-    if ADMIN_ACCESS in check_roles:
+    if ADMIN_ACCESS in check_roles or EVENT_COORDINATOR in check_roles:
         emoji_name = payload.emoji if type(payload.emoji) == str else payload.emoji.name
         for event in CURRENT_EVENTS:
             if emoji_name == event['emoji_name']:
