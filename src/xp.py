@@ -43,7 +43,10 @@ async def get_xp(message):
         author = discord.utils.get(message.guild.members, id=other_id)
 
     xp = db.fetch_user_xp(author.id)
-    return f"You have {xp} XP"
+    if author == message.author:
+        return f"You have {xp} XP"
+    else:
+        return f"They have {xp} XP"
 
 """
 Userinfo
