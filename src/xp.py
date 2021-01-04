@@ -36,7 +36,13 @@ Get XP
 Returns the given user's XP value, as a formatted string
 """
 async def get_xp(message):
-    xp = db.fetch_user_xp(message.author.id)
+    # First, check if the user wants to look up someone else
+    author = message.author
+    other_id = parse_mention(message)
+    if other_id != None:
+        author = discord.utils.get(message.guild.members, id=other_id)
+
+    xp = db.fetch_user_xp(author.id)
     return f"You have {xp} XP"
 
 """
@@ -101,14 +107,10 @@ async def render_lvl_image(message):
         os.makedirs(TMP_PATH)
 
     # First, check if the user wants to look up someone else
-    author = None
+    author = message.author
     other_id = parse_mention(message)
     if other_id != None:
         author = discord.utils.get(message.guild.members, id=other_id)
-
-    # If we couldn't find a user, use the message author
-    if author == None:
-        author = message.author
 
     userid = author.id
     username = author.name
