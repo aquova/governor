@@ -6,6 +6,11 @@
         <link rel="icon" href="assets/cojiro.png" type="image/png">
         <link rel="stylesheet" href="css/base.css" type="text/css">
         <link rel="stylesheet" href="css/leaderboard.css" type="text/css">
+
+        <meta property="og:title" content="Stardew Valley Discord Leaderboard" />
+        <meta property="og:url" content="https://stardew.chat/leaderboard.php" />
+        <meta property="og:image" content="assets/cojiro.png" />
+        <meta property="og:description" content="View the most active members of the Stardew Valley Discord server" />
     </head>
     <body>
         <header>
