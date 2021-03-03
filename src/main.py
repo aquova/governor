@@ -1,5 +1,5 @@
 # Governor
-# Written by aquova, 2020
+# Written by aquova, 2020-2021
 # https://github.com/aquova/governor
 
 import discord
@@ -34,6 +34,7 @@ FUNC_DICT = {
     "edit": commands.edit,
     "getgames": games.get_games,
     "help": commands.print_help,
+    "info": commands.info,
     "lb": commands.show_lb,
     "level": xp.render_lvl_image,
     "list": cc.list_cmds,

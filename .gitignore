@@ -10,6 +10,7 @@ pyvenv.cfg
 
 # VSCode files
 *.code-workspace
+**/.devcontainer/*
 
 # Web files
 *.map

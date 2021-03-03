@@ -1,35 +1,42 @@
 import discord
 import db, utils
 from math import floor
-from config import ADMIN_ACCESS, CMD_PREFIX, RANKS, SERVER_URL
+from config import ADMIN_ACCESS, CMD_PREFIX, RANKS, SERVER_URL, LVL_CHANS, NO_SLOWMODE, XP_OFF
 from user import parse_mention
 
 ADMIN_HELP_MES = (
-    f"Give XP to a user: `{CMD_PREFIX}addxp USER XP` (Can be negative)\n"
-    f"Define a custom message: `{CMD_PREFIX}define NAME [%mention%] MESSAGE`\n"
-    f"Edit a message spoken by the bot: `{CMD_PREFIX}edit MESSAGE_ID new_message`\n"
-    f"List custom commands: `{CMD_PREFIX}list`\n"
-    f"View your level: `{CMD_PREFIX}lvl`\n"
-    f"View available ranks: `{CMD_PREFIX}ranks`\n"
-    f"Remove a custom message: `{CMD_PREFIX}remove NAME`\n"
-    f"Speak a message as the bot: `{CMD_PREFIX}say CHAN_ID message`. If you want to send images they must be attachments *not URLs*.\n"
-    f"Display info on a user: `{CMD_PREFIX}userinfo [USER]`\n"
     f"View your XP: `{CMD_PREFIX}xp`\n"
+    f"View your level: `{CMD_PREFIX}lvl`\n"
     f"Set XP to be x2: `{CMD_PREFIX}bonusxp`\n"
     f"Reset XP multiplier: `{CMD_PREFIX}nobonusxp`\n"
-    f"\nAdd a game to be announced: `{CMD_PREFIX}addgame game_info`\n"
+    f"Give XP to a user: `{CMD_PREFIX}addxp USER XP` (Can be negative)\n"
+    f"\n"
+    f"Define a custom message: `{CMD_PREFIX}define NAME [%mention%] MESSAGE`\n"
+    f"List custom commands: `{CMD_PREFIX}list`\n"
+    f"Remove a custom message: `{CMD_PREFIX}remove NAME`\n"
+    f"\n"
+    f"Speak a message as the bot: `{CMD_PREFIX}say CHAN_ID message`. If you want to send images they must be attachments *not URLs*.\n"
+    f"Edit a message spoken by the bot: `{CMD_PREFIX}edit MESSAGE_ID new_message`\n"
+    f"Display info on a user: `{CMD_PREFIX}userinfo [USER]`\n"
+    f"Display info on bot settings: `{CMD_PREFIX}info`\n"
+    f"View available ranks: `{CMD_PREFIX}ranks`\n"
+    f"\n"
+    f"Add a game to be announced: `{CMD_PREFIX}addgame URL`\n"
     f"View all games to be announced: `{CMD_PREFIX}getgames`\n"
     f"Remove all games to be announced: `{CMD_PREFIX}cleargames`\n"
-    f"\nView this message: `{CMD_PREFIX}help`"
+    f"\n"
+    f"View this message: `{CMD_PREFIX}help`"
 )
 
 HELP_MES = (
-    f"List custom commands: `{CMD_PREFIX}list`\n"
+    f"View your XP: `{CMD_PREFIX}xp`\n"
     f"View your level: `{CMD_PREFIX}lvl`\n"
+    f"\n"
+    f"List custom commands: `{CMD_PREFIX}list`\n"
     f"View available ranks: `{CMD_PREFIX}ranks`\n"
     f"Display info on a user: `{CMD_PREFIX}userinfo [USER]`\n"
-    f"View your XP: `{CMD_PREFIX}xp`\n"
-    f"\nView this message: `{CMD_PREFIX}help`\n"
+    f"\n"
+    f"View this message: `{CMD_PREFIX}help`\n"
 )
 
 """
@@ -137,6 +144,18 @@ async def edit(message):
             return "You cannot edit a message from another user."
         else:
             return f"Oh god something went wrong, everyone panic! {str(e)}"
+
+@utils.requires_admin
+async def info(message):
+    lvl_c = ", ".join([f"<#{x}>" for x in LVL_CHANS])
+    slow_c = ", ".join([f"<#{x}>" for x in NO_SLOWMODE])
+    xp_c = ", ".join([f"<#{x}>" for x in XP_OFF])
+    mes = (
+        f"The `{CMD_PREFIX}lvl` command is only allowed in {lvl_c}\n"
+        f"Dynamic slowmode is disabled in {slow_c}\n"
+        f"Users do not gain XP in {xp_c}\n"
+    )
+    return mes
 
 class CustomCommands:
     def __init__(self):
