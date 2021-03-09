@@ -135,6 +135,10 @@ async def on_message(message):
     if message.author.bot:
         return
 
+    # For now, completely ignore DMs
+    if type(message.channel) is discord.channel.DMChannel:
+        return
+
     # Check first if we're toggling debug mode
     # Need to do this before we discard a message
     if dbg.check_toggle(message):
