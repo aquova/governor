@@ -164,23 +164,25 @@ async def on_message(message):
                 return
             command = utils.get_command(prefix_removed)
 
-            if command in FUNC_DICT:
-                # First, check if they're using a built-in command
-                output_message = await FUNC_DICT[command](message)
-                if output_message != None:
-                    await message.channel.send(output_message)
-            elif cc.command_available(command):
-                # Check if they're using a user-defined command
-                cmd_output = cc.parse_response(message)
-                await message.channel.send(cmd_output)
+            try:
+                if command in FUNC_DICT:
+                    # First, check if they're using a built-in command
+                    output_message = await FUNC_DICT[command](message)
+                    if output_message != None:
+                        await message.channel.send(output_message)
+                elif cc.command_available(command):
+                    # Check if they're using a user-defined command
+                    cmd_output = cc.parse_response(message)
+                    await message.channel.send(cmd_output)
+            except discord.errors.Forbidden as e:
+                if e.code == 50013:
+                    print(f"I can see messages, but cannot send in #{message.channel.name}")
         else:
             # Else, check if they are posting in an event channel
             await events.event_check(message)
 
     except discord.errors.HTTPException as e:
         print(traceback.format_exc())
-        pass
-    except discord.errors.Forbidden:
         pass
 
 client.run(DISCORD_KEY)
