@@ -10,7 +10,7 @@ with open(config_path) as config_file:
     cfg = json.load(config_file)
 
 DISCORD_KEY = cfg['discord']
-DB_PATH = os.path.join(dir_path, "../private/sdv_data.db")
+DB_PATH = os.path.join(dir_path, "../private/governor.db")
 ASSETS_PATH = os.path.join(dir_path, "assets")
 FONTS_PATH = os.path.join(dir_path, "fonts")
 TMP_PATH = os.path.join(dir_path, "../private/tmp")
