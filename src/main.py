@@ -7,6 +7,7 @@ import db, commands, events, games, utils, xp
 import traceback
 from config import DEBUG_BOT, CMD_PREFIX, DISCORD_KEY, GAME_ANNOUNCEMENT_CHANNEL, XP_OFF, GATE_EMOJI, GATE_MES, GATE_ROLE
 from debug import Debug
+from hunt import EggHunt
 from slowmode import Thermometer
 from tracker import Tracker
 
@@ -21,6 +22,7 @@ cc = commands.CustomCommands()
 dbg = Debug()
 game_timer = games.GameTimer()
 thermo = Thermometer()
+hunter = EggHunt()
 
 # Dictionary of function pointers
 # Maps commands to functions that are called by them
@@ -32,6 +34,7 @@ FUNC_DICT = {
     "custom": commands.print_help,
     "define": cc.define_cmd,
     "edit": commands.edit,
+    "endhunt": hunter.end_hunt,
     "getgames": games.get_games,
     "help": commands.print_help,
     "info": commands.info,
@@ -43,6 +46,7 @@ FUNC_DICT = {
     "ranks": commands.list_ranks,
     "remove": cc.remove_cmd,
     "say": commands.say,
+    "starthunt": hunter.start_hunt,
     "userinfo": xp.userinfo,
     "xp": xp.get_xp,
 }
@@ -114,6 +118,21 @@ Runs when a member leaves the server
 async def on_member_remove(user):
     tr.remove_from_cache(user.id)
     await update_user_count(user.guild)
+
+"""
+On Reaction Add
+
+Occurs when a reaction is added to a message
+Only used for Egg Hunting
+"""
+@client.event
+async def on_reaction_add(reaction, user):
+    # Ignore bot reactions
+    if user.bot:
+        return
+
+    if hunter.is_channel_watched(reaction.message.channel.id):
+        hunter.add_reaction(user)
 
 """
 On Raw Reaction Add

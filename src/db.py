@@ -12,6 +12,7 @@ def initialize():
     sqlconn.execute("CREATE TABLE IF NOT EXISTS commands (name TEXT PRIMARY KEY, response TEXT)")
     sqlconn.execute("CREATE TABLE IF NOT EXISTS games (game TEXT)")
     sqlconn.execute("CREATE TABLE IF NOT EXISTS raffle (id INT, channel INT)")
+    sqlconn.execute("CREATE TABLE IF NOT EXISTS hunters (id INT PRIMARY KEY, username TEXT, count INT)")
     sqlconn.commit()
     sqlconn.close()
 
@@ -193,3 +194,24 @@ def add_raffle(userid, chanid):
         return True
 
     return False
+
+"""
+Increment hunter
+
+Increments the number successful Hunts a user has had
+"""
+def inc_hunter(userid, username):
+    read_query = ("SELECT count FROM hunters WHERE id=?", [userid])
+    user_cnt = _db_read(read_query)
+    try:
+        cnt = user_cnt[0][0] + 1
+    except IndexError:
+        cnt = 1
+
+    write_query = ("REPLACE INTO hunters (id, username, count) VALUES (?, ?, ?)", [userid, username, cnt])
+    _db_write(write_query)
+
+def get_hunters():
+    read_query = ("SELECT * FROM hunters",)
+    hunters = _db_read(read_query)
+    return hunters
