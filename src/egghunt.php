@@ -6,6 +6,7 @@
         <link rel="icon" href="assets/cojiro.png" type="image/png">
         <link rel="stylesheet" href="css/base.css" type="text/css">
         <link rel="stylesheet" href="css/egghunt.css" type="text/css">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 
         <meta property="og:title" content="Egg Hunt Leaderboard" />
         <meta property="og:url" content="https://stardew.chat/egghunt.php" />
