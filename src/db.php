@@ -87,4 +87,25 @@
 
         $db->close();
     };
+
+    $populate_egghunt = function () use ($db_path) {
+        $db = new SQLite3($db_path);
+        $ret = $db->query('SELECT * FROM hunters ORDER BY count DESC LIMIT 10');
+
+        echo "<img id='crown' src='assets/hunt_crown.png'>";
+        $rank = 0;
+        while ($row = $ret->fetchArray()) {
+            $rank += 1;
+            $name = $row['username'];
+            $cnt = $row['count'];
+
+            echo "<tr>";
+            echo "<td class='hunter-rank'>$rank</td>";
+            echo "<td class='hunter-name'>$name</td>";
+            echo "<td class='hunter-count'>$cnt</td>";
+            echo "</tr>";
+        }
+
+        $db->close();
+    };
 ?>

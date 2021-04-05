@@ -1,0 +1,39 @@
+header, html {
+    background: #ffbca0;
+    color: black;
+}
+
+table {
+    position: relative;
+    border-collapse: separate;
+    border-spacing: 0 1em;
+    margin: auto;
+}
+
+img {
+    position: absolute;
+    z-index: 1;
+}
+
+#crown {
+    left: calc(50% - 250px); /* This is such a hack, but it seems to work */
+    top: 40px;
+}
+
+tr {
+    height: 60px;
+}
+
+.hunter-rank {
+    border-radius: 15px 0 0 15px;
+}
+
+.hunter-count {
+    border-radius: 0 15px 15px 0;
+}
+
+td {
+    background: #ffe0d9;
+    font-size: 24px;
+    padding: 0 20px;
+}
