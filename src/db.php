@@ -92,7 +92,6 @@
         $db = new SQLite3($db_path);
         $ret = $db->query('SELECT * FROM hunters ORDER BY count DESC LIMIT 10');
 
-        echo "<img id='crown' src='assets/hunt_crown.png'>";
         $rank = 0;
         while ($row = $ret->fetchArray()) {
             $rank += 1;

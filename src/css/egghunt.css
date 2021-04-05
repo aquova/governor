@@ -16,7 +16,6 @@ img {
 }
 
 #crown {
-    left: calc(50% - 250px); /* This is such a hack, but it seems to work */
     top: 40px;
 }
 
