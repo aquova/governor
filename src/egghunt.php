@@ -11,7 +11,7 @@
         <meta property="og:url" content="https://stardew.chat/egghunt.php" />
         <meta property="og:image" content="/assets/SDV_Easter.png" />
     </head>
-    <body onresize="positionCrown()">
+    <body onresize="positionCrown()" ontouchend="positionCrown()">
         <header>
             <h1>Egg Hunt Leaderboard!</h1>
         </header>
