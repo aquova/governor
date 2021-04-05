@@ -1,5 +1,5 @@
 <?php
-    $db_path = "../sdv_data.db";
+    $db_path = "../governor.db";
 
     $populate_leaderboard = function () use ($db_path) {
         $xp_per_lvl = 300;
