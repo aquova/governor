@@ -3,6 +3,10 @@ header, html {
     color: black;
 }
 
+header {
+    font-size: min(3vw, 24px);
+}
+
 table {
     position: relative;
     border-collapse: separate;
