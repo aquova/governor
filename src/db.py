@@ -52,7 +52,7 @@ def fetch_user_xp(user_id):
     found_user = _db_read(query)
 
     if found_user == []:
-        return 0
+        return None
     else:
         return found_user[0][0]
 
