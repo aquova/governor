@@ -7,7 +7,7 @@ from math import floor
 from user import parse_mention
 
 XP_PER_MINUTE = 10
-STARTING_XP = 270
+STARTING_XP = XP_PER_LVL
 
 @dataclass
 class UserData:
@@ -106,7 +106,7 @@ class Tracker:
             # Not very efficient, but there will likely only be a handful of ranks
             for rank in RANKS:
                 rank_xp = rank["level"] * XP_PER_LVL
-                if rank_xp == next_role:
+                if rank_xp == next_role and rank['message'] != "":
                     out_message = f"<@{user_id}> {rank['message']}"
                     break
 
