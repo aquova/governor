@@ -5,7 +5,7 @@
 import discord
 import db, commands, events, games, utils, xp
 import traceback
-from config import DEBUG_BOT, CMD_PREFIX, DISCORD_KEY, GAME_ANNOUNCEMENT_CHANNEL, XP_OFF, GATE_EMOJI, GATE_MES, GATE_ROLE
+from config import DEBUG_BOT, CMD_PREFIX, DISCORD_KEY, GAME_ANNOUNCEMENT_CHANNEL, XP_OFF
 from debug import Debug
 from hunt import EggHunt
 from slowmode import Thermometer
@@ -145,20 +145,6 @@ async def on_raw_reaction_add(payload):
         return
 
     await events.award_event_prize(payload, tr, client)
-
-    if payload.message_id == GATE_MES and payload.emoji.name == GATE_EMOJI:
-        # Raw payload just returns IDs, so need to iterate through connected servers to get server object
-        # Since each bouncer instance will only be in one server, it should be quick.
-        # If bouncer becomes general purpose (god forbid), may need to rethink this
-        try:
-            server = [x for x in client.guilds if x.id == payload.guild_id][0]
-            new_role = discord.utils.get(server.roles, id=GATE_ROLE)
-            target_user = discord.utils.get(server.members, id=payload.user_id)
-            await target_user.add_roles(new_role)
-        except IndexError as e:
-            print("Error: The client could not find any servers: {e}")
-        except AttributeError as e:
-            print("Couldn't find member to add role to: {e}")
 
 """
 On Message
