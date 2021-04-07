@@ -1,13 +1,10 @@
 import datetime, discord
 import db, utils
 
-from config import CMD_PREFIX, RANKS, XP_PER_LVL
+from config import CMD_PREFIX, RANKS, XP_PER_LVL, XP_PER_MINUTE
 from dataclasses import dataclass
 from math import floor
 from user import parse_mention
-
-XP_PER_MINUTE = 10
-STARTING_XP = XP_PER_LVL
 
 @dataclass
 class UserData:
@@ -66,15 +63,7 @@ class Tracker:
         out_message = None
 
         if user_id not in self.user_cache:
-            # First, if user is not in cache, try and fetch from DB
-            xp_db = db.fetch_user_xp(user_id)
-
-            if xp_db is not None:
-                # If user is in the DB, use that value
-                xp = xp_db
-            else:
-                # Otherwise, give them starting XP value
-                xp = STARTING_XP
+            xp = db.fetch_user_xp(user_id)
 
             # Since they weren't in the cache, make sure they have the correct roles
             next_role = await self.check_roles(user, xp)

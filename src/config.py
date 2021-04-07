@@ -1,7 +1,9 @@
 from datetime import datetime
 import json, os
 
+XP_PER_MINUTE = 10
 XP_PER_LVL = 300
+STARTING_XP = XP_PER_LVL
 
 # Read values from config file
 dir_path = os.path.dirname(os.path.realpath(__file__))

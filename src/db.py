@@ -1,5 +1,5 @@
 import sqlite3
-from config import DB_PATH
+from config import DB_PATH, STARTING_XP
 
 """
 Initialize database
@@ -52,7 +52,7 @@ def fetch_user_xp(user_id):
     found_user = _db_read(query)
 
     if found_user == []:
-        return None
+        return STARTING_XP
     else:
         return found_user[0][0]
 
