@@ -20,7 +20,7 @@ Input: mes - message to modify - str
 """
 def get_command(mes):
     words = mes.split()
-    return words[0]
+    return words[0].lower()
 
 """
 Remove command

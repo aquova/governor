@@ -98,7 +98,7 @@ def get_custom_cmds():
     cmd_dict = {}
 
     for cmd in cmds:
-        cmd_dict[cmd[0]] = cmd[1]
+        cmd_dict[cmd[0].lower()] = cmd[1]
 
     return cmd_dict
 
