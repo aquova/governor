@@ -4,6 +4,7 @@ from db import inc_hunter, get_hunters
 
 class EggHunt:
     def __init__(self):
+        self.creator = None
         self.watched_channel = None
         self.hunters = set()
 
@@ -20,11 +21,13 @@ class EggHunt:
         self.watched_channel = channel
 
     def add_reaction(self, user):
-        self.hunters.add(user)
+        if self.creator != user:
+            self.hunters.add(user)
 
     @utils.requires_admin
     async def start_hunt(self, message):
         if not self.is_currently_hunting():
+            self.creator = message.author
             self.set_watched_channel(message.channel)
             return "The hunt has begun!"
         else:
@@ -38,6 +41,7 @@ class EggHunt:
             for user in self.hunters:
                 inc_hunter(user.id, f"{user.name}#{user.discriminator}")
 
+            self.creator = None
             self.watched_channel = None
             self.hunters.clear()
             return "Hunt concluded!"
