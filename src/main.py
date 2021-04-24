@@ -175,7 +175,7 @@ async def on_message(message):
         # Check if we need to congratulate a user on getting a new role
         # Don't award XP if posting in specified disabled channels
         if message.channel.id not in XP_OFF:
-            lvl_up_message = await tr.give_xp(message.author)
+            lvl_up_message = await tr.give_xp(message.author, message.guild)
             if lvl_up_message != None:
                 await message.channel.send(lvl_up_message)
 

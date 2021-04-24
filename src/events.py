@@ -38,7 +38,7 @@ async def award_event_prize(payload, tr, client):
 
                     if db.add_raffle(author.id, channel):
                         # Award three levels if this is first time they're entering this event
-                        await tr.give_xp(author, 3 * XP_PER_LVL)
+                        await tr.give_xp(author, server, 3 * XP_PER_LVL)
 
                     break
                 except Exception as e:

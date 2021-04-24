@@ -53,9 +53,10 @@ class Tracker:
 
     Inputs:
     user - Discord user object
+    server - The server the message originated from
     xp_add - Amount of xp to add. If None, award automatic amount from speaking
     """
-    async def give_xp(self, user, xp_add=None):
+    async def give_xp(self, user, server, xp_add=None):
         user_id = user.id
         xp = 0
         next_role = None
@@ -95,8 +96,14 @@ class Tracker:
             # Not very efficient, but there will likely only be a handful of ranks
             for rank in RANKS:
                 rank_xp = rank["level"] * XP_PER_LVL
-                if rank_xp == next_role and rank['message'] != "":
-                    out_message = f"<@{user_id}> {rank['message']}"
+                if rank_xp == next_role:
+                    if rank['message'] != "":
+                        out_message = f"<@{user_id}> {rank['message']}"
+
+                    if rank['welcome']['message'] != "":
+                        for welcome_id in rank['welcome']['channels']:
+                            chan = discord.utils.get(server.channels, id=welcome_id)
+                            await chan.send(f"Hello <@{user_id}>! {rank['welcome']['message']}")
                     break
 
             next_role = await self.check_roles(user, xp)
@@ -181,7 +188,7 @@ class Tracker:
                 return "Was unable to find XP value in that message"
             user = discord.utils.get(message.guild.members, id=userid)
             if user != None:
-                await self.give_xp(user, xp)
+                await self.give_xp(user, message.guild, xp)
                 return f"{xp} XP given to {user.name}#{user.discriminator}"
             else:
                 return "Was unable to find that user in the server"
