@@ -1,6 +1,7 @@
 import discord, sqlite3
-import utils
+
 from db import inc_hunter, get_hunters
+from utils import requires_admin
 
 class EggHunt:
     def __init__(self):
@@ -24,7 +25,7 @@ class EggHunt:
         if self.creator != user:
             self.hunters.add(user)
 
-    @utils.requires_admin
+    @requires_admin
     async def start_hunt(self, message):
         if not self.is_currently_hunting():
             self.creator = message.author
@@ -33,7 +34,7 @@ class EggHunt:
         else:
             return f"There is already an open hunt in <#{self.watched_channel.id}>. It must be stopped before another can start."
 
-    @utils.requires_admin
+    @requires_admin
     async def end_hunt(self, message):
         if not self.is_currently_hunting():
             return "Um... there was no hunt in progress"

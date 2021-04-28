@@ -1,10 +1,13 @@
 import datetime, discord
-import db, utils
-
-from config import CMD_PREFIX, RANKS, XP_PER_LVL, XP_PER_MINUTE
 from dataclasses import dataclass
+
+import db
+from config import CMD_PREFIX, RANKS, XP_PER_LVL, XP_PER_MINUTE
 from math import floor
+from utils import requires_admin
+
 from commonbot.user import UserLookup
+import commonbot.utils
 
 @dataclass
 class UserData:
@@ -177,10 +180,10 @@ class Tracker:
 
     Adds the specified amout of XP to a user
     """
-    @utils.requires_admin
+    @requires_admin
     async def add_xp(self, message):
         try:
-            payload = utils.remove_command(message.content)
+            payload = commonbot.utils.strip_words(message.content, 1)
             # Treat last word as XP to be awarded
             xp = int(payload.split(" ")[-1])
             userid = self.ul.parse_mention(message)
@@ -201,7 +204,7 @@ class Tracker:
 
     Sets the XP multiplier
     """
-    @utils.requires_admin
+    @requires_admin
     async def set_bonus_xp(self, _):
         self.xp_multiplier = 2
         return "XP multiplier is now x2!"
@@ -211,7 +214,7 @@ class Tracker:
 
     Resets the XP multiplier
     """
-    @utils.requires_admin
+    @requires_admin
     async def reset_bonus_xp(self, _):
         self.xp_multiplier = 1
         return "XP multiplier has been reset"

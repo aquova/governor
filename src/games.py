@@ -1,7 +1,10 @@
-import db, utils
+import db
 from datetime import datetime, timedelta, timezone
 import asyncio, random
 from config import GAME_ANNOUNCE_TIME
+from utils import requires_admin
+
+import commonbot.utils
 
 ANNOUNCE_MESSAGES = [
     "Oh ho ho, what are all these free games I've found?",
@@ -52,9 +55,9 @@ Add game
 
 Adds a game to be announced
 """
-@utils.requires_admin
+@requires_admin
 async def add_game(message):
-    game = utils.remove_command(message.content).strip()
+    game = commonbot.utils.strip_words(message.content, 1).strip()
     if len(game) == 0:
         return "Can't add game: no message provided."
 
@@ -73,7 +76,7 @@ Get games
 
 Returns the list of games to be announced
 """
-@utils.requires_admin
+@requires_admin
 async def get_games(message):
     games = db.get_games()
 
@@ -91,7 +94,7 @@ Clear games
 
 Clears all games that are being announced
 """
-@utils.requires_admin
+@requires_admin
 async def clear_games(message):
     db.clear_games()
 

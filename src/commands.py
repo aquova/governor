@@ -1,7 +1,10 @@
 import discord
-import db, utils
+import db
 from math import floor
 from config import ADMIN_ACCESS, CMD_PREFIX, RANKS, SERVER_URL, LVL_CHANS, NO_SLOWMODE, XP_OFF
+from utils import requires_admin
+
+import commonbot.utils
 from commonbot.user import UserLookup
 
 ul = UserLookup()
@@ -85,13 +88,13 @@ Say
 
 Speaks a message to the specified channel as the bot
 """
-@utils.requires_admin
+@requires_admin
 async def say(message):
     try:
-        payload = utils.remove_command(message.content)
-        channel_id = utils.get_command(payload)
+        payload = commonbot.utils.strip_words(message.content, 1)
+        channel_id = commonbot.utils.get_first_word(payload)
         channel = discord.utils.get(message.guild.channels, id=int(channel_id))
-        m = utils.remove_command(payload)
+        m = commonbot.utils.strip_words(payload, 1)
         if m == "" and len(message.attachments) == 0:
             return "You cannot send empty messages."
 
@@ -118,11 +121,11 @@ Edit message
 
 Edits a message spoken by the bot, by message ID
 """
-@utils.requires_admin
+@requires_admin
 async def edit(message):
     try:
-        payload = utils.remove_command(message.content)
-        edit_id = utils.get_command(payload)
+        payload = commonbot.utils.strip_words(message.content, 1)
+        edit_id = commonbot.utils.get_first_word(payload)
         edit_message = None
         for channel in message.guild.channels:
             try:
@@ -136,7 +139,7 @@ async def edit(message):
         if edit_message == None:
             return "I was unable to find a message with that ID."
 
-        m = utils.remove_command(payload)
+        m = commonbot.utils.strip_words(payload, 1)
         if m == "":
             return "You cannot replace a message with nothing."
 
@@ -150,7 +153,7 @@ async def edit(message):
         else:
             return f"Oh god something went wrong, everyone panic! {str(e)}"
 
-@utils.requires_admin
+@requires_admin
 async def info(message):
     lvl_c = ", ".join([f"<#{x}>" for x in LVL_CHANS])
     slow_c = ", ".join([f"<#{x}>" for x in NO_SLOWMODE])
@@ -196,8 +199,8 @@ class CustomCommands:
     Input: message - Discord message object
     """
     def parse_response(self, message):
-        prefix_removed = utils.strip_prefix(message.content)
-        command = utils.get_command(prefix_removed)
+        prefix_removed = commonbot.utils.strip_prefix(message.content, 1)
+        command = commonbot.utils.get_first_word(prefix_removed).lower()
         response = self.cmd_dict[command]
 
         # Check if they want to embed a ping within the response
@@ -217,13 +220,13 @@ class CustomCommands:
 
     Input: message - Discord message object
     """
-    @utils.requires_admin
+    @requires_admin
     async def define_cmd(self, message):
         # First remove the "define" command
-        new_cmd = utils.remove_command(message.content)
+        new_cmd = commonbot.utils.strip_words(message.content, 1)
         # Then parse the new command
-        cmd = utils.get_command(new_cmd)
-        response = utils.remove_command(new_cmd)
+        cmd = commonbot.utils.get_first_word(new_cmd).lower()
+        response = commonbot.utils.strip_words(new_cmd, 1)
 
         if response == "":
             # Don't allow blank responses
@@ -255,12 +258,12 @@ class CustomCommands:
 
     Input: message - Discord message object
     """
-    @utils.requires_admin
+    @requires_admin
     async def remove_cmd(self, message):
         # First remove the "define" command
-        new_cmd = utils.remove_command(message.content)
+        new_cmd = commonbot.utils.strip_words(message.content, 1)
         # Then parse the command to remove
-        cmd = utils.get_command(new_cmd)
+        cmd = commonbot.utils.get_first_word(new_cmd).lower()
 
         # If this command did exists, remove it from cache and database
         if self.command_available(cmd):

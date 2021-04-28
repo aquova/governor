@@ -3,13 +3,14 @@
 # https://github.com/aquova/governor
 
 import discord
-import db, commands, events, games, utils, xp
+import db, commands, events, games, xp
 import traceback
 from config import OWNER, DEBUG_BOT, CMD_PREFIX, DISCORD_KEY, GAME_ANNOUNCEMENT_CHANNEL, XP_OFF
 from hunt import EggHunt
 from slowmode import Thermometer
 from tracker import Tracker
 
+import commonbot.utils
 from commonbot.debug import Debug
 
 intents = discord.Intents.default()
@@ -182,10 +183,10 @@ async def on_message(message):
 
         # Check if someone is trying to use a bot command
         if message.content != "" and message.content[0] == CMD_PREFIX:
-            prefix_removed = utils.strip_prefix(message.content)
+            prefix_removed = commonbot.utils.strip_prefix(message.content, 1)
             if prefix_removed == "":
                 return
-            command = utils.get_command(prefix_removed)
+            command = commonbot.utils.get_first_word(prefix_removed).lower()
 
             try:
                 if command in FUNC_DICT:
