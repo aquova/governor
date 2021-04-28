@@ -3,7 +3,9 @@ from config import XP_PER_LVL, LVL_CHANS, OWNER, ASSETS_PATH, FONTS_PATH, TMP_PA
 from dataclasses import dataclass, astuple
 from math import ceil, floor
 from PIL import Image, ImageDraw, ImageFont
-from user import parse_mention
+from commonbot.user import UserLookup
+
+ul = UserLookup()
 
 @dataclass
 class Point:
@@ -37,7 +39,7 @@ Returns the given user's XP value, as a formatted string
 """
 async def get_xp(message):
     author = None
-    other_id = parse_mention(message)
+    other_id = ul.parse_mention(message)
     if other_id != None:
         author = discord.utils.get(message.guild.members, id=other_id)
 
@@ -59,7 +61,7 @@ Returns a 'rich' post with some of the user's information in it
 async def userinfo(message):
     # First, check if the user wants to look up someone else
     author = None
-    other_id = parse_mention(message)
+    other_id = ul.parse_mention(message)
     if other_id != None:
         author = discord.utils.get(message.guild.members, id=other_id)
 
@@ -114,7 +116,7 @@ async def render_lvl_image(message):
 
     # First, check if the user wants to look up someone else
     author = None
-    other_id = parse_mention(message)
+    other_id = ul.parse_mention(message)
     if other_id != None:
         author = discord.utils.get(message.guild.members, id=other_id)
 

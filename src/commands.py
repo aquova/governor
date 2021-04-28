@@ -2,7 +2,9 @@ import discord
 import db, utils
 from math import floor
 from config import ADMIN_ACCESS, CMD_PREFIX, RANKS, SERVER_URL, LVL_CHANS, NO_SLOWMODE, XP_OFF
-from user import parse_mention
+from commonbot.user import UserLookup
+
+ul = UserLookup()
 
 ADMIN_HELP_MES = (
     f"View your XP: `{CMD_PREFIX}xp`\n"
@@ -199,7 +201,7 @@ class CustomCommands:
         response = self.cmd_dict[command]
 
         # Check if they want to embed a ping within the response
-        mentioned_id = parse_mention(message)
+        mentioned_id = ul.parse_mention(message)
         if mentioned_id != None:
             ping = f"<@!{mentioned_id}>"
         else:

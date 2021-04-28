@@ -4,7 +4,7 @@ import db, utils
 from config import CMD_PREFIX, RANKS, XP_PER_LVL, XP_PER_MINUTE
 from dataclasses import dataclass
 from math import floor
-from user import parse_mention
+from commonbot.user import UserLookup
 
 @dataclass
 class UserData:
@@ -18,6 +18,7 @@ class Tracker:
     def __init__(self):
         self.user_cache = {}
         self.xp_multiplier = 1
+        self.ul = UserLookup()
 
     """
     Refresh database
@@ -182,7 +183,7 @@ class Tracker:
             payload = utils.remove_command(message.content)
             # Treat last word as XP to be awarded
             xp = int(payload.split(" ")[-1])
-            userid = parse_mention(message)
+            userid = self.ul.parse_mention(message)
             # Incase they didn't give an XP, don't parse ID as XP lol
             if xp == userid:
                 return "Was unable to find XP value in that message"
