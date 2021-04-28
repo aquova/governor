@@ -5,11 +5,12 @@
 import discord
 import db, commands, events, games, utils, xp
 import traceback
-from config import DEBUG_BOT, CMD_PREFIX, DISCORD_KEY, GAME_ANNOUNCEMENT_CHANNEL, XP_OFF
-from debug import Debug
+from config import OWNER, DEBUG_BOT, CMD_PREFIX, DISCORD_KEY, GAME_ANNOUNCEMENT_CHANNEL, XP_OFF
 from hunt import EggHunt
 from slowmode import Thermometer
 from tracker import Tracker
+
+from commonbot.debug import Debug
 
 intents = discord.Intents.default()
 intents.members = True
@@ -19,7 +20,7 @@ client = discord.Client(intents=intents)
 db.initialize()
 tr = Tracker()
 cc = commands.CustomCommands()
-dbg = Debug()
+dbg = Debug(OWNER, CMD_PREFIX, DEBUG_BOT)
 game_timer = games.GameTimer()
 thermo = Thermometer()
 hunter = EggHunt()
@@ -141,7 +142,7 @@ Runs when a member reacts to a message with an emoji
 """
 @client.event
 async def on_raw_reaction_add(payload):
-    if DEBUG_BOT:
+    if dbg.is_debug_bot():
         return
 
     await events.award_event_prize(payload, tr, client)
