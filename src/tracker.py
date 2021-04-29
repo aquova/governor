@@ -186,7 +186,7 @@ class Tracker:
             payload = commonbot.utils.strip_words(message.content, 1)
             # Treat last word as XP to be awarded
             xp = int(payload.split(" ")[-1])
-            userid = self.ul.parse_mention(message)
+            userid = self.ul.parse_id(message)
             # Incase they didn't give an XP, don't parse ID as XP lol
             if xp == userid:
                 return "Was unable to find XP value in that message"

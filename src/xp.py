@@ -41,7 +41,7 @@ Returns the given user's XP value, as a formatted string
 """
 async def get_xp(message):
     author = None
-    other_id = ul.parse_mention(message)
+    other_id = ul.parse_id(message)
     if other_id != None:
         author = discord.utils.get(message.guild.members, id=other_id)
 
@@ -63,7 +63,7 @@ Returns a 'rich' post with some of the user's information in it
 async def userinfo(message):
     # First, check if the user wants to look up someone else
     author = None
-    other_id = ul.parse_mention(message)
+    other_id = ul.parse_id(message)
     if other_id != None:
         author = discord.utils.get(message.guild.members, id=other_id)
 
@@ -118,7 +118,7 @@ async def render_lvl_image(message):
 
     # First, check if the user wants to look up someone else
     author = None
-    other_id = ul.parse_mention(message)
+    other_id = ul.parse_id(message)
     if other_id != None:
         author = discord.utils.get(message.guild.members, id=other_id)
 

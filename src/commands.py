@@ -204,7 +204,7 @@ class CustomCommands:
         response = self.cmd_dict[command]
 
         # Check if they want to embed a ping within the response
-        mentioned_id = ul.parse_mention(message)
+        mentioned_id = ul.parse_id(message)
         if mentioned_id != None:
             ping = f"<@!{mentioned_id}>"
         else:
