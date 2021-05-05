@@ -25,7 +25,7 @@ class GameTimer:
     def start(self, channel):
         if not self.task:
             self._channel = channel
-            asyncio.create_task(self._announce_games())
+            self.task = asyncio.create_task(self._announce_games())
 
     async def _announce_games(self):
         while True:
