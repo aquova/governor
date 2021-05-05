@@ -12,11 +12,13 @@ DECREASE_MAX = 2
 class Thermometer:
     def __init__(self):
         self.channel_dict = {}
+        self.task = None
 
     def start(self, server):
-        self.server = server
-        self.channels = [x for x in self.server.channels if type(x) == discord.TextChannel]
-        asyncio.ensure_future(self._calc_slowmode())
+        if not self.task:
+            self.server = server
+            self.channels = [x for x in self.server.channels if type(x) == discord.TextChannel]
+            asyncio.create_task(self._calc_slowmode())
 
     async def user_spoke(self, message):
         channel = message.channel.id

@@ -19,11 +19,13 @@ Manages sending out game announcements at a regular interval.
 Can only handle one announcement channel for one server.
 """
 class GameTimer:
-    def start(self, channel):
-        self._channel = channel
+    def __init__(self):
+        self.task = None
 
-        # If I ever upgrade to Python 3.7+, it's recommended this become `asyncio.create_task`
-        asyncio.ensure_future(self._announce_games())
+    def start(self, channel):
+        if not self.task:
+            self._channel = channel
+            asyncio.create_task(self._announce_games())
 
     async def _announce_games(self):
         while True:
