@@ -55,8 +55,7 @@ Prints the help message
 async def print_help(message):
     # Print different message if user has advanced permissions
     try:
-        roles = [x.id for x in message.author.roles]
-        if ADMIN_ACCESS in roles:
+        if commonbot.utils.checkRoles(message.author, ADMIN_ACCESS):
             return ADMIN_HELP_MES
         else:
             return HELP_MES
