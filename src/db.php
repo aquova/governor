@@ -1,17 +1,30 @@
 <?php
     $db_path = "../governor.db";
 
-    $populate_leaderboard = function () use ($db_path) {
+    $populate_leaderboard = function ($use_monthly) use ($db_path) {
         $xp_per_lvl = 300;
 
         $db = new SQLite3($db_path);
-        $ret = $db->query('SELECT * FROM xp WHERE username IS NOT NULL ORDER BY xp DESC LIMIT 100');
+        $query;
+        if ($use_monthly) {
+            $month = date('m');
+            $query = $db->prepare('SELECT * FROM xp WHERE username IS NOT NULL AND monthly <> 0 AND month = ? ORDER BY monthly DESC LIMIT 100');
+            $query->bindParam(1, $month, SQLITE3_INTEGER);
+        } else {
+            $query = $db->prepare('SELECT * FROM xp WHERE username IS NOT NULL ORDER BY xp DESC LIMIT 100');
+        }
+        $ret = $query->execute();
 
         $rank = 0;
         while ($row = $ret->fetchArray()) {
             $rank += 1;
             $id = $row['id'];
-            $xp = $row['xp'] . "xp";
+            $xp = "";
+            if ($use_monthly) {
+                $xp = $row['monthly'] . "xp this month";
+            } else {
+                $xp = $row['xp'] . "xp";
+            }
             $lvl = "Lvl " . floor($row['xp'] / $xp_per_lvl);
 
             $username = $row['username'];
