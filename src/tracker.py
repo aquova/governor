@@ -12,6 +12,7 @@ import commonbot.utils
 @dataclass
 class UserData:
     xp: int
+    monthly_xp: int
     timestamp: datetime
     username: str
     avatar: str
@@ -37,6 +38,8 @@ class Tracker:
         for leader in leaders:
             leader_id = leader[0]
             leader_xp = leader[1]
+            leader_monthly = leader[4]
+            leader_month = leader[5]
             user = discord.utils.get(server.members, id=leader_id)
 
             # Update users that are still in the server
@@ -45,10 +48,10 @@ class Tracker:
                 leader_avatar = user.avatar
 
                 # NOTE: May be worth to populate the cache here as well
-                db.set_user_xp(leader_id, leader_xp, leader_name, leader_avatar)
+                db.set_user_xp(leader_id, leader_xp, leader_name, leader_avatar, leader_monthly, leader_month)
             # Otherwise, prune their username/avatar so that they don't appear on the leaderboard
             else:
-                db.set_user_xp(leader_id, leader_xp, None, None)
+                db.set_user_xp(leader_id, leader_xp, None, None, leader_monthly, leader_month)
 
     """
     Grant user xp
@@ -63,23 +66,25 @@ class Tracker:
     async def give_xp(self, user, server, xp_add=None):
         user_id = user.id
         xp = 0
+        monthly_xp = 0
         next_role = None
         curr_time = datetime.datetime.now()
         out_message = None
 
         if user_id not in self.user_cache:
             xp = db.fetch_user_xp(user_id)
+            monthly_xp = db.fetch_user_monthly_xp(user_id)
 
             # Since they weren't in the cache, make sure they have the correct roles
             next_role = await self.check_roles(user, xp)
         else:
             # If user is in cache, get that value instead
             user_data = self.user_cache[user_id]
+            last_mes_time = user_data.timestamp
 
             # Check their last timestamp if we aren't manually adding XP
             # NOTE: Mayor Lewis used to only give XP if they spoke in a "new" minute. But that would involve rounding a datetime, and I can't be bothered.
             if xp_add == None:
-                last_mes_time = user_data.timestamp
                 dt = curr_time - last_mes_time
                 # Users only get XP every minute, so if not enough time has elapsed, ignore them
                 if dt < datetime.timedelta(minutes=1):
@@ -87,12 +92,18 @@ class Tracker:
 
             # Else, grab their data
             xp = user_data.xp
+            monthly_xp = user_data.monthly_xp
             next_role = user_data.next_role_at
 
-        if xp_add:
-            xp += xp_add
-        else:
-            xp += XP_PER_MINUTE * self.xp_multiplier
+            # Check if we've rolled over to a new month
+            if last_mes_time.month != curr_time.month:
+                monthly_xp = 0
+
+        if not xp_add:
+            xp_add = XP_PER_MINUTE * self.xp_multiplier
+
+        xp += xp_add
+        monthly_xp += xp_add
 
         # If we have earned enough XP to level up, award and find next role
         if next_role != None and xp >= next_role:
@@ -116,9 +127,9 @@ class Tracker:
         avatar = user.avatar
 
         # Update their entry in the cache
-        self.user_cache[user_id] = UserData(xp, curr_time, username, avatar, next_role)
+        self.user_cache[user_id] = UserData(xp, monthly_xp, curr_time, username, avatar, next_role)
         # Update their entry in the database
-        db.set_user_xp(user_id, xp, username, avatar)
+        db.set_user_xp(user_id, xp, username, avatar, monthly_xp, curr_time.month)
 
         return out_message
 

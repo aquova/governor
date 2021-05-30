@@ -1,4 +1,5 @@
 import sqlite3
+from datetime import datetime, timezone
 from config import DB_PATH, STARTING_XP
 
 """
@@ -8,7 +9,7 @@ Generates database with needed tables if doesn't exist
 """
 def initialize():
     sqlconn = sqlite3.connect(DB_PATH)
-    sqlconn.execute("CREATE TABLE IF NOT EXISTS xp (id INT PRIMARY KEY, xp INT, username TEXT, avatar TEXT)")
+    sqlconn.execute("CREATE TABLE IF NOT EXISTS xp (id INT PRIMARY KEY, xp INT, username TEXT, avatar TEXT, monthly INT, month INT)")
     sqlconn.execute("CREATE TABLE IF NOT EXISTS commands (name TEXT PRIMARY KEY, response TEXT)")
     sqlconn.execute("CREATE TABLE IF NOT EXISTS games (game TEXT)")
     sqlconn.execute("CREATE TABLE IF NOT EXISTS raffle (id INT, channel INT)")
@@ -66,14 +67,35 @@ Inputs:
     - xp - User's XP tally - int
     - user_name - User's name, formatted as username#1234 - str
     - user_avatar - Hash for user's avatar image, used in the URL - str
+    - monthly - User's XP for this month - int
 """
-def set_user_xp(user_id, xp, user_name, user_avatar):
+def set_user_xp(user_id, xp, user_name, user_avatar, monthly, month):
     # We store username and avatar only for the leaderboard
     if user_avatar == None:
         user_avatar = ""
 
-    query = ("REPLACE INTO xp (id, xp, username, avatar) VALUES (?, ?, ?, ?)", [user_id, xp, user_name, user_avatar])
+    query = ("REPLACE INTO xp (id, xp, username, avatar, monthly, month) VALUES (?, ?, ?, ?, ?, ?)", [user_id, xp, user_name, user_avatar, monthly, month])
     _db_write(query)
+
+"""
+Fetch user monthly XP
+
+Collects the XP entry for this user for this month
+
+Input: user_id - User ID in question - int
+"""
+def fetch_user_monthly_xp(user_id):
+    query = ("SELECT monthly, month FROM xp WHERE id=?", [user_id])
+    found_user = _db_read(query)
+    curr_month = datetime.now(timezone.utc).month
+
+    if found_user == []:
+        return 0
+
+    if found_user[0][1] != curr_month:
+        return 0
+    else:
+        return found_user[0][0]
 
 """
 Get leaders
@@ -82,6 +104,18 @@ Returns a list of database entries for the top 100 highest XP holders
 """
 def get_leaders():
     query = ("SELECT * FROM xp ORDER BY xp DESC LIMIT 100",)
+    leaders = _db_read(query)
+
+    return leaders
+
+"""
+Get monthly leaders
+
+Returns a list of database entries for the top 100 highest XP holders this month
+"""
+def get_monthly_leaders():
+    curr_month = datetime.now(timezone.utc).month
+    query = ("SELECT * FROM xp ORDER BY monthly WHERE month=? DESC LIMIT 100", [curr_month])
     leaders = _db_read(query)
 
     return leaders

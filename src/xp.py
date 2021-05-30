@@ -50,10 +50,11 @@ async def get_xp(message):
         author = message.author
 
     xp = db.fetch_user_xp(author.id)
+    monthly_xp = db.fetch_user_monthly_xp(author.id)
     if author == message.author:
-        return f"You have {xp} XP"
+        return f"You have {xp} XP all-time, and {monthly_xp} XP this month"
     else:
-        return f"They have {xp} XP"
+        return f"They have {xp} XP all-time, and {monthly_xp} XP this month"
 
 """
 Userinfo
