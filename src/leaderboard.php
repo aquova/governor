@@ -7,6 +7,7 @@
         <link rel="stylesheet" href="css/base.css" type="text/css">
         <link rel="stylesheet" href="css/leaderboard.css" type="text/css">
         <link rel="stylesheet" href="css/ranks.css" type="text/css">
+        <link rel="stylesheet" href="css/tabs.css" type="text/css">
 
         <meta property="og:title" content="Stardew Valley Discord Leaderboard" />
         <meta property="og:url" content="https://stardew.chat/leaderboard.php" />
@@ -18,12 +19,28 @@
             <h1>Stardew Valley Discord Leaderboard</h1>
         </header>
         <main>
-            <ul>
             <?php
                 include 'db.php';
-                populate_leaderboard(false);
             ?>
-            </ul>
+            <div class="tab">
+                <button class="tabbtn" onclick="opentab(event, 'monthly')">This Month</button>
+                <button class="tabbtn" id="default" onclick="opentab(event, 'alltime')">All-Time</button>
+            </div>
+            <div id="monthly" class="tabcontent">
+                <ul>
+                    <?php
+                        populate_leaderboard(true);
+                    ?>
+                </ul>
+            </div>
+            <div id="alltime" class="tabcontent">
+                <ul>
+                    <?php
+                        populate_leaderboard(false);
+                    ?>
+                </ul>
+            </div>
         </main>
     </body>
+    <script src="js/tabs.js"></script>
 </html>
