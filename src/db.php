@@ -1,10 +1,38 @@
 <?php
-    $db_path = "../governor.db";
+    // Constants
+    define("DB_PATH", "../governor.db");
+    define("XP_PER_LVL", 300);
 
-    $populate_leaderboard = function ($use_monthly) use ($db_path) {
-        $xp_per_lvl = 300;
+    define("VILLAGER_LVL", 1);
+    define("COWPOKE_LVL", 5);
+    define("FARMER_LVL", 25);
+    define("SHEPHERD_LVL", 100);
+    define("RANCHER_LVL", 250);
+    define("CROPMASTER_LVL", 500);
+    define("DESPERADO_LVL", 1000);
 
-        $db = new SQLite3($db_path);
+    function get_role_class($lvl) {
+        $role = "class='villager'";
+
+        if ($lvl >= DESPERADO_LVL) {
+            $role = "class='desperado'";
+        } elseif ($lvl >= CROPMASTER_LVL) {
+            $role = "class='cropmaster'";
+        } elseif ($lvl >= RANCHER_LVL) {
+            $role = "class='rancher'";
+        } elseif ($lvl >= SHEPHERD_LVL) {
+            $role = "class='shepherd'";
+        } elseif ($lvl >= FARMER_LVL) {
+            $role = "class='farmer'";
+        } elseif ($lvl >= COWPOKE_LVL) {
+            $role = "class='cowpoke'";
+        }
+
+        return $role;
+    };
+
+    function populate_leaderboard($use_monthly) {
+        $db = new SQLite3(DB_PATH);
         $query;
         if ($use_monthly) {
             $month = date('m');
@@ -25,7 +53,9 @@
             } else {
                 $xp = $row['xp'] . "xp";
             }
-            $lvl = "Lvl " . floor($row['xp'] / $xp_per_lvl);
+            $user_level = floor($row['xp'] / XP_PER_LVL);
+            $lvl = "Lvl " . $user_level;
+            $role_class = get_role_class($user_level);
 
             $username = $row['username'];
             if ($username == "") {
@@ -38,12 +68,11 @@
                 $avatar_img = "https://cdn.discordapp.com/avatars/" . $id . "/" . $row['avatar'] . ".png";
             }
 
-            // TODO: Make this nicer
             echo "<li class='user'>";
             echo "<span class='user-rank'>$rank</span>";
             echo "<img class='user-img' src='$avatar_img'>";
             echo "<span class='user-name'>";
-            echo "<span>$username</span>";
+            echo "<span $role_class>$username</span>";
             echo "<br>";
             echo "<span class='user-id'>$id</span>";
             echo "</span>";
@@ -58,9 +87,8 @@
         $db->close();
     };
 
-    $populate_cmd_tbl = function () use ($db_path) {
-
-        $db = new SQLite3($db_path);
+    function populate_cmd_tbl() {
+        $db = new SQLite3(DB_PATH);
         $ret = $db->query('SELECT * FROM commands ORDER BY name');
 
         while ($row = $ret->fetchArray()) {
@@ -101,8 +129,8 @@
         $db->close();
     };
 
-    $populate_egghunt = function () use ($db_path) {
-        $db = new SQLite3($db_path);
+    function populate_egghunt() {
+        $db = new SQLite3(DB_PATH);
         $ret = $db->query('SELECT * FROM hunters ORDER BY count DESC LIMIT 10');
 
         $rank = 0;

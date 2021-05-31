@@ -6,6 +6,7 @@
         <link rel="icon" href="assets/cojiro.png" type="image/png">
         <link rel="stylesheet" href="css/base.css" type="text/css">
         <link rel="stylesheet" href="css/leaderboard.css" type="text/css">
+        <link rel="stylesheet" href="css/ranks.css" type="text/css">
 
         <meta property="og:title" content="Stardew Valley Discord Montly Leaderboard" />
         <meta property="og:url" content="https://stardew.chat/monthly.php" />
@@ -20,7 +21,7 @@
             <ul>
             <?php
                 include 'db.php';
-                $populate_leaderboard(true);
+                populate_leaderboard(true);
             ?>
             </ul>
         </main>
