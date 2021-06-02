@@ -19,7 +19,7 @@
                 </tr>
                 <?php
                     include 'db.php';
-                    $populate_cmd_tbl();
+                    populate_cmd_tbl();
                 ?>
             </table>
         </main>

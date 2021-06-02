@@ -21,7 +21,7 @@
             <table id='leader_tbl'>
                 <?php
                     include 'db.php';
-                    $populate_egghunt();
+                    populate_egghunt();
                 ?>
             </table>
         </main>
