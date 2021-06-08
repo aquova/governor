@@ -51,3 +51,7 @@ main .user .user-id {
 main .user .user-xp {
   font-size: 12px;
 }
+
+.tabbtn {
+  width: 50%;
+}
