@@ -23,8 +23,8 @@
                 include 'db.php';
             ?>
             <div class="tab">
-                <button class="tabbtn" onclick="opentab(event, 'monthly')">This Month</button>
-                <button class="tabbtn" id="default" onclick="opentab(event, 'alltime')">All-Time</button>
+                <button class="tabbtn" id="monthlybtn" onclick="opentab(event, 'monthly')">This Month</button>
+                <button class="tabbtn" id="alltimebtn" id="default" onclick="opentab(event, 'alltime')">All-Time</button>
             </div>
             <div id="monthly" class="tabcontent">
                 <ul>

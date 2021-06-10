@@ -1,4 +1,9 @@
-document.getElementById("default").click()
+let hash = window.location.hash.substr(1)
+if (hash == "monthly" || hash == "alltime") {
+    document.getElementById(hash + "btn").click()
+} else {
+    document.getElementById("default").click()
+}
 
 function opentab(evt, tab_id) {
     let tabcontent = document.getElementsByClassName('tabcontent')
@@ -13,6 +18,8 @@ function opentab(evt, tab_id) {
         btn.className = btn.className.replace(" active", "")
     }
 
-    document.getElementById(tab_id).style.display = "block"
+    let curr_tab = document.getElementById(tab_id)
+    window.location.hash = curr_tab.id
+    curr_tab.style.display = "block"
     evt.currentTarget.className += " active"
 }
