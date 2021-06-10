@@ -1,6 +1,7 @@
-let hash = window.location.hash.substr(1)
-if (hash == "monthly") {
-    document.getElementById(hash + "btn").click()
+let params = new URLSearchParams(window.location.search)
+let default_tab = params.get('tab')
+if (default_tab == "monthly") {
+    document.getElementById(default_tab + "btn").click()
 } else {
     document.getElementById("alltimebtn").click()
 }
@@ -19,7 +20,7 @@ function opentab(evt, tab_id) {
     }
 
     let curr_tab = document.getElementById(tab_id)
-    window.location.hash = curr_tab.id
+    window.history.replaceState(null, null, "?tab=" + curr_tab.id)
     curr_tab.style.display = "block"
     evt.currentTarget.className += " active"
 }
