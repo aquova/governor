@@ -1,9 +1,9 @@
 let hash = window.location.hash.substr(1);
-if (hash == "monthly" || hash == "alltime") {
+if (hash == "monthly") {
     document.getElementById(hash + "btn").click();
 }
 else {
-    document.getElementById("default").click();
+    document.getElementById("alltimebtn").click();
 }
 function opentab(evt, tab_id) {
     let tabcontent = document.getElementsByClassName('tabcontent');
