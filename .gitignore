@@ -14,3 +14,9 @@ pyvenv.cfg
 
 # Web files
 *.map
+
+# Editor files
+*.code-workspace
+
+# Private files
+*.db

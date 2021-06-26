@@ -1,0 +1,17 @@
+.list {
+    max-width: 500px;
+    margin: auto;
+}
+
+#footer {
+    font-size: 11px;
+}
+
+a {
+    color: slategray;
+    text-decoration: none;
+}
+
+a:hover {
+    color: darkslategray;
+}
