@@ -1,6 +1,6 @@
 <?php
     // Constants
-    define("DB_PATH", "../governor.db");
+    define("DB_PATH", "/private/governor.db");
     define("XP_PER_LVL", 300);
 
     define("VILLAGER_LVL", 1);

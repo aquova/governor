@@ -1,21 +1,20 @@
 from datetime import datetime
-import json, os
+import json
 
 XP_PER_MINUTE = 10
 XP_PER_LVL = 300
 STARTING_XP = XP_PER_LVL
 
 # Read values from config file
-dir_path = os.path.dirname(os.path.realpath(__file__))
-config_path = os.path.join(dir_path, "../private/config.json")
+config_path = "/private/config.json"
 with open(config_path) as config_file:
     cfg = json.load(config_file)
 
 DISCORD_KEY = cfg['discord']
-DB_PATH = os.path.join(dir_path, "../private/governor.db")
-ASSETS_PATH = os.path.join(dir_path, "assets")
-FONTS_PATH = os.path.join(dir_path, "fonts")
-TMP_PATH = os.path.join(dir_path, "../private/tmp")
+DB_PATH = "/private/governor.db"
+ASSETS_PATH = "/governor/assets"
+FONTS_PATH = "/governor/fonts"
+TMP_PATH = "/private/tmp"
 CMD_PREFIX = cfg['command_prefix']
 ADMIN_ACCESS = cfg['roles']['admin_access']
 SERVER_URL = cfg['server_url']
@@ -36,6 +35,6 @@ VERIFY_EVENTS = cfg['channels']['events']['verify'] # Channel to approve event s
 CURRENT_EVENTS = cfg['roles']['events']
 
 # Import ranks from their configuration
-ranks_path = os.path.join(dir_path, "../private/ranks.json")
+ranks_path = "/private/ranks.json"
 with open(ranks_path) as ranks_file:
     RANKS = json.load(ranks_file)['ranks']
