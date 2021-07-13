@@ -3,7 +3,6 @@ from dataclasses import dataclass
 
 import db
 from config import CMD_PREFIX, RANKS, XP_PER_LVL, XP_PER_MINUTE
-from math import floor
 from utils import requires_admin
 
 from commonbot.user import UserLookup

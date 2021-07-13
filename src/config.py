@@ -1,5 +1,5 @@
 from datetime import datetime
-import json
+import discord, json
 
 XP_PER_MINUTE = 10
 XP_PER_LVL = 300
@@ -38,3 +38,8 @@ CURRENT_EVENTS = cfg['roles']['events']
 ranks_path = "/private/ranks.json"
 with open(ranks_path) as ranks_file:
     RANKS = json.load(ranks_file)['ranks']
+
+intents = discord.Intents.default()
+intents.members = True
+
+client = discord.Client(intents=intents)

@@ -5,18 +5,13 @@
 import discord
 import db, commands, events, games, xp
 import traceback
-from config import OWNER, DEBUG_BOT, CMD_PREFIX, DISCORD_KEY, GAME_ANNOUNCEMENT_CHANNEL, XP_OFF
+from config import client, OWNER, DEBUG_BOT, CMD_PREFIX, DISCORD_KEY, GAME_ANNOUNCEMENT_CHANNEL, XP_OFF
 from hunt import EggHunt
 from slowmode import Thermometer
 from tracker import Tracker
 
 import commonbot.utils
 from commonbot.debug import Debug
-
-intents = discord.Intents.default()
-intents.members = True
-
-client = discord.Client(intents=intents)
 
 db.initialize()
 tr = Tracker()
