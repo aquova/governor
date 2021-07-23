@@ -83,7 +83,7 @@ class Tracker:
 
             # Check their last timestamp if we aren't manually adding XP
             # NOTE: Mayor Lewis used to only give XP if they spoke in a "new" minute. But that would involve rounding a datetime, and I can't be bothered.
-            if xp_add == None:
+            if not xp_add:
                 dt = curr_time - last_mes_time
                 # Users only get XP every minute, so if not enough time has elapsed, ignore them
                 if dt < datetime.timedelta(minutes=1):
@@ -100,12 +100,12 @@ class Tracker:
 
         if not xp_add:
             xp_add = XP_PER_MINUTE * self.xp_multiplier
+            monthly_xp += xp_add
 
         xp += xp_add
-        monthly_xp += xp_add
 
         # If we have earned enough XP to level up, award and find next role
-        if next_role != None and xp >= next_role:
+        if next_role and xp >= next_role:
             # Find what the congratulatory message should be
             # Not very efficient, but there will likely only be a handful of ranks
             for rank in RANKS:
