@@ -1,8 +1,7 @@
 # Functions related to Discord server events (not API events)
 
-import discord, db, requests, os, shutil
+import discord, db
 from config import ADMIN_ACCESS, EVENT_COORDINATOR, PUZZLE_EVENTS, XP_PER_LVL, CURRENT_EVENTS, VERIFY_EVENTS
-from tracker import Tracker
 from commonbot.utils import checkRoles
 
 async def award_event_prize(payload, tr, client):
