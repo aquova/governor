@@ -54,6 +54,6 @@ class Thermometer:
                     if old_slowmode != slowmode:
                         await channel.edit(slowmode_delay=slowmode)
                 except Exception as e:
-                    print(f"Exception: {str(e)}")
+                    print(f"Error attempting to set slowmode in <#{channel_id}>: {str(e)}")
 
             self.channel_dict.clear()
