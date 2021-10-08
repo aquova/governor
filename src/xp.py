@@ -113,8 +113,6 @@ async def render_lvl_image(message):
     if not commonbot.utils.is_valid_channel(message.channel.id, LVL_CHANS):
         return
 
-    ourself = False
-
     # Make image tmp folder if needed
     if not os.path.exists(TMP_PATH):
         os.makedirs(TMP_PATH)
@@ -127,7 +125,6 @@ async def render_lvl_image(message):
 
     # If we couldn't find a user, use the message author
     if author == None:
-        ourself = True
         author = message.author
 
     userid = author.id
@@ -209,8 +206,5 @@ async def render_lvl_image(message):
     with open(out_filename, 'rb') as af:
         df = discord.File(af)
         await message.channel.send(file=df)
-
-    if ourself:
-        await message.channel.send("I couldn't find who you were looking for, so here is you instead!")
 
     return None
