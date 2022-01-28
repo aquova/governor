@@ -1,5 +1,5 @@
 from config import ADMIN_ACCESS
-from commonbot.utils import checkRoles
+from commonbot.utils import check_roles
 
 """
 Requires admin
@@ -11,7 +11,7 @@ def requires_admin(func):
         # expect message to be the last argument
         message = args[-1]
 
-        if checkRoles(message.author, ADMIN_ACCESS):
+        if check_roles(message.author, ADMIN_ACCESS):
             return await func(*args, **kwargs)
         else:
             return None

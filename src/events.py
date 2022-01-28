@@ -2,13 +2,13 @@
 
 import discord, db
 from config import ADMIN_ACCESS, EVENT_COORDINATOR, PUZZLE_EVENTS, XP_PER_LVL, CURRENT_EVENTS, VERIFY_EVENTS
-from commonbot.utils import checkRoles
+from commonbot.utils import check_roles
 
 async def award_event_prize(payload, tr, client):
     # Only give reward if giver is an admin, and correct emoji was used
     # Can't use requires_admin wrapper as there is no message object from the event
     valid_roles = ADMIN_ACCESS + [EVENT_COORDINATOR]
-    if checkRoles(payload.member, valid_roles):
+    if check_roles(payload.member, valid_roles):
         emoji_name = payload.emoji if type(payload.emoji) == str else payload.emoji.name
         for event in CURRENT_EVENTS:
             if emoji_name == event['emoji_name']:
