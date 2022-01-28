@@ -22,7 +22,7 @@ class GameTimer:
     def __init__(self):
         self.task = None
 
-    def start(self, channel: discord.Channel):
+    def start(self, channel: discord.TextChannel):
         if not self.task:
             self._channel = channel
             self.task = asyncio.create_task(self._announce_games())

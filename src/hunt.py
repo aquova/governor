@@ -18,7 +18,7 @@ class EggHunt:
         else:
             return False
 
-    def set_watched_channel(self, channel: discord.Channel):
+    def set_watched_channel(self, channel: discord.TextChannel):
         self.watched_channel = channel
 
     def add_reaction(self, user: discord.Member):
