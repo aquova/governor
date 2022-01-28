@@ -52,7 +52,7 @@ Print Help
 
 Prints the help message
 """
-async def print_help(message):
+async def print_help(message: discord.Message) -> str:
     # Print different message if user has advanced permissions
     try:
         if commonbot.utils.check_roles(message.author, ADMIN_ACCESS):
@@ -67,7 +67,7 @@ Show leaderboard
 
 Posts the URL for the online leaderboard
 """
-async def show_lb(message):
+async def show_lb(message: discord.Message) -> str:
     return f"{SERVER_URL}/leaderboard.php"
 
 """
@@ -75,7 +75,7 @@ List ranks
 
 Lists the available earnable rank roles, and their levels
 """
-async def list_ranks(message):
+async def list_ranks(message: discord.Message) -> str:
     output = ""
     for rank in RANKS:
         output += f"Level {rank['level']}: {rank['name']}\n"
@@ -88,7 +88,7 @@ Say
 Speaks a message to the specified channel as the bot
 """
 @requires_admin
-async def say(message):
+async def say(message: discord.Message) -> str:
     try:
         payload = commonbot.utils.strip_words(message.content, 1)
         channel_id = commonbot.utils.get_first_word(payload)
@@ -121,7 +121,7 @@ Edit message
 Edits a message spoken by the bot, by message ID
 """
 @requires_admin
-async def edit(message):
+async def edit(message: discord.Message) -> str:
     try:
         payload = commonbot.utils.strip_words(message.content, 1)
         edit_id = commonbot.utils.get_first_word(payload)
@@ -135,7 +135,7 @@ async def edit(message):
                 if e.code == 10008:
                     pass
 
-        if edit_message == None:
+        if not edit_message:
             return "I was unable to find a message with that ID."
 
         m = commonbot.utils.strip_words(payload, 1)
@@ -153,7 +153,7 @@ async def edit(message):
             return f"Oh god something went wrong, everyone panic! {str(e)}"
 
 @requires_admin
-async def info(message):
+async def info(message: discord.Message) -> str:
     lvl_c = ", ".join([f"<#{x}>" for x in LVL_CHANS])
     slow_c = ", ".join([f"<#{x}>" for x in NO_SLOWMODE])
     xp_c = ", ".join([f"<#{x}>" for x in XP_OFF])
@@ -172,10 +172,8 @@ class CustomCommands:
     Set Protected Keywords
 
     Sets the list of protected keywords that can't be used for custom command names
-
-    Input: keywords - Protected keywords - List(str)
     """
-    def set_protected_keywords(self, keywords):
+    def set_protected_keywords(self, keywords: list[str]):
         self.keywords = keywords
         # "Debug" isn't in the command list, but also needs to be protected
         self.keywords.append('debug')
@@ -184,21 +182,17 @@ class CustomCommands:
     Command Available
 
     Checks if the custom command exists
-
-    Input: cmd - Name of command to check for - str
     """
-    def command_available(self, cmd):
+    def command_available(self, cmd: str) -> bool:
         return cmd in self.cmd_dict
 
     """
     Parse Response
 
     Return the specified response for a custom command
-
-    Input: message - Discord message object
     """
-    def parse_response(self, message):
-        prefix_removed = commonbot.utils.strip_prefix(message.content, 1)
+    def parse_response(self, message: discord.Message) -> str:
+        prefix_removed = commonbot.utils.strip_prefix(message.content, CMD_PREFIX)
         command = commonbot.utils.get_first_word(prefix_removed).lower()
         response = self.cmd_dict[command]
 
@@ -216,11 +210,9 @@ class CustomCommands:
     Define command
 
     Sets a new user-defined command
-
-    Input: message - Discord message object
     """
     @requires_admin
-    async def define_cmd(self, message):
+    async def define_cmd(self, message: discord.Message) -> str:
         # First remove the "define" command
         new_cmd = commonbot.utils.strip_words(message.content, 1)
         # Then parse the new command
@@ -254,11 +246,9 @@ class CustomCommands:
     Remove command
 
     Removes a user-defined command
-
-    Input: message - Discord message object
     """
     @requires_admin
-    async def remove_cmd(self, message):
+    async def remove_cmd(self, message: discord.Message) -> str:
         # First remove the "define" command
         new_cmd = commonbot.utils.strip_words(message.content, 1)
         # Then parse the command to remove
@@ -276,7 +266,7 @@ class CustomCommands:
 
     Give a list of all user-defined commands
     """
-    async def list_cmds(self, message):
+    async def list_cmds(self, message: discord.Message) -> str:
         output = "```\n"
         cmds = sorted(self.cmd_dict.keys(), key=str.lower)
         output += ", ".join(cmds)

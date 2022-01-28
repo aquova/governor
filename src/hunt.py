@@ -9,24 +9,24 @@ class EggHunt:
         self.watched_channel = None
         self.hunters = set()
 
-    def is_currently_hunting(self):
+    def is_currently_hunting(self) -> bool:
         return self.watched_channel != None
 
-    def is_channel_watched(self, channel_id):
+    def is_channel_watched(self, channel_id: int) -> bool:
         if self.is_currently_hunting():
             return self.watched_channel.id == channel_id
         else:
             return False
 
-    def set_watched_channel(self, channel):
+    def set_watched_channel(self, channel: discord.Channel):
         self.watched_channel = channel
 
-    def add_reaction(self, user):
+    def add_reaction(self, user: discord.Member):
         if self.creator != user:
             self.hunters.add(user)
 
     @requires_admin
-    async def start_hunt(self, message):
+    async def start_hunt(self, message: discord.Message) -> str:
         if not self.is_currently_hunting():
             self.creator = message.author
             self.set_watched_channel(message.channel)
@@ -35,7 +35,7 @@ class EggHunt:
             return f"There is already an open hunt in <#{self.watched_channel.id}>. It must be stopped before another can start."
 
     @requires_admin
-    async def end_hunt(self, message):
+    async def end_hunt(self, message: discord.Message) -> str:
         if not self.is_currently_hunting():
             return "Um... there was no hunt in progress"
         else:

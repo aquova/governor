@@ -1,10 +1,11 @@
 # Functions related to Discord server events (not API events)
 
 import discord, db
-from config import ADMIN_ACCESS, EVENT_COORDINATOR, PUZZLE_EVENTS, XP_PER_LVL, CURRENT_EVENTS, VERIFY_EVENTS
+from config import client, ADMIN_ACCESS, EVENT_COORDINATOR, PUZZLE_EVENTS, XP_PER_LVL, CURRENT_EVENTS, VERIFY_EVENTS
+from tracker import Tracker
 from commonbot.utils import check_roles
 
-async def award_event_prize(payload, tr, client):
+async def award_event_prize(payload: discord.RawReactionActionEvent, tr: Tracker):
     # Only give reward if giver is an admin, and correct emoji was used
     # Can't use requires_admin wrapper as there is no message object from the event
     valid_roles = ADMIN_ACCESS + [EVENT_COORDINATOR]
@@ -45,10 +46,10 @@ async def award_event_prize(payload, tr, client):
                     print(f"Exception found when fetching reaction message: {str(e)}")
                     break
 
-async def event_check(message):
+async def event_check(message: discord.Message):
     await _check_hidden_task(message)
 
-async def _check_hidden_task(message):
+async def _check_hidden_task(message: discord.Message):
     # For events where other members shouldn't see entries we need to:
     # - Do basic checking to see if this is valid entry
     # - Delete their post in chat

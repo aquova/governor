@@ -1,6 +1,7 @@
 import sqlite3
 from datetime import datetime, timezone
 from config import DB_PATH, STARTING_XP
+from typing import Optional
 
 """
 Initialize database
@@ -22,7 +23,7 @@ Database read
 
 Helper function to perform database reads
 """
-def _db_read(query):
+def _db_read(query: tuple) -> list[tuple]:
     sqlconn = sqlite3.connect(DB_PATH)
     # The * operator in Python expands a tuple into function params
     results = sqlconn.execute(*query).fetchall()
@@ -35,7 +36,7 @@ Database write
 
 Helper function to perform database writes
 """
-def _db_write(query):
+def _db_write(query: tuple[str, list]):
     sqlconn = sqlite3.connect(DB_PATH)
     sqlconn.execute(*query)
     sqlconn.commit()
@@ -45,10 +46,8 @@ def _db_write(query):
 Fetch user XP
 
 Collects the XP database entry for a given user
-
-Input: user_id - User ID in question - int
 """
-def fetch_user_xp(user_id):
+def fetch_user_xp(user_id: int) -> int:
     query = ("SELECT xp FROM xp WHERE id=?", [user_id])
     found_user = _db_read(query)
 
@@ -61,15 +60,8 @@ def fetch_user_xp(user_id):
 Set User XP
 
 Updates a user's XP value, as well as other user information
-
-Inputs:
-    - user_id - The user's ID - int
-    - xp - User's XP tally - int
-    - user_name - User's name, formatted as username#1234 - str
-    - user_avatar - Hash for user's avatar image, used in the URL - str
-    - monthly - User's XP for this month - int
 """
-def set_user_xp(user_id, xp, user_name, user_avatar, monthly, month):
+def set_user_xp(user_id: int, xp: int, user_name: Optional[str], user_avatar: Optional[str], monthly: int, month: int):
     # We store username and avatar only for the leaderboard
     if user_avatar == None:
         user_avatar = ""
@@ -81,10 +73,8 @@ def set_user_xp(user_id, xp, user_name, user_avatar, monthly, month):
 Fetch user monthly XP
 
 Collects the XP entry for this user for this month
-
-Input: user_id - User ID in question - int
 """
-def fetch_user_monthly_xp(user_id):
+def fetch_user_monthly_xp(user_id: int) -> int:
     query = ("SELECT monthly, month FROM xp WHERE id=?", [user_id])
     found_user = _db_read(query)
     curr_month = datetime.now(timezone.utc).month
@@ -102,7 +92,7 @@ Get leaders
 
 Returns a list of database entries for the top 100 highest XP holders
 """
-def get_leaders():
+def get_leaders() -> list[tuple]:
     query = ("SELECT * FROM xp ORDER BY xp DESC LIMIT 100",)
     leaders = _db_read(query)
 
@@ -113,7 +103,7 @@ Get monthly leaders
 
 Returns a list of database entries for the top 100 highest XP holders this month
 """
-def get_monthly_leaders():
+def get_monthly_leaders() -> list[tuple]:
     curr_month = datetime.now(timezone.utc).month
     query = ("SELECT * FROM xp ORDER BY monthly WHERE month=? DESC LIMIT 100", [curr_month])
     leaders = _db_read(query)
@@ -125,7 +115,7 @@ Get custom commands
 
 Returns the user-set custom commands
 """
-def get_custom_cmds():
+def get_custom_cmds() -> dict[str, str]:
     query = ("SELECT * FROM commands",)
     cmds = _db_read(query)
 
@@ -140,10 +130,8 @@ def get_custom_cmds():
 Remove custom command
 
 Removes a previously set custom command from the database
-
-Input: name - Name of custom command - str
 """
-def remove_custom_cmd(name):
+def remove_custom_cmd(name: str):
     query = ("DELETE FROM commands WHERE name=?", [name])
     _db_write(query)
 
@@ -151,12 +139,8 @@ def remove_custom_cmd(name):
 Set new custom command
 
 Adds a new user-defined command to the database
-
-Inputs:
-    - name - How to invoke the command - str
-    - response - Reply upon successful invocation - str
 """
-def set_new_custom_cmd(name, response):
+def set_new_custom_cmd(name: str, response: str):
     query = ("INSERT OR REPLACE INTO commands (name, response) VALUES (?, ?)", [name, response])
     _db_write(query)
 
@@ -165,7 +149,7 @@ Get rank
 
 Returns the server rank for the user in question
 """
-def get_rank(userid):
+def get_rank(userid: int) -> int:
     xp_query = ("SELECT xp FROM xp WHERE id=?", [userid])
     xp_res = _db_read(xp_query)
     if xp_res == []:
@@ -182,11 +166,8 @@ def get_rank(userid):
 Add game
 
 Adds a new stored game to the database
-
-Inputs:
-    - game - A link to the game plus any additional info about the game - str
 """
-def add_game(game):
+def add_game(game: str):
     query = ("INSERT INTO games (game) VALUES (?)", [game])
     _db_write(query)
 
@@ -195,7 +176,7 @@ Get games
 
 Gets all games stored
 """
-def get_games():
+def get_games() -> list[str]:
     # get games as a list of 1-tuples
     query = ("SELECT game FROM games",)
     raw_results = _db_read(query)
@@ -219,7 +200,7 @@ Add to raffle
 
 Adds a user's ID to the event raffle
 """
-def add_raffle(userid, chanid):
+def add_raffle(userid: int, chanid: int) -> bool:
     read_query = ("SELECT id FROM raffle WHERE id=? AND channel=?", [userid, chanid])
     results = _db_read(read_query)
     if results == []:
@@ -234,7 +215,7 @@ Increment hunter
 
 Increments the number successful Hunts a user has had
 """
-def inc_hunter(userid, username):
+def inc_hunter(userid: int, username: str):
     read_query = ("SELECT count FROM hunters WHERE id=?", [userid])
     user_cnt = _db_read(read_query)
     try:
@@ -245,7 +226,7 @@ def inc_hunter(userid, username):
     write_query = ("REPLACE INTO hunters (id, username, count) VALUES (?, ?, ?)", [userid, username, cnt])
     _db_write(write_query)
 
-def get_hunters():
+def get_hunters() -> list[tuple]:
     read_query = ("SELECT * FROM hunters",)
     hunters = _db_read(read_query)
     return hunters

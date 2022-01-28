@@ -1,5 +1,7 @@
-import datetime, discord
+import discord
 from dataclasses import dataclass
+from datetime import datetime, timedelta
+from typing import Optional
 
 import db
 from config import CMD_PREFIX, RANKS, XP_PER_LVL, XP_PER_MINUTE
@@ -15,7 +17,7 @@ class UserData:
     timestamp: datetime
     username: str
     avatar: str
-    next_role_at: int
+    next_role_at: Optional[int]
 
 class Tracker:
     def __init__(self):
@@ -27,10 +29,8 @@ class Tracker:
     Refresh database
 
     Collects up-to-date data for leaderboard members
-
-    Input: server - Discord server object
     """
-    async def refresh_db(self, server):
+    async def refresh_db(self, server: discord.Guild):
         leaders = db.get_leaders()
 
         # Iterate thru every leader on the leaderboard and collect data
@@ -42,7 +42,7 @@ class Tracker:
             user = discord.utils.get(server.members, id=leader_id)
 
             # Update users that are still in the server
-            if user != None:
+            if user:
                 leader_name = f"{user.name}#{user.discriminator}"
                 leader_avatar = user.avatar
 
@@ -56,18 +56,13 @@ class Tracker:
     Grant user xp
 
     Updates user XP, levels, and roles
-
-    Inputs:
-    user - Discord user object
-    server - The server the message originated from
-    xp_add - Amount of xp to add. If None, award automatic amount from speaking
     """
-    async def give_xp(self, user, server, xp_add=None):
+    async def give_xp(self, user: discord.Member, server: discord.Guild, xp_add: Optional[int]=None) -> Optional[str]:
         user_id = user.id
         xp = 0
         monthly_xp = 0
         next_role = None
-        curr_time = datetime.datetime.now()
+        curr_time = datetime.now()
         out_message = None
 
         if user_id not in self.user_cache:
@@ -86,7 +81,7 @@ class Tracker:
             if not xp_add:
                 dt = curr_time - last_mes_time
                 # Users only get XP every minute, so if not enough time has elapsed, ignore them
-                if dt < datetime.timedelta(minutes=1):
+                if dt < timedelta(minutes=1):
                     return None
 
             # Else, grab their data
@@ -99,10 +94,11 @@ class Tracker:
                 monthly_xp = 0
 
         if not xp_add:
-            xp_add = XP_PER_MINUTE * self.xp_multiplier
-            monthly_xp += xp_add
-
-        xp += xp_add
+            new_xp = XP_PER_MINUTE * self.xp_multiplier
+            monthly_xp += new_xp
+            xp += new_xp
+        else:
+            xp += xp_add
 
         # If we have earned enough XP to level up, award and find next role
         if next_role and xp >= next_role:
@@ -136,12 +132,8 @@ class Tracker:
     Check roles
 
     Make sure the user has the correct roles, given their XP
-
-    Inputs:
-        user - Discord user object
-        xp - User's XP value - int
     """
-    async def check_roles(self, user, xp):
+    async def check_roles(self, user: discord.Member, xp: int) -> Optional[int]:
         try:
             user_roles = user.roles
             user_role_ids = [x.id for x in user.roles]
@@ -168,7 +160,7 @@ class Tracker:
             # Go through our new role IDs, and get the actual role objects
             for role_id in new_roles:
                 role = discord.utils.get(user.guild.roles, id=role_id)
-                if role != None:
+                if role:
                     user_roles.append(role)
 
             # The role list *replaces* the old list, not appends to it
@@ -181,7 +173,7 @@ class Tracker:
 
     Removes a user from the user cache, in the event they leave the server
     """
-    def remove_from_cache(self, user_id):
+    def remove_from_cache(self, user_id: int):
         if user_id in self.user_cache:
             del self.user_cache[user_id]
 
@@ -191,7 +183,7 @@ class Tracker:
     Adds the specified amout of XP to a user
     """
     @requires_admin
-    async def add_xp(self, message):
+    async def add_xp(self, message: discord.Message) -> str:
         try:
             payload = commonbot.utils.strip_words(message.content, 1)
             # Treat last word as XP to be awarded
@@ -215,7 +207,7 @@ class Tracker:
     Sets the XP multiplier
     """
     @requires_admin
-    async def set_bonus_xp(self, _):
+    async def set_bonus_xp(self, _) -> str:
         self.xp_multiplier = 2
         return "XP multiplier is now x2!"
 
@@ -225,6 +217,6 @@ class Tracker:
     Resets the XP multiplier
     """
     @requires_admin
-    async def reset_bonus_xp(self, _):
+    async def reset_bonus_xp(self, _) -> str:
         self.xp_multiplier = 1
         return "XP multiplier has been reset"

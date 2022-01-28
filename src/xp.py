@@ -3,6 +3,7 @@ from config import XP_PER_LVL, LVL_CHANS, OWNER, ASSETS_PATH, FONTS_PATH, TMP_PA
 from dataclasses import dataclass, astuple
 from math import ceil, floor
 from PIL import Image, ImageDraw, ImageFont
+from typing import Optional
 
 from commonbot.user import UserLookup
 import commonbot.utils
@@ -14,11 +15,11 @@ class Point:
     x: int
     y: int
 
-    def __init__(self, x, y):
+    def __init__(self, x: int, y: int):
         self.x = x
         self.y = y
 
-    def shadow_tuple(self):
+    def shadow_tuple(self) -> tuple[int, int]:
         return (self.x - 1, self.y + 1)
 
 IMG_BG = os.path.join(ASSETS_PATH, "bg_rank.png")
@@ -39,14 +40,14 @@ Get XP
 
 Returns the given user's XP value, as a formatted string
 """
-async def get_xp(message):
+async def get_xp(message: discord.Message) -> str:
     author = None
     other_id = ul.parse_id(message)
-    if other_id != None:
+    if other_id:
         author = discord.utils.get(message.guild.members, id=other_id)
 
     # If we couldn't find a user, use the message author
-    if author == None:
+    if not author:
         author = message.author
 
     xp = db.fetch_user_xp(author.id)
@@ -61,15 +62,15 @@ Userinfo
 
 Returns a 'rich' post with some of the user's information in it
 """
-async def userinfo(message):
+async def userinfo(message: discord.Message):
     # First, check if the user wants to look up someone else
     author = None
     other_id = ul.parse_id(message)
-    if other_id != None:
+    if other_id:
         author = discord.utils.get(message.guild.members, id=other_id)
 
     # If we couldn't find a user, use the message author
-    if author == None:
+    if not author:
         author = message.author
 
     username = f"{author.name}#{author.discriminator}"
@@ -108,10 +109,10 @@ Render level image
 
 Creates a customized image for the user, showing avatar image, level, name, and rank
 """
-async def render_lvl_image(message):
+async def render_lvl_image(message: discord.Message) -> Optional[str]:
     # Only allow this command if in whitelisted channels
     if message.channel.id not in LVL_CHANS:
-        return
+        return None
 
     # Make image tmp folder if needed
     if not os.path.exists(TMP_PATH):
@@ -120,11 +121,11 @@ async def render_lvl_image(message):
     # First, check if the user wants to look up someone else
     author = None
     other_id = ul.parse_id(message)
-    if other_id != None:
+    if other_id:
         author = discord.utils.get(message.guild.members, id=other_id)
 
     # If we couldn't find a user, use the message author
-    if author == None:
+    if not author:
         author = message.author
 
     userid = author.id

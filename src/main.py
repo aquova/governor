@@ -1,5 +1,5 @@
 # Governor
-# Written by aquova, 2020-2021
+# Written by aquova, 2020-2022
 # https://github.com/aquova/governor
 
 import discord
@@ -56,7 +56,7 @@ Update User Count
 
 Updates the bot's 'activity' to reflect the number of users
 """
-async def update_user_count(guild):
+async def update_user_count(guild: discord.Guild):
     activity_mes = f"{guild.member_count} members!"
     activity_object = discord.Activity(name=activity_mes, type=discord.ActivityType.watching)
     await client.change_presence(activity=activity_object)
@@ -78,7 +78,7 @@ On Guild Available
 Runs when a guild (server) that the bot is connected to becomes ready
 """
 @client.event
-async def on_guild_available(guild):
+async def on_guild_available(guild: discord.Guild):
     await tr.refresh_db(guild)
 
     # This is 100% going to cause issues if we ever want to host on more than one server
@@ -103,7 +103,7 @@ On Member Join
 Runs when a user joins the server
 """
 @client.event
-async def on_member_join(user):
+async def on_member_join(user: discord.Member):
     await update_user_count(user.guild)
 
 """
@@ -112,7 +112,7 @@ On Member Remove
 Runs when a member leaves the server
 """
 @client.event
-async def on_member_remove(user):
+async def on_member_remove(user: discord.Member):
     tr.remove_from_cache(user.id)
     await update_user_count(user.guild)
 
@@ -123,7 +123,7 @@ Occurs when a reaction is added to a message
 Only used for Egg Hunting
 """
 @client.event
-async def on_reaction_add(reaction, user):
+async def on_reaction_add(reaction: discord.Reaction, user: discord.Member):
     # Ignore bot reactions
     if user.bot:
         return
@@ -137,11 +137,11 @@ On Raw Reaction Add
 Runs when a member reacts to a message with an emoji
 """
 @client.event
-async def on_raw_reaction_add(payload):
+async def on_raw_reaction_add(payload: discord.RawReactionActionEvent):
     if dbg.is_debug_bot():
         return
 
-    await events.award_event_prize(payload, tr, client)
+    await events.award_event_prize(payload, tr)
 
 """
 On Message
@@ -149,7 +149,7 @@ On Message
 Runs when a user posts a message
 """
 @client.event
-async def on_message(message):
+async def on_message(message: discord.Message):
     # Ignore bots completely (including ourself)
     if message.author.bot:
         return
@@ -178,7 +178,7 @@ async def on_message(message):
 
         # Check if someone is trying to use a bot command
         if message.content != "" and message.content[0] == CMD_PREFIX:
-            prefix_removed = commonbot.utils.strip_prefix(message.content, 1)
+            prefix_removed = commonbot.utils.strip_prefix(message.content, CMD_PREFIX)
             if prefix_removed == "":
                 return
             command = commonbot.utils.get_first_word(prefix_removed).lower()

@@ -1,4 +1,4 @@
-import db
+import discord, db
 from datetime import datetime, timedelta, timezone
 import asyncio, random
 from config import GAME_ANNOUNCE_TIME
@@ -22,7 +22,7 @@ class GameTimer:
     def __init__(self):
         self.task = None
 
-    def start(self, channel):
+    def start(self, channel: discord.Channel):
         if not self.task:
             self._channel = channel
             self.task = asyncio.create_task(self._announce_games())
@@ -58,7 +58,7 @@ Add game
 Adds a game to be announced
 """
 @requires_admin
-async def add_game(message):
+async def add_game(message: discord.Message) -> str:
     game = commonbot.utils.strip_words(message.content, 1).strip()
     if len(game) == 0:
         return "Can't add game: no message provided."
@@ -79,7 +79,7 @@ Get games
 Returns the list of games to be announced
 """
 @requires_admin
-async def get_games(message):
+async def get_games(message: discord.Message) -> str:
     games = db.get_games()
 
     time_info = get_next_announcement_info()
@@ -97,18 +97,17 @@ Clear games
 Clears all games that are being announced
 """
 @requires_admin
-async def clear_games(message):
+async def clear_games(message: discord.Message) -> str:
     db.clear_games()
 
     return "Games cleared!"
-
 
 """
 Get next announcement info
 
 Returns a string representing the time when the next game announcement will happen. Inlcudes the UTC time and duration until that time.
 """
-def get_next_announcement_info():
+def get_next_announcement_info() -> str:
     time_utc = GAME_ANNOUNCE_TIME.strftime("%H:%M UTC")
     remaining = get_delta_to_next_announcement()
 
@@ -124,7 +123,7 @@ Gets a timedelta to the next announcement time.
 
 If the current time today is before the configured time, the timedelta will be to the announcement time today. Otherwise it will be for the announcement time tomorrow.
 """
-def get_delta_to_next_announcement():
+def get_delta_to_next_announcement() -> timedelta:
     now = datetime.now(timezone.utc)
     announcement = now.replace(hour=GAME_ANNOUNCE_TIME.hour, minute=GAME_ANNOUNCE_TIME.minute)
 
