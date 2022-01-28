@@ -110,7 +110,7 @@ Creates a customized image for the user, showing avatar image, level, name, and 
 """
 async def render_lvl_image(message):
     # Only allow this command if in whitelisted channels
-    if not commonbot.utils.is_valid_channel(message.channel.id, LVL_CHANS):
+    if message.channel.id not in LVL_CHANS:
         return
 
     # Make image tmp folder if needed
