@@ -3,7 +3,7 @@
 # https://github.com/aquova/governor
 
 import discord
-import db, commands, events, games, xp
+import db, commands, games, xp
 import traceback
 from config import client, OWNER, DEBUG_BOT, CMD_PREFIX, DISCORD_KEY, GAME_ANNOUNCEMENT_CHANNEL, XP_OFF
 from slowmode import Thermometer
@@ -113,18 +113,6 @@ async def on_member_remove(user: discord.Member):
     await update_user_count(user.guild)
 
 """
-On Raw Reaction Add
-
-Runs when a member reacts to a message with an emoji
-"""
-@client.event
-async def on_raw_reaction_add(payload: discord.RawReactionActionEvent):
-    if dbg.is_debug_bot():
-        return
-
-    await events.award_event_prize(payload, tr)
-
-"""
 On Message
 
 Runs when a user posts a message
@@ -177,9 +165,6 @@ async def on_message(message: discord.Message):
             except discord.errors.Forbidden as e:
                 if e.code == 50013:
                     print(f"I can see messages, but cannot send in #{message.channel.name}")
-        else:
-            # Else, check if they are posting in an event channel
-            await events.event_check(message)
 
     except discord.errors.HTTPException as e:
         print(traceback.format_exc())
