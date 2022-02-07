@@ -2,7 +2,7 @@
 
 A Discord experience and leveling bot, designed to be used with the Stardew Valley server.
 
-Written by aquova, 2020-2021
+Written by aquova, 2020-2022
 
 https://github.com/aquova/governor
 

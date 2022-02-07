@@ -30,9 +30,6 @@ ADMIN_HELP_MES = (
     f"View all games to be announced: `{CMD_PREFIX}getgames`\n"
     f"Remove all games to be announced: `{CMD_PREFIX}cleargames`\n"
     f"\n"
-    f"Start a new egg hunt in the current channel: `{CMD_PREFIX}starthunt`\n"
-    f"End the current egg hunt: `{CMD_PREFIX}endhunt`\n"
-    f"\n"
     f"View this message: `{CMD_PREFIX}help`"
 )
 
