@@ -37,6 +37,7 @@ FUNC_DICT = {
     "list": cc.list_cmds,
     "lvl": xp.render_lvl_image,
     "nobonusxp": tr.reset_bonus_xp,
+    "postgames": game_timer.post_games,
     "ranks": commands.list_ranks,
     "remove": cc.remove_cmd,
     "say": commands.say,
@@ -142,7 +143,7 @@ async def on_message(message: discord.Message):
         # Don't award XP if posting in specified disabled channels
         if message.channel.id not in XP_OFF:
             lvl_up_message = await tr.give_xp(message.author, message.guild)
-            if lvl_up_message != None:
+            if lvl_up_message:
                 await message.channel.send(lvl_up_message)
 
         # Check if someone is trying to use a bot command
@@ -156,7 +157,7 @@ async def on_message(message: discord.Message):
                 if command in FUNC_DICT:
                     # First, check if they're using a built-in command
                     output_message = await FUNC_DICT[command](message)
-                    if output_message != None:
+                    if output_message:
                         await message.channel.send(output_message)
                 elif cc.command_available(command):
                     # Check if they're using a user-defined command

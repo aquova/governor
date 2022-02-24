@@ -28,6 +28,7 @@ ADMIN_HELP_MES = (
     f"\n"
     f"Add a game to be announced: `{CMD_PREFIX}addgame URL`\n"
     f"View all games to be announced: `{CMD_PREFIX}getgames`\n"
+    f"Post games immediately: `{CMD_PREFIX}postgames`\n"
     f"Remove all games to be announced: `{CMD_PREFIX}cleargames`\n"
     f"\n"
     f"View this message: `{CMD_PREFIX}help`"

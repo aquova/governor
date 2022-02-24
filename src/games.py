@@ -27,23 +27,26 @@ class GameTimer:
             self._channel = channel
             self.task = asyncio.create_task(self._announce_games())
 
+    @requires_admin
+    async def post_games(self, message: discord.Message) -> str:
+        await self._send_message()
+        return "Games posted"
+
     async def _announce_games(self):
         while True:
             await self._wait_until_next_announcement()
+            await self._send_message()
 
-            games = db.get_games()
+    async def _send_message(self):
+        games = db.get_games()
 
-            if len(games) != 0:
-                # generate message
-                formatted_games = "\n".join(games)
-                announcement = random.choice(ANNOUNCE_MESSAGES)
-                message = f"{announcement}\n\n{formatted_games}"
+        if len(games) != 0:
+            formatted_games = "\n".join(games)
+            announcement = random.choice(ANNOUNCE_MESSAGES)
+            message = f"{announcement}\n\n{formatted_games}"
 
-                # send message
-                await self._channel.send(message)
-
-                # clear games
-                db.clear_games()
+            await self._channel.send(message)
+            db.clear_games()
 
     @staticmethod
     async def _wait_until_next_announcement():
