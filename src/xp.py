@@ -100,7 +100,9 @@ async def userinfo(message: discord.Message):
     if boost_time != None:
         embed.add_field(name="boosted", value=boost_time.strftime("%c"))
 
-    embed.add_field(name="roles", value=role_str, inline=False)
+    # Discord will throw an error if we try to have a field with an empty string
+    if len(roles) > 0:
+        embed.add_field(name="roles", value=role_str, inline=False)
 
     await message.channel.send(embed=embed)
 
