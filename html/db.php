@@ -143,24 +143,4 @@
 
         $db->close();
     };
-
-    function populate_egghunt() {
-        $db = new SQLite3(DB_PATH);
-        $ret = $db->query('SELECT * FROM hunters ORDER BY count DESC LIMIT 10');
-
-        $rank = 0;
-        while ($row = $ret->fetchArray()) {
-            $rank += 1;
-            $name = $row['username'];
-            $cnt = $row['count'];
-
-            echo "<tr>";
-            echo "<td class='hunter-rank'>$rank</td>";
-            echo "<td class='hunter-name'>$name</td>";
-            echo "<td class='hunter-count'>$cnt</td>";
-            echo "</tr>";
-        }
-
-        $db->close();
-    };
 ?>
