@@ -107,14 +107,29 @@
             // TODO: Someday make these into <code> blocks
             $mes = str_replace("```", "", $mes);
 
-            // Turn whitelisted images into img tags
-            $img_regex = "/(https?:\/\/\S*(discordapp|imgur)\.(com|net)\S+)/";
-            $mes = preg_replace($img_regex, "<img src=$1>", $mes);
+            // Convert image URLs to img tags, other links to normal hyperlinks
+            $url_regex = '/https?:\/\/\S+/';
+            $found = preg_match_all($url_regex, $mes, $matches, PREG_OFFSET_CAPTURE);
+            if ($found) {
+                foreach ($matches[0] as $match) {
+                    $url = $match[0];
+                    $split = preg_split("/\./", $url);
+                    $file_type = "";
+                    if ($split) {
+                        $file_type = end($split);
+                    }
 
-            // Turn all other links into hyperlinks
-            $url_regex = '/(https?:\/\/\S+)/';
-            if ((preg_match($url_regex, $mes)) and !(preg_match($img_regex, $mes))) {
-                $mes = preg_replace($url_regex, "<a href=$1>$1</a>", $mes);
+                    switch ($file_type) {
+                        case "jpg":
+                        case "png":
+                            $mes = str_replace($url, "<img src=" . $url . ">", $mes);
+                            break;
+
+                        default:
+                            $mes = str_replace($url, "<a href=" . $url . ">" . $url . "</a>", $mes);
+                            break;
+                    }
+                }
             }
 
             // New lines should become html breaks
