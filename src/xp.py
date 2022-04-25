@@ -1,23 +1,20 @@
 import discord, db, requests, os, shutil
 from config import XP_PER_LVL, LVL_CHANS, OWNER, ASSETS_PATH, FONTS_PATH, TMP_PATH
-from dataclasses import dataclass, astuple
 from math import ceil, floor
 from PIL import Image, ImageDraw, ImageFont
 from typing import Optional
 
 from commonbot.user import UserLookup
-import commonbot.utils
 
 ul = UserLookup()
 
-@dataclass
 class Point:
-    x: int
-    y: int
-
     def __init__(self, x: int, y: int):
         self.x = x
         self.y = y
+
+    def as_tuple(self) -> tuple[int, int]:
+        return (self.x, self.y)
 
     def shadow_tuple(self) -> tuple[int, int]:
         return (self.x - 1, self.y + 1)
@@ -87,7 +84,7 @@ async def userinfo(message: discord.Message):
     embed = discord.Embed(title=username, type="rich", color=author.color)
     if author.nick != None:
         embed.description = f"aka {author.nick}"
-    embed.set_thumbnail(url=author.avatar_url)
+    embed.set_thumbnail(url=author.display_avatar.url)
     embed.add_field(name="ID", value=author.id, inline=False)
     if author.bot:
         embed.add_field(name="Bot?", value="🤖")
@@ -144,7 +141,7 @@ async def render_lvl_image(message: discord.Message) -> Optional[str]:
     if author.avatar == None:
         avatar_filename = os.path.join(ASSETS_PATH, "default_avatar.png")
     else:
-        avatar_url = f"https://cdn.discordapp.com/avatars/{userid}/{author.avatar}.png"
+        avatar_url = author.display_avatar.url
 
         # Download the user's avatar image to private/tmp
         try:
@@ -183,14 +180,14 @@ async def render_lvl_image(message: discord.Message) -> Optional[str]:
 
     # Draw shadow one pixel down and left
     draw.text(USERNAME_POS.shadow_tuple(), username, BACK_COLOR, font=font_22)
-    draw.text(astuple(USERNAME_POS), username, FONT_COLOR, font=font_22)
+    draw.text(USERNAME_POS.as_tuple(), username, FONT_COLOR, font=font_22)
     # The discriminator needs to be appended on the end of the username, but in a different font size
     username_width = font_22.getsize(username)[0]
     y_offset = font_22.getsize(username)[1] / 6
     draw.text((USERNAME_POS.x + username_width, USERNAME_POS.y + y_offset), f"#{author.discriminator}", BACK_COLOR, font=font_14)
 
     draw.text(LEVEL_POS.shadow_tuple(), f"Level {lvl}", BACK_COLOR, font=font_22)
-    draw.text(astuple(LEVEL_POS), f"Level {lvl}", FONT_COLOR, font=font_22)
+    draw.text(LEVEL_POS.as_tuple(), f"Level {lvl}", FONT_COLOR, font=font_22)
 
     # Since the ranks can be (currentnly) up to 5 digits, adjust dynamically
     rank_text = f"Server Rank : {rank}"

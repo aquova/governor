@@ -33,7 +33,4 @@ ranks_path = "/private/ranks.json"
 with open(ranks_path) as ranks_file:
     RANKS = json.load(ranks_file)['ranks']
 
-intents = discord.Intents.default()
-intents.members = True
-
-client = discord.Client(intents=intents)
+client = discord.Client(intents=discord.Intents.all())

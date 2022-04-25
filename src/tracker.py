@@ -1,5 +1,4 @@
 import discord
-from dataclasses import dataclass
 from datetime import datetime, timedelta
 from typing import Optional
 
@@ -10,14 +9,14 @@ from utils import requires_admin
 from commonbot.user import UserLookup
 import commonbot.utils
 
-@dataclass
 class UserData:
-    xp: int
-    monthly_xp: int
-    timestamp: datetime
-    username: str
-    avatar: str
-    next_role_at: Optional[int]
+    def __init__(self, xp: int, monthly_xp: int, timestamp: datetime, username: str, avatar: str, next_role_at: Optional[int]):
+        self.xp = xp
+        self.monthly_xp = monthly_xp
+        self.timestamp = timestamp
+        self.username = username
+        self.avatar = avatar
+        self.next_role_at = next_role_at
 
 class Tracker:
     def __init__(self):
@@ -44,7 +43,7 @@ class Tracker:
             # Update users that are still in the server
             if user:
                 leader_name = f"{user.name}#{user.discriminator}"
-                leader_avatar = user.avatar
+                leader_avatar = user.display_avatar.key
 
                 # NOTE: May be worth to populate the cache here as well
                 db.set_user_xp(leader_id, leader_xp, leader_name, leader_avatar, leader_monthly, leader_month)
@@ -119,7 +118,7 @@ class Tracker:
             next_role = await self.check_roles(user, xp)
 
         username = f"{user.name}#{user.discriminator}"
-        avatar = user.avatar
+        avatar = user.display_avatar.key
 
         # Update their entry in the cache
         self.user_cache[user_id] = UserData(xp, monthly_xp, curr_time, username, avatar, next_role)
