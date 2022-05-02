@@ -16,7 +16,10 @@ ASSETS_PATH = "/governor/assets"
 FONTS_PATH = "/governor/fonts"
 TMP_PATH = "/private/tmp"
 CMD_PREFIX = cfg['command_prefix']
+
 ADMIN_ACCESS = cfg['roles']['admin_access']
+DEFINE_ACCESS = cfg['roles']['define_access']
+
 SERVER_URL = cfg['server_url']
 OWNER = cfg['owner']
 DEBUG_BOT = (cfg['debug'].upper() == "TRUE")

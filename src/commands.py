@@ -1,8 +1,7 @@
 import discord
 import db
-from math import floor
 from config import ADMIN_ACCESS, CMD_PREFIX, RANKS, SERVER_URL, LVL_CHANS, NO_SLOWMODE, XP_OFF
-from utils import requires_admin
+from utils import requires_admin, requires_define
 
 import commonbot.utils
 from commonbot.user import UserLookup
@@ -39,6 +38,7 @@ HELP_MES = (
     f"View your level: `{CMD_PREFIX}lvl`\n"
     f"\n"
     f"List custom commands: `{CMD_PREFIX}list`\n"
+    f"Define a custom command: `{CMD_PREFIX}define NAME [%mention%] MESSAGE` (only available to certain roles)\n"
     f"View available ranks: `{CMD_PREFIX}ranks`\n"
     f"Display info on a user: `{CMD_PREFIX}userinfo [USER]`\n"
     f"\n"
@@ -209,7 +209,7 @@ class CustomCommands:
 
     Sets a new user-defined command
     """
-    @requires_admin
+    @requires_define
     async def define_cmd(self, message: discord.Message) -> str:
         # First remove the "define" command
         new_cmd = commonbot.utils.strip_words(message.content, 1)
