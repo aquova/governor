@@ -1,6 +1,6 @@
 import discord
 import db
-from config import ADMIN_ACCESS, CMD_PREFIX, RANKS, SERVER_URL, LVL_CHANS, NO_SLOWMODE, XP_OFF
+from config import client, ADMIN_ACCESS, CMD_PREFIX, RANKS, SERVER_URL, LVL_CHANS, NO_SLOWMODE, XP_OFF, LOG_CHAN
 from utils import requires_admin, requires_define
 
 import commonbot.utils
@@ -224,6 +224,11 @@ class CustomCommands:
             # Don't allow users to set commands with protected keywords
             return f"`{cmd}` is already in use as a built-in function. Please choose another name."
 
+        # Store what the command used to say, if anything
+        old_response = None
+        if cmd in self.cmd_dict:
+            old_response = self.cmd_dict[cmd]
+
         # Set new command in cache and database
         self.cmd_dict[cmd] = response
         db.set_new_custom_cmd(cmd, response)
@@ -231,12 +236,20 @@ class CustomCommands:
         # Format confirmation to the user
         output_message = f"New command added! You can use it like `{CMD_PREFIX}{cmd}`. "
 
+        author = message.author
         # If user allows embedding of a ping, list various ways this can be done
         if "%mention%" in response:
-            author = message.author
             user_id = author.id
-            user_name = f"{author.name}#{author.discriminator}"
-            output_message += f"You can also use it as `{CMD_PREFIX}{cmd} {user_id}`, `{CMD_PREFIX}{cmd} {user_name}`, or `{CMD_PREFIX}{cmd} @{user_name}`"
+            output_message += f"You can also use it as `{CMD_PREFIX}{cmd} {user_id}`, `{CMD_PREFIX}{cmd} {str(author)}`, or `{CMD_PREFIX}{cmd} @{str(author)}`"
+
+        log_msg = ""
+        log_chan = client.get_channel(LOG_CHAN)
+        if old_response:
+            log_msg = f"{str(author)} has changed the command `{cmd}` from `{old_response}` to `{response}`"
+        else:
+            log_msg = f"{str(author)} has added the `{cmd}` command - `{response}`"
+
+        await log_chan.send(log_msg)
 
         return output_message
 
@@ -252,12 +265,20 @@ class CustomCommands:
         # Then parse the command to remove
         cmd = commonbot.utils.get_first_word(new_cmd).lower()
 
-        # If this command did exists, remove it from cache and database
+        # If this command did exist, remove it from cache and database
         if self.command_available(cmd):
+            old_msg = self.cmd_dict[cmd]
+
             del self.cmd_dict[cmd]
             db.remove_custom_cmd(cmd)
 
-        return f"`{cmd}` removed as a custom command!"
+            log_chan = client.get_channel(LOG_CHAN)
+            log_msg = f"{str(message.author)} has removed the `{cmd}` command. It used to say `{old_msg}`."
+            await log_chan.send(log_msg)
+
+            return f"`{cmd}` removed as a custom command!"
+
+        return f"`{cmd}` was never a command..."
 
     """
     List commands
