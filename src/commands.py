@@ -100,7 +100,7 @@ async def say(message: discord.Message) -> str:
             await channel.send(file=f)
 
         if m != "":
-            await channel.send(m)
+            await channel.send(m, allowed_mentions=discord.AllowedMentions.none())
 
         return "Message sent."
     except (IndexError, ValueError):
