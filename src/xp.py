@@ -103,21 +103,12 @@ async def userinfo(message: discord.Message):
 
     await message.channel.send(embed=embed)
 
-"""
-Render level image
-
-Creates a customized image for the user, showing avatar image, level, name, and rank
-"""
-async def render_lvl_image(message: discord.Message) -> Optional[str]:
+async def parse_lvl_image(message: discord.Message):
     # Only allow this command if in whitelisted channels
     if message.channel.id not in LVL_CHANS:
         return None
 
-    # Make image tmp folder if needed
-    if not os.path.exists(TMP_PATH):
-        os.makedirs(TMP_PATH)
-
-    # First, check if the user wants to look up someone else
+    # Check if the user wants to look up someone else
     author = None
     other_id = ul.parse_id(message)
     if other_id:
@@ -127,8 +118,25 @@ async def render_lvl_image(message: discord.Message) -> Optional[str]:
     if not author:
         author = message.author
 
-    userid = author.id
-    username = author.name
+    filename = await render_lvl_image(author)
+    if filename:
+        with open(filename, 'rb') as af:
+            df = discord.File(af)
+            await message.channel.send(file=df)
+    return None
+
+"""
+Render level image
+
+Creates a customized image for the user, showing avatar image, level, name, and rank
+"""
+async def render_lvl_image(user: discord.Member) -> Optional[str]:
+    # Make image tmp folder if needed
+    if not os.path.exists(TMP_PATH):
+        os.makedirs(TMP_PATH)
+
+    userid = user.id
+    username = user.name
     xp = db.fetch_user_xp(userid)
     lvl = floor(xp / XP_PER_LVL)
     # Calculate what percentage we are to the next level, as a range from 0-10
@@ -138,10 +146,10 @@ async def render_lvl_image(message: discord.Message) -> Optional[str]:
     out_filename = os.path.join(TMP_PATH, f"{userid}.png")
     avatar_filename = out_filename
 
-    if author.avatar == None:
+    if user.avatar == None:
         avatar_filename = os.path.join(ASSETS_PATH, "default_avatar.png")
     else:
-        avatar_url = author.display_avatar.url
+        avatar_url = user.display_avatar.url
 
         # Download the user's avatar image to private/tmp
         try:
@@ -152,7 +160,7 @@ async def render_lvl_image(message: discord.Message) -> Optional[str]:
         except requests.exceptions.ConnectionError as e:
             print(f"Issue downloading avatar {avatar_url}. Aborting")
             print(str(e))
-            return f"Error accessing avatar URL has occurred. Pinging <@{OWNER}>"
+            return None
 
     # Open image, paste the avatar image, then the frame
     bg = Image.open(IMG_BG)
@@ -184,7 +192,7 @@ async def render_lvl_image(message: discord.Message) -> Optional[str]:
     # The discriminator needs to be appended on the end of the username, but in a different font size
     username_width = font_22.getsize(username)[0]
     y_offset = font_22.getsize(username)[1] / 6
-    draw.text((USERNAME_POS.x + username_width, USERNAME_POS.y + y_offset), f"#{author.discriminator}", BACK_COLOR, font=font_14)
+    draw.text((USERNAME_POS.x + username_width, USERNAME_POS.y + y_offset), f"#{user.discriminator}", BACK_COLOR, font=font_14)
 
     draw.text(LEVEL_POS.shadow_tuple(), f"Level {lvl}", BACK_COLOR, font=font_22)
     draw.text(LEVEL_POS.as_tuple(), f"Level {lvl}", FONT_COLOR, font=font_22)
@@ -202,9 +210,5 @@ async def render_lvl_image(message: discord.Message) -> Optional[str]:
     small_bar.close()
     large_bar.close()
 
-    # Send image to channel
-    with open(out_filename, 'rb') as af:
-        df = discord.File(af)
-        await message.channel.send(file=df)
+    return out_filename
 
-    return None

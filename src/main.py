@@ -36,7 +36,7 @@ FUNC_DICT = {
     "lb": commands.show_lb,
     "level": xp.render_lvl_image,
     "list": cc.list_cmds,
-    "lvl": xp.render_lvl_image,
+    "lvl": xp.parse_lvl_image,
     "nobonusxp": tr.reset_bonus_xp,
     "postgames": game_timer.post_games,
     "ranks": commands.list_ranks,
@@ -77,6 +77,10 @@ Runs when a guild (server) that the bot is connected to becomes ready
 """
 @client.event
 async def on_guild_available(guild: discord.Guild):
+    if not dbg.is_debug_bot():
+        import context
+        await client.setup_guild(guild)
+
     await tr.refresh_db(guild)
 
     # This is 100% going to cause issues if we ever want to host on more than one server

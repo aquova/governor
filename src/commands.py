@@ -66,7 +66,7 @@ Show leaderboard
 
 Posts the URL for the online leaderboard
 """
-async def show_lb(message: discord.Message) -> str:
+async def show_lb(unused=None) -> str:
     return f"{SERVER_URL}/leaderboard.php"
 
 """
@@ -74,7 +74,7 @@ List ranks
 
 Lists the available earnable rank roles, and their levels
 """
-async def list_ranks(message: discord.Message) -> str:
+async def list_ranks(unused=None) -> str:
     output = ""
     for rank in RANKS:
         output += f"Level {rank['level']}: {rank['name']}\n"
