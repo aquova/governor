@@ -36,5 +36,3 @@ GAME_ANNOUNCE_TIME = datetime.strptime(cfg['games']['announcement_time'], "%I:%M
 ranks_path = "/private/ranks.json"
 with open(ranks_path) as ranks_file:
     RANKS = json.load(ranks_file)['ranks']
-
-client = discord.Client(intents=discord.Intents.all())

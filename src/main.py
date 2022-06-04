@@ -5,7 +5,8 @@
 import discord
 import db, commands, games, xp
 import traceback
-from config import client, OWNER, DEBUG_BOT, CMD_PREFIX, DISCORD_KEY, GAME_ANNOUNCEMENT_CHANNEL, XP_OFF
+from client import client
+from config import OWNER, DEBUG_BOT, CMD_PREFIX, DISCORD_KEY, GAME_ANNOUNCEMENT_CHANNEL, XP_OFF
 from slowmode import Thermometer
 from tracker import Tracker
 

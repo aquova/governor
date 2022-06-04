@@ -1,6 +1,7 @@
 import discord
 import db
-from config import client, ADMIN_ACCESS, CMD_PREFIX, RANKS, SERVER_URL, LVL_CHANS, NO_SLOWMODE, XP_OFF, LOG_CHAN
+from client import client
+from config import ADMIN_ACCESS, CMD_PREFIX, RANKS, SERVER_URL, LVL_CHANS, NO_SLOWMODE, XP_OFF, LOG_CHAN
 from utils import requires_admin, requires_define
 
 import commonbot.utils
