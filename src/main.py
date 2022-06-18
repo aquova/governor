@@ -5,6 +5,7 @@
 import discord
 import db, commands, games, xp
 import traceback
+import re
 import requests
 from client import client
 from config import OWNER, DEBUG_BOT, CMD_PREFIX, DISCORD_KEY, GAME_ANNOUNCEMENT_CHANNEL, XP_OFF
@@ -153,12 +154,11 @@ async def on_message(message: discord.Message):
                 await message.channel.send(lvl_up_message)
 
         if (message.content.__contains__('https://smapi.io/log/')):
-            message_array = message.content.split()
-            for t in message_array:
-                if (t.__contains__('https://smapi.io/log/')):
-                    log_info = requests.get("http://api.pil.ninja/smapi_log/endpoint?" + t)
-                    json_log_info = log_info.json()
-                    await message.channel.send("SMAPI log info: SMAPI " + json_log_info['SMAPI_ver'] + " with Stardew Valley " + json_log_info['StardewVersion'] + "on: " + json_log_info['OS'] + ", with " + json_log_info['SMAPIMods'] + " C# Mods and " + json_log_info['ContentPacks'] + " Content Packs")
+             for log_link in re.findall("https://smapi.io/log/[a-zA-Z0-9]{32}", message.content):
+                log_info = requests.get("http://api.pil.ninja/smapi_log/endpoint?" + log_link)
+                json_log_info = log_info.json()
+                if json_log_info['success'] is True:
+                    await message.channel.send("SMAPI log info: SMAPI " + json_log_info['SMAPI_ver'] + " with Stardew Valley " + json_log_info['StardewVersion'] + " on " + json_log_info['OS'] + ", with " + json_log_info['SMAPIMods'] + " C# Mods and " + json_log_info['ContentPacks'] + " Content Packs")
                 
             
         # Check if someone is trying to use a bot command
