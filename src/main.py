@@ -153,12 +153,15 @@ async def on_message(message: discord.Message):
                 await message.channel.send(lvl_up_message)
 
         if (message.content.__contains__('https://smapi.io/log/')):
-            message_array = message.content.split()
-            for t in message_array:
-                if (t.__contains__('https://smapi.io/log/')):
-                    log_info = requests.get("http://api.pil.ninja/smapi_log/endpoint?" + t)
+            message_with_normal_urls = message.content.replace("<", "").replace(">", "")
+            message_array = message_with_normal_urls.split()
+            for w in message_array:
+                if (w.__contains__('https://smapi.io/log/')):
+                    log_id = w.replace("https://smapi.io/log/", "").replace(".","").replace("/","").replace("?","").replace("!","").replace(",","")
+                    log_info = requests.get("http://api.pil.ninja/smapi_log/endpoint?" + "https://smapi.io/log/" + log_id)
                     json_log_info = log_info.json()
-                    await message.channel.send("SMAPI log info: SMAPI " + json_log_info['SMAPI_ver'] + " with Stardew Valley " + json_log_info['StardewVersion'] + " on " + json_log_info['OS'] + ", with " + json_log_info['SMAPIMods'] + " C# Mods and " + json_log_info['ContentPacks'] + " Content Packs")
+                    if json_log_info['success'] is True:
+                        await message.channel.send("SMAPI log info: SMAPI " + json_log_info['SMAPI_ver'] + " with Stardew Valley " + json_log_info['StardewVersion'] + " on " + json_log_info['OS'] + ", with " + json_log_info['SMAPIMods'] + " C# Mods and " + json_log_info['ContentPacks'] + " Content Packs")
                 
             
         # Check if someone is trying to use a bot command
