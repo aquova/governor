@@ -36,7 +36,7 @@ FUNC_DICT = {
     "help": commands.print_help,
     "info": commands.info,
     "lb": commands.show_lb,
-    "level": xp.render_lvl_image,
+    "level": xp.parse_lvl_image,
     "list": cc.list_cmds,
     "lvl": xp.parse_lvl_image,
     "nobonusxp": tr.reset_bonus_xp,
@@ -159,8 +159,8 @@ async def on_message(message: discord.Message):
                 json_log_info = log_info.json()
                 if json_log_info['success'] is True:
                     await message.channel.send("SMAPI log info: SMAPI " + json_log_info['SMAPI_ver'] + " with Stardew Valley " + json_log_info['StardewVersion'] + " on " + json_log_info['OS'] + ", with " + json_log_info['SMAPIMods'] + " C# Mods and " + json_log_info['ContentPacks'] + " Content Packs")
-                
-            
+
+
         # Check if someone is trying to use a bot command
         if message.content != "" and message.content[0] == CMD_PREFIX:
             prefix_removed = commonbot.utils.strip_prefix(message.content, CMD_PREFIX)
