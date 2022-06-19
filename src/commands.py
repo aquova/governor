@@ -1,11 +1,13 @@
 import discord
+
+import commonbot.utils
+from commonbot.user import UserLookup
+
 import db
 from client import client
 from config import ADMIN_ACCESS, CMD_PREFIX, RANKS, SERVER_URL, LVL_CHANS, NO_SLOWMODE, XP_OFF, LOG_CHAN
 from utils import requires_admin, requires_define
 
-import commonbot.utils
-from commonbot.user import UserLookup
 
 ul = UserLookup()
 
@@ -56,8 +58,7 @@ async def print_help(message: discord.Message) -> str:
     try:
         if commonbot.utils.check_roles(message.author, ADMIN_ACCESS):
             return ADMIN_HELP_MES
-        else:
-            return HELP_MES
+        return HELP_MES
     except AttributeError:
         return HELP_MES
 
@@ -66,7 +67,7 @@ Show leaderboard
 
 Posts the URL for the online leaderboard
 """
-async def show_lb(unused=None) -> str:
+async def show_lb(_) -> str:
     return f"{SERVER_URL}/leaderboard.php"
 
 """
@@ -74,11 +75,10 @@ List ranks
 
 Lists the available earnable rank roles, and their levels
 """
-async def list_ranks(unused=None) -> str:
+async def list_ranks(_) -> str:
     output = ""
     for rank in RANKS:
         output += f"Level {rank['level']}: {rank['name']}\n"
-
     return output
 
 """
@@ -92,27 +92,27 @@ async def say(message: discord.Message) -> str:
         payload = commonbot.utils.strip_words(message.content, 1)
         channel_id = commonbot.utils.get_first_word(payload)
         channel = discord.utils.get(message.guild.channels, id=int(channel_id))
-        m = commonbot.utils.strip_words(payload, 1)
-        if m == "" and len(message.attachments) == 0:
+        output = commonbot.utils.strip_words(payload, 1)
+        if output == "" and len(message.attachments) == 0:
             return "You cannot send empty messages."
 
         for item in message.attachments:
-            f = await item.to_file()
-            await channel.send(file=f)
+            my_file = await item.to_file()
+            await channel.send(file=my_file)
 
-        if m != "":
-            await channel.send(m, allowed_mentions=discord.AllowedMentions.none())
+        if output != "":
+            await channel.send(output, allowed_mentions=discord.AllowedMentions.none())
 
         return "Message sent."
     except (IndexError, ValueError):
         return f"I was unable to find a channel ID in that message. `{CMD_PREFIX}say CHAN_ID message`"
     except AttributeError:
         return "Are you sure that was a channel ID?"
-    except discord.errors.HTTPException as e:
-        if e.code == 50013:
+    except discord.errors.HTTPException as err:
+        if err.code == 50013:
             return "You do not have permissions to post in that channel."
         else:
-            return f"Oh god something went wrong, everyone panic! {str(e)}"
+            return f"Oh god something went wrong, everyone panic! {str(err)}"
 
 """
 Edit message
@@ -127,32 +127,32 @@ async def edit(message: discord.Message) -> str:
         edit_message = None
         for channel in message.guild.channels:
             try:
-                if type(channel) == discord.TextChannel:
+                if isinstance(channel, discord.TextChannel):
                     edit_message = await channel.fetch_message(int(edit_id))
                     break
-            except discord.errors.HTTPException as e:
-                if e.code == 10008:
+            except discord.errors.HTTPException as err:
+                if err.code == 10008:
                     pass
 
         if not edit_message:
             return "I was unable to find a message with that ID."
 
-        m = commonbot.utils.strip_words(payload, 1)
-        if m == "":
+        output = commonbot.utils.strip_words(payload, 1)
+        if output == "":
             return "You cannot replace a message with nothing."
 
-        await edit_message.edit(content=m)
+        await edit_message.edit(content=output)
         return "Message edited."
     except (IndexError, ValueError):
         return "I was unable to find a message ID in that message. `{CMD_PREFIX}edit MES_ID message`"
-    except discord.errors.HTTPException as e:
-        if e.code == 50005:
+    except discord.errors.HTTPException as err:
+        if err.code == 50005:
             return "You cannot edit a message from another user."
         else:
-            return f"Oh god something went wrong, everyone panic! {str(e)}"
+            return f"Oh god something went wrong, everyone panic! {str(err)}"
 
 @requires_admin
-async def info(message: discord.Message) -> str:
+async def info(_) -> str:
     lvl_c = ", ".join([f"<#{x}>" for x in LVL_CHANS])
     slow_c = ", ".join([f"<#{x}>" for x in NO_SLOWMODE])
     xp_c = ", ".join([f"<#{x}>" for x in XP_OFF])
@@ -165,6 +165,7 @@ async def info(message: discord.Message) -> str:
 
 class CustomCommands:
     def __init__(self):
+        self.keywords = None
         self.cmd_dict = db.get_custom_cmds()
 
     """
@@ -197,7 +198,7 @@ class CustomCommands:
 
         # Check if they want to embed a ping within the response
         mentioned_id = ul.parse_id(message)
-        if mentioned_id != None:
+        if mentioned_id is not None:
             ping = f"<@!{mentioned_id}>"
         else:
             ping = ""
@@ -286,7 +287,7 @@ class CustomCommands:
 
     Give a list of all user-defined commands
     """
-    async def list_cmds(self, message: discord.Message) -> str:
+    async def list_cmds(self, _) -> str:
         output = "```\n"
         cmds = sorted(self.cmd_dict.keys(), key=str.lower)
         output += ", ".join(cmds)

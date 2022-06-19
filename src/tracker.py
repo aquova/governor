@@ -1,13 +1,14 @@
-import discord
 from datetime import datetime, timedelta
 from typing import Optional
+
+import discord
+
+from commonbot.user import UserLookup
+import commonbot.utils
 
 import db
 from config import CMD_PREFIX, RANKS, XP_PER_LVL, XP_PER_MINUTE
 from utils import requires_admin
-
-from commonbot.user import UserLookup
-import commonbot.utils
 
 class UserData:
     def __init__(self, xp: int, monthly_xp: int, timestamp: datetime, username: str, avatar: str, next_role_at: Optional[int]):
@@ -152,10 +153,10 @@ class Tracker:
                 if role_xp <= xp:
                     new_roles.append(role_id)
                 # Otherwise, keep track if this should be the next role to earn
-                elif lowest_missing_xp == None or role_xp < lowest_missing_xp:
+                elif lowest_missing_xp is None or role_xp < lowest_missing_xp:
                     lowest_missing_xp = role_xp
 
-        if new_roles != []:
+        if new_roles:
             # Go through our new role IDs, and get the actual role objects
             for role_id in new_roles:
                 role = discord.utils.get(user.guild.roles, id=role_id)
@@ -192,7 +193,7 @@ class Tracker:
             if xp == userid:
                 return "Was unable to find XP value in that message"
             user = discord.utils.get(message.guild.members, id=userid)
-            if user != None:
+            if user is not None:
                 await self.give_xp(user, message.guild, xp)
                 return f"{xp} XP given to {user.name}#{user.discriminator}"
             else:

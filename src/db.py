@@ -1,7 +1,8 @@
-import sqlite3
 from datetime import datetime, timezone
-from config import DB_PATH, STARTING_XP
+import sqlite3
 from typing import Optional
+
+from config import DB_PATH, STARTING_XP
 
 """
 Initialize database
@@ -49,7 +50,7 @@ def fetch_user_xp(user_id: int) -> int:
     query = ("SELECT xp FROM xp WHERE id=?", [user_id])
     found_user = _db_read(query)
 
-    if found_user == []:
+    if not found_user:
         return STARTING_XP
     else:
         return found_user[0][0]
@@ -61,7 +62,7 @@ Updates a user's XP value, as well as other user information
 """
 def set_user_xp(user_id: int, xp: int, user_name: Optional[str], user_avatar: Optional[str], monthly: int, month: int):
     # We store username and avatar only for the leaderboard
-    if user_avatar == None:
+    if user_avatar is None:
         user_avatar = ""
 
     query = ("REPLACE INTO xp (id, xp, username, avatar, monthly, month) VALUES (?, ?, ?, ?, ?, ?)", [user_id, xp, user_name, user_avatar, monthly, month])
@@ -150,9 +151,8 @@ Returns the server rank for the user in question
 def get_rank(userid: int) -> int:
     xp_query = ("SELECT xp FROM xp WHERE id=?", [userid])
     xp_res = _db_read(xp_query)
-    if xp_res == []:
-        xp = 0
-    else:
+    xp = 0
+    if xp_res:
         xp = xp_res[0][0]
 
     count_query = ("SELECT COUNT()+1 FROM xp WHERE xp > ? and username IS NOT NULL", [xp])

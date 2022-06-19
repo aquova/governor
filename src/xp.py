@@ -1,10 +1,16 @@
-import discord, db, requests, os, shutil
-from config import XP_PER_LVL, LVL_CHANS, OWNER, ASSETS_PATH, FONTS_PATH, TMP_PATH
 from math import ceil, floor
-from PIL import Image, ImageDraw, ImageFont
+import os
+import shutil
 from typing import Optional
 
+import discord
+from PIL import Image, ImageDraw, ImageFont
+import requests
+
 from commonbot.user import UserLookup
+
+from config import XP_PER_LVL, LVL_CHANS, ASSETS_PATH, FONTS_PATH, TMP_PATH
+import db
 
 ul = UserLookup()
 
@@ -82,7 +88,7 @@ async def userinfo(message: discord.Message):
     role_str = ", ".join(roles)
 
     embed = discord.Embed(title=username, type="rich", color=author.color)
-    if author.nick != None:
+    if author.nick is not None:
         embed.description = f"aka {author.nick}"
     embed.set_thumbnail(url=author.display_avatar.url)
     embed.add_field(name="ID", value=author.id, inline=False)
@@ -94,7 +100,7 @@ async def userinfo(message: discord.Message):
 
     embed.add_field(name="created", value=create_time)
     embed.add_field(name="joined", value=join_time)
-    if boost_time != None:
+    if boost_time is not None:
         embed.add_field(name="boosted", value=boost_time.strftime("%c"))
 
     # Discord will throw an error if we try to have a field with an empty string
@@ -120,9 +126,9 @@ async def parse_lvl_image(message: discord.Message):
 
     filename = await render_lvl_image(author)
     if filename:
-        with open(filename, 'rb') as af:
-            df = discord.File(af)
-            await message.channel.send(file=df)
+        with open(filename, 'rb') as my_file:
+            discord_file = discord.File(my_file)
+            await message.channel.send(file=discord_file)
     return None
 
 """
@@ -146,7 +152,7 @@ async def render_lvl_image(user: discord.Member) -> Optional[str]:
     out_filename = os.path.join(TMP_PATH, f"{userid}.png")
     avatar_filename = out_filename
 
-    if user.avatar == None:
+    if user.avatar is None:
         avatar_filename = os.path.join(ASSETS_PATH, "default_avatar.png")
     else:
         avatar_url = user.display_avatar.url
@@ -157,9 +163,9 @@ async def render_lvl_image(user: discord.Member) -> Optional[str]:
             with open(avatar_filename, 'wb') as outfile:
                 shutil.copyfileobj(response.raw, outfile)
             del response
-        except requests.exceptions.ConnectionError as e:
+        except requests.exceptions.ConnectionError as err:
             print(f"Issue downloading avatar {avatar_url}. Aborting")
-            print(str(e))
+            print(str(err))
             return None
 
     # Open image, paste the avatar image, then the frame
@@ -182,7 +188,6 @@ async def render_lvl_image(user: discord.Member) -> Optional[str]:
 
     # Add the information text to the image
     draw = ImageDraw.Draw(bg)
-    font_12 = ImageFont.truetype(FONT, 12)
     font_14 = ImageFont.truetype(FONT, 14)
     font_22 = ImageFont.truetype(FONT, 22)
 
@@ -211,4 +216,3 @@ async def render_lvl_image(user: discord.Member) -> Optional[str]:
     large_bar.close()
 
     return out_filename
-

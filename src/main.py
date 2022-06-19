@@ -2,19 +2,23 @@
 # Written by aquova, 2020-2022
 # https://github.com/aquova/governor
 
-import discord
-import db, commands, games, xp
-import traceback
 import re
-import requests
 import string
+
+import discord
+import requests
+
+import commonbot.utils
+from commonbot.debug import Debug
+
+import db
+import commands
+import games
+import xp
 from client import client
 from config import OWNER, DEBUG_BOT, CMD_PREFIX, DISCORD_KEY, GAME_ANNOUNCEMENT_CHANNEL, XP_OFF
 from slowmode import Thermometer
 from tracker import Tracker
-
-import commonbot.utils
-from commonbot.debug import Debug
 
 db.initialize()
 tr = Tracker()
@@ -139,7 +143,7 @@ async def on_message(message: discord.Message):
         return
 
     # For now, completely ignore DMs
-    if type(message.channel) is discord.channel.DMChannel:
+    if isinstance(message.channel, discord.channel.DMChannel):
         return
 
     # Check first if we're toggling debug mode
@@ -150,47 +154,42 @@ async def on_message(message: discord.Message):
     elif dbg.should_ignore_message(message):
         return
 
-    try:
-        # Keep track of the user's message for dynamic slowmode
-        await thermo.user_spoke(message)
-        # Check if we need to congratulate a user on getting a new role
-        # Don't award XP if posting in specified disabled channels
-        if message.channel.id not in XP_OFF:
-            lvl_up_message = await tr.give_xp(message.author, message.guild)
-            if lvl_up_message:
-                await message.channel.send(lvl_up_message)
+    # Keep track of the user's message for dynamic slowmode
+    await thermo.user_spoke(message)
+    # Check if we need to congratulate a user on getting a new role
+    # Don't award XP if posting in specified disabled channels
+    if message.channel.id not in XP_OFF:
+        lvl_up_message = await tr.give_xp(message.author, message.guild)
+        if lvl_up_message:
+            await message.channel.send(lvl_up_message)
 
-        for log_link in re.findall(r"https://smapi.io/log/[a-zA-Z0-9]{32}", message.content):
-            log_dict = requests.get(f"http://api.pil.ninja/smapi_log/endpoint?{log_link}").json()
-            windows_info = re.search(r"(Windows (?:Vista|\d+)) .+", log_dict["OS"])
-            if windows_info:  # Condense OS text for Windows because it's often quite verbose.
-                log_dict["OS"] = windows_info.group(1)
-            await message.channel.send(smapi_log_message_template.substitute(log_dict))
+    for log_link in re.findall(r"https://smapi.io/log/[a-zA-Z0-9]{32}", message.content):
+        log_dict = requests.get(f"http://api.pil.ninja/smapi_log/endpoint?{log_link}").json()
+        windows_info = re.search(r"(Windows (?:Vista|\d+)) .+", log_dict["OS"])
+        if windows_info:  # Condense OS text for Windows because it's often quite verbose.
+            log_dict["OS"] = windows_info.group(1)
+        await message.channel.send(smapi_log_message_template.substitute(log_dict))
 
 
-        # Check if someone is trying to use a bot command
-        if message.content != "" and message.content[0] == CMD_PREFIX:
-            prefix_removed = commonbot.utils.strip_prefix(message.content, CMD_PREFIX)
-            if prefix_removed == "":
-                return
-            command = commonbot.utils.get_first_word(prefix_removed).lower()
+    # Check if someone is trying to use a bot command
+    if message.content != "" and message.content[0] == CMD_PREFIX:
+        prefix_removed = commonbot.utils.strip_prefix(message.content, CMD_PREFIX)
+        if prefix_removed == "":
+            return
+        command = commonbot.utils.get_first_word(prefix_removed).lower()
 
-            try:
-                if command in FUNC_DICT:
-                    # First, check if they're using a built-in command
-                    output_message = await FUNC_DICT[command](message)
-                    if output_message:
-                        await message.channel.send(output_message)
-                elif cc.command_available(command):
-                    # Check if they're using a user-defined command
-                    cmd_output = cc.parse_response(message)
-                    await message.channel.send(cmd_output)
-            except discord.errors.Forbidden as e:
-                if e.code == 50013:
-                    print(f"I can see messages, but cannot send in #{message.channel.name}")
-
-    except discord.errors.HTTPException as e:
-        print(traceback.format_exc())
-        pass
+        try:
+            if command in FUNC_DICT:
+                # First, check if they're using a built-in command
+                output_message = await FUNC_DICT[command](message)
+                if output_message:
+                    await message.channel.send(output_message)
+            elif cc.command_available(command):
+                # Check if they're using a user-defined command
+                cmd_output = cc.parse_response(message)
+                await message.channel.send(cmd_output)
+        except discord.errors.Forbidden as err:
+            if err.code == 50013:
+                print(f"I can see messages, but cannot send in #{message.channel.name}")
 
 client.run(DISCORD_KEY)

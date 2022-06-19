@@ -1,7 +1,6 @@
-from config import ADMIN_ACCESS, DEFINE_ACCESS
-from commonbot.utils import check_roles
 from typing import Callable, Optional
-
+from commonbot.utils import check_roles
+from config import ADMIN_ACCESS, DEFINE_ACCESS
 """
 Requires define
 

@@ -1,10 +1,14 @@
-import discord, db
+import asyncio
 from datetime import datetime, timedelta, timezone
-import asyncio, random
-from config import GAME_ANNOUNCE_TIME
-from utils import requires_admin
+import random
+
+import discord
 
 import commonbot.utils
+
+import db
+from config import GAME_ANNOUNCE_TIME
+from utils import requires_admin
 
 ANNOUNCE_MESSAGES = [
     "Oh ho ho, what are all these free games I've found?",
@@ -20,6 +24,7 @@ Can only handle one announcement channel for one server.
 """
 class GameTimer:
     def __init__(self):
+        self._channel = None
         self.task = None
 
     def start(self, channel: discord.TextChannel):
@@ -28,7 +33,7 @@ class GameTimer:
             self.task = asyncio.create_task(self._announce_games())
 
     @requires_admin
-    async def post_games(self, message: discord.Message) -> str:
+    async def post_games(self, _) -> str:
         await self._send_message()
         return "Games posted"
 
@@ -70,7 +75,7 @@ async def add_game(message: discord.Message) -> str:
     time_info = get_next_announcement_info()
 
     if game in games:
-       return f"That game (and {len(games) - 1} other(s)) is already going to be announced at {time_info}."
+        return f"That game (and {len(games) - 1} other(s)) is already going to be announced at {time_info}."
 
     db.add_game(game)
 
@@ -82,14 +87,13 @@ Get games
 Returns the list of games to be announced
 """
 @requires_admin
-async def get_games(message: discord.Message) -> str:
+async def get_games(_) -> str:
     games = db.get_games()
 
     time_info = get_next_announcement_info()
 
     if len(games) != 0:
         formatted_games = "\n".join(games)
-
         return f"The following games will be announced at {time_info}:\n{formatted_games}"
     else:
         return f"There are no games to announce so the next announcement at {time_info} will be skipped."
@@ -100,9 +104,8 @@ Clear games
 Clears all games that are being announced
 """
 @requires_admin
-async def clear_games(message: discord.Message) -> str:
+async def clear_games(_) -> str:
     db.clear_games()
-
     return "Games cleared!"
 
 """

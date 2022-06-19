@@ -1,4 +1,5 @@
-import asyncio, discord
+import asyncio
+import discord
 from config import NO_SLOWMODE
 
 WAIT_TIME = 120 # How long to sleep between checks, in seconds
@@ -11,6 +12,7 @@ DECREASE_MAX = 2
 
 class Thermometer:
     def __init__(self):
+        self.channels = None
         self.channel_dict = {}
         self.task = None
 
@@ -49,10 +51,7 @@ class Thermometer:
                 slowmode = min(MAX_SLOWMODE, slowmode, old_slowmode + INCREASE_MAX)
                 slowmode = max(slowmode, old_slowmode - DECREASE_MAX)
 
-                try:
-                    if old_slowmode != slowmode:
-                        await channel.edit(slowmode_delay=slowmode)
-                except Exception as e:
-                    print(f"Error attempting to set slowmode in <#{channel_id}>: {str(e)}")
+                if old_slowmode != slowmode:
+                    await channel.edit(slowmode_delay=slowmode)
 
             self.channel_dict.clear()
