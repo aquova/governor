@@ -7,6 +7,7 @@ import db, commands, games, xp
 import traceback
 import re
 import requests
+import string
 from client import client
 from config import OWNER, DEBUG_BOT, CMD_PREFIX, DISCORD_KEY, GAME_ANNOUNCEMENT_CHANNEL, XP_OFF
 from slowmode import Thermometer
@@ -50,6 +51,12 @@ FUNC_DICT = {
 
 # The keys in the function dict cannot be used as custom commands
 cc.set_protected_keywords(list(FUNC_DICT.keys()))
+
+# Template for SMAPI log info messages
+smapi_log_message_template = string.Template(
+    "**Log Info:** SMAPI $SMAPI_ver with SDV $StardewVersion on $OS, "
+    "with $SMAPIMods C# mods and $ContentPacks content packs."
+)
 
 """
 Update User Count
@@ -153,12 +160,12 @@ async def on_message(message: discord.Message):
             if lvl_up_message:
                 await message.channel.send(lvl_up_message)
 
-        if (message.content.__contains__('https://smapi.io/log/')):
-             for log_link in re.findall("https://smapi.io/log/[a-zA-Z0-9]{32}", message.content):
-                log_info = requests.get("http://api.pil.ninja/smapi_log/endpoint?" + log_link)
-                json_log_info = log_info.json()
-                if json_log_info['success'] is True:
-                    await message.channel.send("SMAPI log info: SMAPI " + json_log_info['SMAPI_ver'] + " with Stardew Valley " + json_log_info['StardewVersion'] + " on " + json_log_info['OS'] + ", with " + json_log_info['SMAPIMods'] + " C# Mods and " + json_log_info['ContentPacks'] + " Content Packs")
+        for log_link in re.findall(r"https://smapi.io/log/[a-zA-Z0-9]{32}", message.content):
+            log_dict = requests.get(f"http://api.pil.ninja/smapi_log/endpoint?{log_link}").json()
+            windows_info = re.search(r"(Windows (?:Vista|\d+)) .+", log_dict["OS"])
+            if windows_info:  # Condense OS text for Windows because it's often quite verbose.
+                log_dict["OS"] = windows_info.group(1)
+            await message.channel.send(smapi_log_message_template.substitute(log_dict))
 
 
         # Check if someone is trying to use a bot command
