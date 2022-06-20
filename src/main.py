@@ -165,10 +165,11 @@ async def on_message(message: discord.Message):
 
     for log_link in re.findall(r"https://smapi.io/log/[a-zA-Z0-9]{32}", message.content):
         log_dict = requests.get(f"http://api.pil.ninja/smapi_log/endpoint?{log_link}").json()
-        windows_info = re.search(r"(Windows (?:Vista|\d+)) .+", log_dict["OS"])
-        if windows_info:  # Condense OS text for Windows because it's often quite verbose.
-            log_dict["OS"] = windows_info.group(1)
-        await message.channel.send(smapi_log_message_template.substitute(log_dict))
+        if log_dict["success"]:
+            windows_info = re.search(r"(Windows (?:Vista|\d+)) .+", log_dict["OS"])
+            if windows_info:  # Condense OS text for Windows because it's often quite verbose.
+                log_dict["OS"] = windows_info.group(1)
+            await message.channel.send(smapi_log_message_template.substitute(log_dict))
 
 
     # Check if someone is trying to use a bot command
