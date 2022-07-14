@@ -7,6 +7,7 @@ import string
 
 import discord
 import requests
+import urllib.parse
 
 import commonbot.utils
 from commonbot.debug import Debug
@@ -170,6 +171,20 @@ async def on_message(message: discord.Message):
             if windows_info:  # Condense OS text for Windows because it's often quite verbose.
                 log_dict["OS"] = windows_info.group(1)
             await message.channel.send(smapi_log_message_template.substitute(log_dict))
+
+    for attachment in message.attachments:
+            if attachment.filename == "SMAPI-latest.txt":
+                print("SMAPI-latest.txt found")
+                r = requests.get(attachment.url)
+                #await message.channel.send(a.url)
+                log = urllib.parse.quote(r.text)
+                headers = {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                }
+
+                s = requests.post('https://smapi.io/log/', data="input={0}".format(log), headers=headers)
+                logurl = s.text.split('</strong> <code>')[1].split('</code>')[0]
+                await message.channel.send("Log found, uploaded to: " + logurl)
 
 
     # Check if someone is trying to use a bot command
