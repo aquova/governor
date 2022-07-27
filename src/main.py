@@ -85,6 +85,15 @@ async def on_ready():
     print(client.user.id)
 
 """
+On Thread Create
+
+Occurs when a new thread is created in the server
+"""
+@client.event
+async def on_thread_create(thread: discord.Thread):
+    await thread.join()
+
+"""
 On Guild Available
 
 Runs when a guild (server) that the bot is connected to becomes ready
