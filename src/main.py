@@ -15,6 +15,7 @@ from commonbot.debug import Debug
 import db
 import commands
 import games
+import pronouns
 import xp
 from client import client
 from config import OWNER, DEBUG_BOT, CMD_PREFIX, DISCORD_KEY, GAME_ANNOUNCEMENT_CHANNEL, XP_OFF
@@ -46,6 +47,7 @@ FUNC_DICT = {
     "list": cc.list_cmds,
     "lvl": xp.parse_lvl_image,
     "nobonusxp": tr.reset_bonus_xp,
+    "pronouns": pronouns.post_widget,
     "postgames": game_timer.post_games,
     "ranks": commands.list_ranks,
     "remove": cc.remove_cmd,
@@ -83,6 +85,7 @@ async def on_ready():
     print("Logged in as:")
     print(client.user.name)
     print(client.user.id)
+    await client.setup_hook()
 
 """
 On Thread Create
@@ -100,10 +103,6 @@ Runs when a guild (server) that the bot is connected to becomes ready
 """
 @client.event
 async def on_guild_available(guild: discord.Guild):
-    if not dbg.is_debug_bot():
-        import context
-        await client.setup_guild(guild)
-
     await tr.refresh_db(guild)
 
     # This is 100% going to cause issues if we ever want to host on more than one server

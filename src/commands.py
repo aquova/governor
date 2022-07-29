@@ -28,6 +28,8 @@ ADMIN_HELP_MES = (
     f"Display info on bot settings: `{CMD_PREFIX}info`\n"
     f"View available ranks: `{CMD_PREFIX}ranks`\n"
     f"\n"
+    f"Post the pronoun selection menu (rarely do this): `{CMD_PREFIX}pronouns CHAN_ID`\n"
+    f"\n"
     f"Add a game to be announced: `{CMD_PREFIX}addgame URL`\n"
     f"View all games to be announced: `{CMD_PREFIX}getgames`\n"
     f"Post games immediately: `{CMD_PREFIX}postgames`\n"

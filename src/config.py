@@ -32,6 +32,12 @@ LOG_CHAN = cfg['channels']['log']
 GAME_ANNOUNCEMENT_CHANNEL = cfg['games']['announcement_channel']
 GAME_ANNOUNCE_TIME = datetime.strptime(cfg['games']['announcement_time'], "%I:%M %p")
 
+HE_PRONOUN = cfg['roles']['pronouns']['he']
+SHE_PRONOUN = cfg['roles']['pronouns']['she']
+THEY_PRONOUN = cfg['roles']['pronouns']['they']
+ANY_PRONOUN = cfg['roles']['pronouns']['any']
+ASK_PRONOUN = cfg['roles']['pronouns']['ask']
+
 # Import ranks from their configuration
 RANKS_PATH = "/private/ranks.json"
 with open(RANKS_PATH) as ranks_file:
