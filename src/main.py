@@ -52,6 +52,7 @@ FUNC_DICT = {
     "ranks": commands.list_ranks,
     "remove": cc.remove_cmd,
     "say": commands.say,
+    "sync": commands.sync,
     "userinfo": xp.userinfo,
     "xp": xp.get_xp,
 }
