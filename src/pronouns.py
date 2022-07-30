@@ -1,14 +1,17 @@
+from math import floor
+
 import discord
 
 from commonbot.utils import strip_words, get_first_word
 
-from config import CMD_PREFIX, HE_PRONOUN, SHE_PRONOUN, THEY_PRONOUN, ANY_PRONOUN, ASK_PRONOUN
+from config import CMD_PREFIX, HE_PRONOUN, SHE_PRONOUN, THEY_PRONOUN, IT_PRONOUN, ANY_PRONOUN, ASK_PRONOUN
 from utils import requires_admin
 
 PRONOUNS = {
     "He/Him": HE_PRONOUN,
     "She/Her": SHE_PRONOUN,
     "They/Them": THEY_PRONOUN,
+    "It/Its": IT_PRONOUN,
     "Any": ANY_PRONOUN,
     "Ask": ASK_PRONOUN,
 }
@@ -33,8 +36,10 @@ class PronounWidgetButton(discord.ui.Button):
 class PronounWidget(discord.ui.View):
     def __init__(self):
         super().__init__(timeout=None)
+        idx = 0
         for pronoun, _ in PRONOUNS.items():
-            self.add_item(PronounWidgetButton(pronoun, 0))
+            self.add_item(PronounWidgetButton(pronoun, floor(idx / 3)))
+            idx += 1
 
 @requires_admin
 async def post_widget(message: discord.Message) -> str:
