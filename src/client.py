@@ -1,6 +1,5 @@
 import discord
 
-import context
 from pronouns import PronounWidget
 
 class DiscordClient(discord.Client):
