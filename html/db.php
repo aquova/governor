@@ -36,7 +36,7 @@
         $query;
         if ($use_monthly) {
             $month = date('m');
-            $year = date('y');
+            $year = date('Y');
             $query = $db->prepare('SELECT * FROM xp WHERE username IS NOT NULL AND monthly <> 0 AND month = ? AND year = ? ORDER BY monthly DESC LIMIT 100');
             $query->bindParam(1, $month, SQLITE3_INTEGER);
             $query->bindParam(2, $year, SQLITE3_INTEGER);
