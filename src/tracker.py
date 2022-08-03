@@ -39,6 +39,7 @@ class Tracker:
             leader_xp = leader[1]
             leader_monthly = leader[4]
             leader_month = leader[5]
+            leader_year = leader[6]
             user = discord.utils.get(server.members, id=leader_id)
 
             # Update users that are still in the server
@@ -47,10 +48,10 @@ class Tracker:
                 leader_avatar = user.display_avatar.key
 
                 # NOTE: May be worth to populate the cache here as well
-                db.set_user_xp(leader_id, leader_xp, leader_name, leader_avatar, leader_monthly, leader_month)
+                db.set_user_xp(leader_id, leader_xp, leader_name, leader_avatar, leader_monthly, leader_month, leader_year)
             # Otherwise, prune their username/avatar so that they don't appear on the leaderboard
             else:
-                db.set_user_xp(leader_id, leader_xp, None, None, leader_monthly, leader_month)
+                db.set_user_xp(leader_id, leader_xp, None, None, leader_monthly, leader_month, leader_year)
 
     """
     Grant user xp
@@ -90,7 +91,7 @@ class Tracker:
             next_role = user_data.next_role_at
 
             # Check if we've rolled over to a new month
-            if last_mes_time.month != curr_time.month:
+            if last_mes_time.month != curr_time.month or last_mes_time.year != curr_time.year:
                 monthly_xp = 0
 
         if not xp_add:
@@ -124,7 +125,7 @@ class Tracker:
         # Update their entry in the cache
         self.user_cache[user_id] = UserData(xp, monthly_xp, curr_time, username, avatar, next_role)
         # Update their entry in the database
-        db.set_user_xp(user_id, xp, username, avatar, monthly_xp, curr_time.month)
+        db.set_user_xp(user_id, xp, username, avatar, monthly_xp, curr_time.month, curr_time.year)
 
         return out_message
 

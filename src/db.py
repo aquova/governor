@@ -11,7 +11,7 @@ Generates database with needed tables if doesn't exist
 """
 def initialize():
     sqlconn = sqlite3.connect(DB_PATH)
-    sqlconn.execute("CREATE TABLE IF NOT EXISTS xp (id INT PRIMARY KEY, xp INT, username TEXT, avatar TEXT, monthly INT, month INT)")
+    sqlconn.execute("CREATE TABLE IF NOT EXISTS xp (id INT PRIMARY KEY, xp INT, username TEXT, avatar TEXT, monthly INT, month INT, year INT)")
     sqlconn.execute("CREATE TABLE IF NOT EXISTS commands (name TEXT PRIMARY KEY, response TEXT)")
     sqlconn.execute("CREATE TABLE IF NOT EXISTS games (game TEXT)")
     sqlconn.commit()
@@ -60,12 +60,12 @@ Set User XP
 
 Updates a user's XP value, as well as other user information
 """
-def set_user_xp(user_id: int, xp: int, user_name: Optional[str], user_avatar: Optional[str], monthly: int, month: int):
+def set_user_xp(user_id: int, xp: int, user_name: Optional[str], user_avatar: Optional[str], monthly: int, month: int, year: int):
     # We store username and avatar only for the leaderboard
     if user_avatar is None:
         user_avatar = ""
 
-    query = ("REPLACE INTO xp (id, xp, username, avatar, monthly, month) VALUES (?, ?, ?, ?, ?, ?)", [user_id, xp, user_name, user_avatar, monthly, month])
+    query = ("REPLACE INTO xp (id, xp, username, avatar, monthly, month, year) VALUES (?, ?, ?, ?, ?, ?)", [user_id, xp, user_name, user_avatar, monthly, month, year])
     _db_write(query)
 
 """
@@ -74,14 +74,14 @@ Fetch user monthly XP
 Collects the XP entry for this user for this month
 """
 def fetch_user_monthly_xp(user_id: int) -> int:
-    query = ("SELECT monthly, month FROM xp WHERE id=?", [user_id])
+    query = ("SELECT monthly, month, year FROM xp WHERE id=?", [user_id])
     found_user = _db_read(query)
-    curr_month = datetime.now(timezone.utc).month
+    curr_time = datetime.now(timezone.utc)
 
     if found_user == []:
         return 0
 
-    if found_user[0][1] != curr_month:
+    if found_user[0][1] != curr_time.month or found_user[0][2] != curr_time.year:
         return 0
     else:
         return found_user[0][0]
@@ -103,8 +103,8 @@ Get monthly leaders
 Returns a list of database entries for the top 100 highest XP holders this month
 """
 def get_monthly_leaders() -> list[tuple]:
-    curr_month = datetime.now(timezone.utc).month
-    query = ("SELECT * FROM xp ORDER BY monthly WHERE month=? DESC LIMIT 100", [curr_month])
+    curr_time = datetime.now(timezone.utc)
+    query = ("SELECT * FROM xp ORDER BY monthly WHERE month=? AND year=? DESC LIMIT 100", [curr_time.month, curr_time.year])
     leaders = _db_read(query)
 
     return leaders
