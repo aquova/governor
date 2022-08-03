@@ -65,7 +65,7 @@ def set_user_xp(user_id: int, xp: int, user_name: Optional[str], user_avatar: Op
     if user_avatar is None:
         user_avatar = ""
 
-    query = ("REPLACE INTO xp (id, xp, username, avatar, monthly, month, year) VALUES (?, ?, ?, ?, ?, ?)", [user_id, xp, user_name, user_avatar, monthly, month, year])
+    query = ("REPLACE INTO xp (id, xp, username, avatar, monthly, month, year) VALUES (?, ?, ?, ?, ?, ?, ?)", [user_id, xp, user_name, user_avatar, monthly, month, year])
     _db_write(query)
 
 """
