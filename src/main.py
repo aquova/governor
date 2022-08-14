@@ -122,6 +122,12 @@ async def on_guild_available(guild: discord.Guild):
     # Set Bouncer's status
     await update_user_count(guild)
 
+    # Only set up slash commands for prod bot
+    if not dbg.is_debug_bot():
+        import context
+        client.sync_guild(guild)
+
+
 """
 On Member Join
 
