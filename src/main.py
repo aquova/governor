@@ -15,6 +15,7 @@ from commonbot.debug import Debug
 import db
 import commands
 import games
+import platforms
 import pronouns
 import xp
 from client import client
@@ -47,6 +48,7 @@ FUNC_DICT = {
     "list": cc.list_cmds,
     "lvl": xp.parse_lvl_image,
     "nobonusxp": tr.reset_bonus_xp,
+    "platforms": platforms.post_widget,
     "pronouns": pronouns.post_widget,
     "postgames": game_timer.post_games,
     "ranks": commands.list_ranks,

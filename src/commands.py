@@ -29,6 +29,7 @@ ADMIN_HELP_MES = (
     f"View available ranks: `{CMD_PREFIX}ranks`\n"
     f"\n"
     f"Sync slash commands to the server: `{CMD_PREFIX}sync`\n"
+    f"Post the platform selection menu (rarely do this): `{CMD_PREFIX}platforms CHAN_ID`\n"
     f"Post the pronoun selection menu (rarely do this): `{CMD_PREFIX}pronouns CHAN_ID`\n"
     f"\n"
     f"Add a game to be announced: `{CMD_PREFIX}addgame URL`\n"

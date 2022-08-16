@@ -39,6 +39,13 @@ IT_PRONOUN = cfg['roles']['pronouns']['it']
 ANY_PRONOUN = cfg['roles']['pronouns']['any']
 ASK_PRONOUN = cfg['roles']['pronouns']['ask']
 
+PC_PLATFORM = cfg['roles']['platforms']['pc']
+XBOX_PLATFORM = cfg['roles']['platforms']['xbox']
+PS_PLATFORM = cfg['roles']['platforms']['ps']
+NS_PLATFORM = cfg['roles']['platforms']['ns']
+MOBILE_PLATFORM = cfg['roles']['platforms']['mobile']
+VITA_PLATFORM = cfg['roles']['platforms']['vita']
+
 # Import ranks from their configuration
 RANKS_PATH = "/private/ranks.json"
 with open(RANKS_PATH) as ranks_file:

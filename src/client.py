@@ -1,5 +1,6 @@
 import discord
 
+from platforms import PlatformWidget
 from pronouns import PronounWidget
 
 class DiscordClient(discord.Client):
@@ -8,6 +9,7 @@ class DiscordClient(discord.Client):
         self.tree = discord.app_commands.CommandTree(self)
 
     async def setup_hook(self):
+        self.add_view(PlatformWidget())
         self.add_view(PronounWidget())
 
     async def sync_guild(self, guild: discord.Guild):
