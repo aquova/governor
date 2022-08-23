@@ -19,7 +19,7 @@ import platforms
 import pronouns
 import xp
 from client import client
-from config import OWNER, DEBUG_BOT, CMD_PREFIX, DISCORD_KEY, GAME_ANNOUNCEMENT_CHANNEL, XP_OFF
+from config import OWNER, DEBUG_BOT, CMD_PREFIX, DISCORD_KEY, GAME_ANNOUNCEMENT_CHANNEL, AUTO_ADD_EPIC_GAMES, XP_OFF
 from slowmode import Thermometer
 from tracker import Tracker
 
@@ -118,7 +118,7 @@ async def on_guild_available(guild: discord.Guild):
         await client.close()
         raise Exception(f"Game announcement error: couldn't find channel {GAME_ANNOUNCEMENT_CHANNEL}")
 
-    game_timer.start(game_channel)
+    game_timer.start(game_channel, AUTO_ADD_EPIC_GAMES and not dbg.is_debug_bot())
     thermo.start(guild)
 
     # Set Bouncer's status

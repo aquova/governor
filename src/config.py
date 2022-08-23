@@ -30,6 +30,7 @@ XP_OFF = cfg['channels']['xp_disabled']
 LOG_CHAN = cfg['channels']['log']
 
 GAME_ANNOUNCEMENT_CHANNEL = cfg['games']['announcement_channel']
+AUTO_ADD_EPIC_GAMES = cfg['games']['auto_add_epic_games']
 GAME_ANNOUNCE_TIME = datetime.strptime(cfg['games']['announcement_time'], "%I:%M %p")
 
 HE_PRONOUN = cfg['roles']['pronouns']['he']
