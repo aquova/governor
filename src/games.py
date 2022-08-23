@@ -248,7 +248,7 @@ def get_delta_to_next_announcement() -> timedelta:
     return announcement - now
 
 
-def contains_substring(target: str, items: List[str]) -> bool:
+def contains_substring(target: str, items: list[str]) -> bool:
     """
     contains_substring returns whether target is a substring of any element in items.
     """
