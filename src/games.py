@@ -44,12 +44,10 @@ class GameTimer:
         self.should_add_epic_games = None
 
     def start(self, channel: discord.TextChannel, add_epic_games: bool):
-        if self._channel is not None:
-            raise Exception("GameTimer already started")
-
-        self._channel = channel
-        self.task = asyncio.create_task(self._announce_games())
-        self.should_add_epic_games = add_epic_games
+        if self.task is None:
+            self._channel = channel
+            self.should_add_epic_games = add_epic_games
+            self.task = asyncio.create_task(self._announce_games())
 
     @requires_admin
     async def post_games(self, _) -> str:
