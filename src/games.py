@@ -119,6 +119,8 @@ class GameTimer:
             try:
                 name = game["title"]
                 url = game["productSlug"]
+
+                # Sometimes product slug is None, in which case this other field looks right, but it also can be None
                 if url is None and len(game["catalogNs"]["mappings"]) > 0:
                     url = game["catalogNs"]["mappings"][0]["pageSlug"]
 
@@ -130,7 +132,13 @@ class GameTimer:
                     # eg_print(f"{name}: not free, skipping")
                     continue
 
-                # When there is no promotion the promotions field is a mess:
+                # Offer type returned by the API is (so far) one of BASE_GAME, DLC, or OTHERS
+                # It is unclear what OTHERS is - assume BASE_GAME is for full games that become free
+                if game["offerType"] != "BASE_GAME":
+                    # eg_print(f"{name}: not a full game, skipping")
+                    continue
+
+                # When there is no promotion the promotions field can be different:
                 # sometimes null, sometimes an empty object, sometimes a list of no objects
                 # Wrap in try/catch and assume failing to parse it means it's not on sale rather than a parse error
                 try:
