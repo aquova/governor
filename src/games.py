@@ -93,7 +93,7 @@ class GameTimer:
     @staticmethod
     def _get_epic_games() -> list[dict[str, str]]:
         """
-        This retrieves epic games newly available for free today. US region only.
+        This retrieves epic games newly available for free today. F2P games are ignored. US region only.
         The parsing is *very* hacky, but to be fair, so is the data format.
         :return: A list of newly free games.
         """
@@ -130,6 +130,10 @@ class GameTimer:
 
                 if game["price"]["totalPrice"]["discountPrice"] != 0:
                     # eg_print(f"{name}: not free, skipping")
+                    continue
+
+                if game["price"]["totalPrice"]["originalPrice"] == 0:
+                    # eg_print(f"{name}: always free, skipping")
                     continue
 
                 # Offer type returned by the API is (so far) one of BASE_GAME, DLC, or OTHERS
