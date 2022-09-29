@@ -104,7 +104,7 @@ Returns a list of database entries for the top 100 highest XP holders this month
 """
 def get_monthly_leaders() -> list[tuple]:
     curr_time = datetime.now(timezone.utc)
-    query = ("SELECT * FROM xp ORDER BY monthly WHERE month=? AND year=? DESC LIMIT 100", [curr_time.month, curr_time.year])
+    query = ("SELECT * FROM xp WHERE month=? AND year=? ORDER BY monthly DESC LIMIT 100", [curr_time.month, curr_time.year])
     leaders = _db_read(query)
 
     return leaders

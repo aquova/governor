@@ -42,26 +42,29 @@ class Tracker:
     """
     async def refresh_db(self):
         while True:
-            leaders = db.get_leaders()
-
-            # Iterate thru every leader on the leaderboard and collect data
-            for leader in leaders:
-                leader_id = leader[0]
-                leader_xp = leader[1]
-                leader_monthly = leader[4]
-                leader_month = leader[5]
-                leader_year = leader[6]
-                user = discord.utils.get(self.server.members, id=leader_id)
-
-                # Update users that are still in the server
-                if user:
-                    # NOTE: May be worth to populate the cache here as well
-                    db.set_user_xp(leader_id, leader_xp, str(user), user.display_avatar.url, leader_monthly, leader_month, leader_year)
-                # Otherwise, prune their username/avatar so that they don't appear on the leaderboard
-                else:
-                    db.set_user_xp(leader_id, leader_xp, None, None, leader_monthly, leader_month, leader_year)
-
+            all_leaders = db.get_leaders()
+            self.refresh_helper(all_leaders)
+            monthly_leaders = db.get_monthly_leaders()
+            self.refresh_helper(monthly_leaders)
             await asyncio.sleep(SLEEP_TIME)
+
+    def refresh_helper(self, leaders: list[tuple]):
+        # Iterate thru every leader on the leaderboard and collect data
+        for leader in leaders:
+            leader_id = leader[0]
+            leader_xp = leader[1]
+            leader_monthly = leader[4]
+            leader_month = leader[5]
+            leader_year = leader[6]
+            user = discord.utils.get(self.server.members, id=leader_id)
+
+            # Update users that are still in the server
+            if user:
+                # NOTE: May be worth to populate the cache here as well
+                db.set_user_xp(leader_id, leader_xp, str(user), user.display_avatar.url, leader_monthly, leader_month, leader_year)
+            # Otherwise, prune their username/avatar so that they don't appear on the leaderboard
+            else:
+                db.set_user_xp(leader_id, leader_xp, None, None, leader_monthly, leader_month, leader_year)
 
     """
     Grant user xp
