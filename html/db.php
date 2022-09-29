@@ -58,16 +58,11 @@
             $user_level = floor($row['xp'] / XP_PER_LVL);
             $lvl = "Lvl " . $user_level;
             $role_class = get_role_class($user_level);
+            $avatar_img = $row['avatar'];
 
             $username = $row['username'];
             if ($username == "") {
                 $username = "???";
-            }
-
-            if ($row['avatar'] == "") {
-                $avatar_img = "assets/default_avatar.png";
-            } else {
-                $avatar_img = "https://cdn.discordapp.com/avatars/" . $id . "/" . $row['avatar'] . ".png";
             }
 
             echo "<li class='user'>";

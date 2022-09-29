@@ -106,8 +106,6 @@ Runs when a guild (server) that the bot is connected to becomes ready
 """
 @client.event
 async def on_guild_available(guild: discord.Guild):
-    await tr.refresh_db(guild)
-
     # This is 100% going to cause issues if we ever want to host on more than one server
     # TODO: If we want to fix this, make announcement channels a list in config.json, and add a server ID column to DB
     game_channel = discord.utils.get(guild.text_channels, id=GAME_ANNOUNCEMENT_CHANNEL)
@@ -120,6 +118,7 @@ async def on_guild_available(guild: discord.Guild):
 
     game_timer.start(game_channel, AUTO_ADD_EPIC_GAMES and not dbg.is_debug_bot())
     thermo.start(guild)
+    tr.start(guild)
 
     # Set Bouncer's status
     await update_user_count(guild)

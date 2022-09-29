@@ -1,3 +1,4 @@
+import asyncio
 from datetime import datetime, timedelta
 from typing import Optional
 
@@ -9,6 +10,8 @@ import commonbot.utils
 import db
 from config import CMD_PREFIX, RANKS, XP_PER_LVL, XP_PER_MINUTE
 from utils import requires_admin
+
+SLEEP_TIME = 24 * 60 * 60 # One day
 
 class UserData:
     def __init__(self, xp: int, monthly_xp: int, timestamp: datetime, username: str, avatar: str, next_role_at: Optional[int]):
@@ -24,34 +27,41 @@ class Tracker:
         self.user_cache = {}
         self.xp_multiplier = 1
         self.ul = UserLookup()
+        self.task = None
+        self.server = None
+
+    def start(self, server: discord.Guild):
+        if not self.task:
+            self.server = server
+            self.task = asyncio.create_task(self.refresh_db())
 
     """
     Refresh database
 
     Collects up-to-date data for leaderboard members
     """
-    async def refresh_db(self, server: discord.Guild):
-        leaders = db.get_leaders()
+    async def refresh_db(self):
+        while True:
+            leaders = db.get_leaders()
 
-        # Iterate thru every leader on the leaderboard and collect data
-        for leader in leaders:
-            leader_id = leader[0]
-            leader_xp = leader[1]
-            leader_monthly = leader[4]
-            leader_month = leader[5]
-            leader_year = leader[6]
-            user = discord.utils.get(server.members, id=leader_id)
+            # Iterate thru every leader on the leaderboard and collect data
+            for leader in leaders:
+                leader_id = leader[0]
+                leader_xp = leader[1]
+                leader_monthly = leader[4]
+                leader_month = leader[5]
+                leader_year = leader[6]
+                user = discord.utils.get(self.server.members, id=leader_id)
 
-            # Update users that are still in the server
-            if user:
-                leader_name = f"{user.name}#{user.discriminator}"
-                leader_avatar = user.display_avatar.key
+                # Update users that are still in the server
+                if user:
+                    # NOTE: May be worth to populate the cache here as well
+                    db.set_user_xp(leader_id, leader_xp, str(user), user.display_avatar.url, leader_monthly, leader_month, leader_year)
+                # Otherwise, prune their username/avatar so that they don't appear on the leaderboard
+                else:
+                    db.set_user_xp(leader_id, leader_xp, None, None, leader_monthly, leader_month, leader_year)
 
-                # NOTE: May be worth to populate the cache here as well
-                db.set_user_xp(leader_id, leader_xp, leader_name, leader_avatar, leader_monthly, leader_month, leader_year)
-            # Otherwise, prune their username/avatar so that they don't appear on the leaderboard
-            else:
-                db.set_user_xp(leader_id, leader_xp, None, None, leader_monthly, leader_month, leader_year)
+            await asyncio.sleep(SLEEP_TIME)
 
     """
     Grant user xp
@@ -119,13 +129,11 @@ class Tracker:
 
             next_role = await self.check_roles(user, xp)
 
-        username = f"{user.name}#{user.discriminator}"
-        avatar = user.display_avatar.key
-
+        avatar = user.display_avatar.url
         # Update their entry in the cache
-        self.user_cache[user_id] = UserData(xp, monthly_xp, curr_time, username, avatar, next_role)
+        self.user_cache[user_id] = UserData(xp, monthly_xp, curr_time, str(user), avatar, next_role)
         # Update their entry in the database
-        db.set_user_xp(user_id, xp, username, avatar, monthly_xp, curr_time.month, curr_time.year)
+        db.set_user_xp(user_id, xp, str(user), avatar, monthly_xp, curr_time.month, curr_time.year)
 
         return out_message
 
