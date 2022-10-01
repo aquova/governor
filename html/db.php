@@ -3,34 +3,6 @@
     define("DB_PATH", "/private/governor.db");
     define("XP_PER_LVL", 300);
 
-    define("VILLAGER_LVL", 1);
-    define("COWPOKE_LVL", 5);
-    define("FARMER_LVL", 25);
-    define("SHEPHERD_LVL", 100);
-    define("RANCHER_LVL", 250);
-    define("CROPMASTER_LVL", 500);
-    define("DESPERADO_LVL", 1000);
-
-    function get_role_class($lvl) {
-        $role = "class='villager'";
-
-        if ($lvl >= DESPERADO_LVL) {
-            $role = "class='desperado'";
-        } elseif ($lvl >= CROPMASTER_LVL) {
-            $role = "class='cropmaster'";
-        } elseif ($lvl >= RANCHER_LVL) {
-            $role = "class='rancher'";
-        } elseif ($lvl >= SHEPHERD_LVL) {
-            $role = "class='shepherd'";
-        } elseif ($lvl >= FARMER_LVL) {
-            $role = "class='farmer'";
-        } elseif ($lvl >= COWPOKE_LVL) {
-            $role = "class='cowpoke'";
-        }
-
-        return $role;
-    };
-
     function populate_leaderboard($use_monthly) {
         $db = new SQLite3(DB_PATH);
         $query;
@@ -57,7 +29,7 @@
             }
             $user_level = floor($row['xp'] / XP_PER_LVL);
             $lvl = "Lvl " . $user_level;
-            $role_class = get_role_class($user_level);
+            $role_color = $row['color'];
             $avatar_img = $row['avatar'];
 
             $username = $row['username'];
@@ -69,7 +41,7 @@
             echo "<span class='user-rank'>$rank</span>";
             echo "<img class='user-img' src='$avatar_img'>";
             echo "<span class='user-name'>";
-            echo "<span $role_class>$username</span>";
+            echo "<span style='color:$role_color'>$username</span>";
             echo "<br>";
             echo "<span class='user-id'>$id</span>";
             echo "</span>";

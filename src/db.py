@@ -11,7 +11,7 @@ Generates database with needed tables if doesn't exist
 """
 def initialize():
     sqlconn = sqlite3.connect(DB_PATH)
-    sqlconn.execute("CREATE TABLE IF NOT EXISTS xp (id INT PRIMARY KEY, xp INT, username TEXT, avatar TEXT, monthly INT, month INT, year INT)")
+    sqlconn.execute("CREATE TABLE IF NOT EXISTS xp (id INT PRIMARY KEY, xp INT, username TEXT, avatar TEXT, monthly INT, month INT, year INT, color TEXT)")
     sqlconn.execute("CREATE TABLE IF NOT EXISTS commands (name TEXT PRIMARY KEY, response TEXT)")
     sqlconn.execute("CREATE TABLE IF NOT EXISTS games (game TEXT)")
     sqlconn.commit()
@@ -60,12 +60,12 @@ Set User XP
 
 Updates a user's XP value, as well as other user information
 """
-def set_user_xp(user_id: int, xp: int, user_name: Optional[str], user_avatar: Optional[str], monthly: int, month: int, year: int):
+def set_user_xp(user_id: int, xp: int, user_name: Optional[str], user_avatar: Optional[str], monthly: int, month: int, year: int, color: Optional[str]):
     # We store username and avatar only for the leaderboard
     if user_avatar is None:
         user_avatar = ""
 
-    query = ("REPLACE INTO xp (id, xp, username, avatar, monthly, month, year) VALUES (?, ?, ?, ?, ?, ?, ?)", [user_id, xp, user_name, user_avatar, monthly, month, year])
+    query = ("REPLACE INTO xp (id, xp, username, avatar, monthly, month, year, color) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", [user_id, xp, user_name, user_avatar, monthly, month, year, color])
     _db_write(query)
 
 """

@@ -61,10 +61,10 @@ class Tracker:
             # Update users that are still in the server
             if user:
                 # NOTE: May be worth to populate the cache here as well
-                db.set_user_xp(leader_id, leader_xp, str(user), user.display_avatar.url, leader_monthly, leader_month, leader_year)
+                db.set_user_xp(leader_id, leader_xp, str(user), user.display_avatar.url, leader_monthly, leader_month, leader_year, str(user.color))
             # Otherwise, prune their username/avatar so that they don't appear on the leaderboard
             else:
-                db.set_user_xp(leader_id, leader_xp, None, None, leader_monthly, leader_month, leader_year)
+                db.set_user_xp(leader_id, leader_xp, None, None, leader_monthly, leader_month, leader_year, None)
 
     """
     Grant user xp
@@ -136,7 +136,7 @@ class Tracker:
         # Update their entry in the cache
         self.user_cache[user_id] = UserData(xp, monthly_xp, curr_time, str(user), avatar, next_role)
         # Update their entry in the database
-        db.set_user_xp(user_id, xp, str(user), avatar, monthly_xp, curr_time.month, curr_time.year)
+        db.set_user_xp(user_id, xp, str(user), avatar, monthly_xp, curr_time.month, curr_time.year, str(user.color))
 
         return out_message
 
