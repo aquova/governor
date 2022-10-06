@@ -204,7 +204,7 @@ class CustomCommands:
     def parse_response(self, message: discord.Message) -> str:
         prefix_removed = commonbot.utils.strip_prefix(message.content, CMD_PREFIX)
         command = commonbot.utils.get_first_word(prefix_removed).lower()
-        response = self.cmd_dict[command]
+        response = self.cmd_dict[command][0]
 
         # Check if they want to embed a ping within the response
         mentioned_id = ul.parse_id(message)
@@ -228,6 +228,7 @@ class CustomCommands:
         # Then parse the new command
         cmd = commonbot.utils.get_first_word(new_cmd).lower()
         response = commonbot.utils.strip_words(new_cmd, 1)
+        is_admin = commonbot.utils.check_roles(message.author, ADMIN_ACCESS)
 
         if response == "":
             # Don't allow blank responses
@@ -239,11 +240,14 @@ class CustomCommands:
         # Store what the command used to say, if anything
         old_response = None
         if cmd in self.cmd_dict:
-            old_response = self.cmd_dict[cmd]
+            # Protect commands originally made by moderators
+            if self.cmd_dict[cmd][1] and not is_admin:
+                return f"`{cmd}` was created by a moderator, and only moderators can edit its contents."
+            old_response = self.cmd_dict[cmd][0]
 
         # Set new command in cache and database
-        self.cmd_dict[cmd] = response
-        db.set_new_custom_cmd(cmd, response)
+        self.cmd_dict[cmd] = (response, is_admin)
+        db.set_new_custom_cmd(cmd, self.cmd_dict[cmd])
 
         # Format confirmation to the user
         output_message = f"New command added! You can use it like `{CMD_PREFIX}{cmd}`. "

@@ -12,7 +12,7 @@ Generates database with needed tables if doesn't exist
 def initialize():
     sqlconn = sqlite3.connect(DB_PATH)
     sqlconn.execute("CREATE TABLE IF NOT EXISTS xp (id INT PRIMARY KEY, xp INT, username TEXT, avatar TEXT, monthly INT, month INT, year INT, color TEXT)")
-    sqlconn.execute("CREATE TABLE IF NOT EXISTS commands (name TEXT PRIMARY KEY, response TEXT)")
+    sqlconn.execute("CREATE TABLE IF NOT EXISTS commands (name TEXT PRIMARY KEY, response TEXT, flag INT)")
     sqlconn.execute("CREATE TABLE IF NOT EXISTS games (game TEXT)")
     sqlconn.commit()
     sqlconn.close()
@@ -114,14 +114,14 @@ Get custom commands
 
 Returns the user-set custom commands
 """
-def get_custom_cmds() -> dict[str, str]:
+def get_custom_cmds() -> dict[str, tuple]:
     query = ("SELECT * FROM commands",)
     cmds = _db_read(query)
 
     cmd_dict = {}
 
     for cmd in cmds:
-        cmd_dict[cmd[0].lower()] = cmd[1]
+        cmd_dict[cmd[0].lower()] = (cmd[1], cmd[2] > 0)
 
     return cmd_dict
 
@@ -139,8 +139,9 @@ Set new custom command
 
 Adds a new user-defined command to the database
 """
-def set_new_custom_cmd(name: str, response: str):
-    query = ("INSERT OR REPLACE INTO commands (name, response) VALUES (?, ?)", [name, response])
+def set_new_custom_cmd(name: str, response: tuple):
+    admin_flag = 1 if response[1] else 0
+    query = ("INSERT OR REPLACE INTO commands (name, response, flag) VALUES (?, ?, ?)", [name, response[0], admin_flag])
     _db_write(query)
 
 """
