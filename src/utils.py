@@ -1,6 +1,8 @@
-from typing import Callable, Optional
+from typing import Callable, Coroutine, Optional
 from commonbot.utils import check_roles
 from config import ADMIN_ACCESS, DEFINE_ACCESS
+import asyncio, functools
+
 """
 Requires define
 
@@ -42,4 +44,10 @@ def requires_admin(func: Callable) -> Optional[Callable]:
         else:
             return None
 
+    return wrapper
+
+def to_thread(func: Callable) -> Coroutine:
+    @functools.wraps(func)
+    async def wrapper(*args, **kwargs):
+        return await asyncio.to_thread(func, *args, **kwargs)
     return wrapper

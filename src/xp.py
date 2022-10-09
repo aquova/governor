@@ -2,14 +2,16 @@ from math import ceil, floor
 import os
 import shutil
 from typing import Optional
+from utils import to_thread
 
 import discord
 from PIL import Image, ImageDraw, ImageFont
 import requests
 
 from commonbot.user import UserLookup
+from commonbot.utils import check_roles
 
-from config import XP_PER_LVL, LVL_CHANS, ASSETS_PATH, FONTS_PATH, TMP_PATH
+from config import XP_PER_LVL, LVL_CHANS, ASSETS_PATH, FONTS_PATH, TMP_PATH, ADMIN_ACCESS
 import db
 
 ul = UserLookup()
@@ -111,7 +113,7 @@ async def userinfo(message: discord.Message):
 
 async def parse_lvl_image(message: discord.Message):
     # Only allow this command if in whitelisted channels
-    if message.channel.id not in LVL_CHANS:
+    if message.channel.id not in LVL_CHANS and not check_roles(message.author, ADMIN_ACCESS):
         return None
 
     # Check if the user wants to look up someone else
@@ -158,14 +160,8 @@ async def render_lvl_image(user: discord.Member) -> Optional[str]:
         avatar_url = user.display_avatar.url
 
         # Download the user's avatar image to private/tmp
-        try:
-            response = requests.get(avatar_url, stream=True)
-            with open(avatar_filename, 'wb') as outfile:
-                shutil.copyfileobj(response.raw, outfile)
-            del response
-        except requests.exceptions.ConnectionError as err:
-            print(f"Issue downloading avatar {avatar_url}. Aborting")
-            print(str(err))
+        success = await download_avatar(avatar_url, avatar_filename)
+        if not success:
             return None
 
     # Open image, paste the avatar image, then the frame
@@ -216,3 +212,16 @@ async def render_lvl_image(user: discord.Member) -> Optional[str]:
     large_bar.close()
 
     return out_filename
+
+@to_thread
+def download_avatar(url: str, filename: str) -> bool:
+    try:
+        response = requests.get(url, stream=True)
+        with open(filename, 'wb') as outfile:
+            shutil.copyfileobj(response.raw, outfile)
+        del response
+        return True
+    except requests.exceptions.ConnectionError as err:
+        print(f"Issue downloading avatar {url}. Aborting")
+        print(str(err))
+        return False
