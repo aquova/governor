@@ -42,6 +42,7 @@ class GameTimer:
         self._channel = None
         self.task = None
         self.should_add_epic_games = None
+        self._last_announcement_message = None
 
     def start(self, channel: discord.TextChannel, add_epic_games: bool):
         if self.task is None:
@@ -68,11 +69,12 @@ class GameTimer:
 
         if len(games) != 0:
             formatted_games = "\n".join(games)
-            announcement = random.choice(ANNOUNCE_MESSAGES)
+            announcement = random.choice([msg for msg in ANNOUNCE_MESSAGES if msg != self._last_announcement_message])
             message = f"{announcement}\n\n{formatted_games}"
 
             await self._channel.send(message)
             db.clear_games()
+            self._last_announcement_message = announcement
 
     @staticmethod
     async def _wait_until_next_announcement():
