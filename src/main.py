@@ -19,7 +19,7 @@ import platforms
 import pronouns
 import xp
 from client import client
-from config import OWNER, DEBUG_BOT, CMD_PREFIX, DISCORD_KEY, GAME_ANNOUNCEMENT_CHANNEL, AUTO_ADD_EPIC_GAMES, XP_OFF
+from config import OWNER, DEBUG_BOT, CMD_PREFIX, DISCORD_KEY, GAME_ANNOUNCEMENT_CHANNEL, AUTO_ADD_EPIC_GAMES, XP_OFF, SERVER_URL
 from slowmode import Thermometer
 from tracker import Tracker
 
@@ -181,7 +181,7 @@ async def on_message(message: discord.Message):
             await message.channel.send(lvl_up_message)
 
     for log_link in re.findall(r"https://smapi.io/log/[a-zA-Z0-9]{32}", message.content):
-        log_dict = requests.get(f"http://api.pil.ninja/smapi_log/endpoint?{log_link}").json()
+        log_dict = requests.get(f"{SERVER_URL}/log.php?{log_link}").json()
         if log_dict["success"]:
             windows_info = re.search(r"(Windows (?:Vista|\d+)) .+", log_dict["OS"])
             if windows_info:  # Condense OS text for Windows because it's often quite verbose.
