@@ -67,6 +67,12 @@ smapi_log_message_template = string.Template(
     "**Log Info:** SMAPI $SMAPI_ver with SDV $StardewVersion on $OS, "
     "with $SMAPIMods C# mods and $ContentPacks content packs."
 )
+smapi_log_message_template_2 = string.Template(
+    "**Log Info:** SMAPI $SMAPI_ver with SDV $StardewVersion on $OS, "
+    "with $SMAPIMods C# mods and $ContentPacks content packs.\n",
+    "Possible fixes: $suggested_fixes"
+)
+
 
 """
 Update User Count
@@ -186,7 +192,12 @@ async def on_message(message: discord.Message):
             windows_info = re.search(r"(Windows (?:Vista|\d+)) .+", log_dict["OS"])
             if windows_info:  # Condense OS text for Windows because it's often quite verbose.
                 log_dict["OS"] = windows_info.group(1)
-            await message.channel.send(smapi_log_message_template.substitute(log_dict))
+            if log_dict["suggested_fixes"] == []:
+                await message.channel.send(smapi_log_message_template.substitute(log_dict))
+            elif log_dict["suggested_fixes"] != []:
+                fixes_string = ', '.join(log_dict["suggested_fixes"])
+                log_dict["suggested_fixes"] = fixes_string
+                await message.channel.send(smapi_log_message_template_2.substitute(log_dict))
 
     for attachment in message.attachments:
         if attachment.filename == "SMAPI-latest.txt" or attachment.filename == "SMAPI-crash.txt":
