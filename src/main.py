@@ -22,6 +22,7 @@ from client import client
 from config import OWNER, DEBUG_BOT, CMD_PREFIX, DISCORD_KEY, GAME_ANNOUNCEMENT_CHANNEL, AUTO_ADD_EPIC_GAMES, XP_OFF
 from slowmode import Thermometer
 from tracker import Tracker
+from log import parse_log
 
 db.initialize()
 tr = Tracker()
@@ -63,9 +64,14 @@ FUNC_DICT = {
 cc.set_protected_keywords(list(FUNC_DICT.keys()))
 
 # Template for SMAPI log info messages
-smapi_log_message_template = string.Template(
+smapi_log_message_template_nofixes = string.Template(
     "**Log Info:** SMAPI $SMAPI_ver with SDV $StardewVersion on $OS, "
     "with $SMAPIMods C# mods and $ContentPacks content packs."
+)
+smapi_log_message_template_fixes  = string.Template(
+    "**Log Info:** SMAPI $SMAPI_ver with SDV $StardewVersion on $OS, "
+    "with $SMAPIMods C# mods and $ContentPacks content packs. \n"
+    "Suggested fixes: $suggested_fixes"
 )
 
 """
@@ -181,12 +187,13 @@ async def on_message(message: discord.Message):
             await message.channel.send(lvl_up_message)
 
     for log_link in re.findall(r"https://smapi.io/log/[a-zA-Z0-9]{32}", message.content):
-        log_dict = requests.get(f"http://api.pil.ninja/smapi_log/endpoint?{log_link}").json()
-        if log_dict["success"]:
-            windows_info = re.search(r"(Windows (?:Vista|\d+)) .+", log_dict["OS"])
-            if windows_info:  # Condense OS text for Windows because it's often quite verbose.
-                log_dict["OS"] = windows_info.group(1)
-            await message.channel.send(smapi_log_message_template.substitute(log_dict))
+        log_info = parse_log(log_link)
+        
+        if log_info["suggested_fixes"] != []:
+            await message.channel.send(smapi_log_message_template_fixes.substitute(log_info))
+        else:
+            await message.channel.send(smapi_log_message_template_nofixes.substitute(log_info))
+            
 
     for attachment in message.attachments:
         if attachment.filename == "SMAPI-latest.txt" or attachment.filename == "SMAPI-crash.txt":
