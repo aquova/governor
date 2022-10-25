@@ -189,7 +189,7 @@ async def on_message(message: discord.Message):
     for log_link in re.findall(r"https://smapi.io/log/[a-zA-Z0-9]{32}", message.content):
         log_info = parse_log(log_link)
         
-        if log_info["suggested_fixes"] != []:
+        if log_info["suggested_fixes"] != "":
             await message.channel.send(smapi_log_message_template_fixes.substitute(log_info))
         else:
             await message.channel.send(smapi_log_message_template_nofixes.substitute(log_info))
