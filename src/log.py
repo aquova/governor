@@ -1,14 +1,10 @@
 import bs4
 import requests
 
-#create a log class, that will parse the log file and return the info
 def parse_log(url):
-    #get the log file
     r = requests.get(url)
-    #parse the log file
     soup = bs4.BeautifulSoup(r.text, "html.parser")
     soup.encode("utf-8")
-    #find the log info
     data = soup.find("table", {"id": "metadata"})
     
     log_info = {
@@ -29,16 +25,19 @@ def parse_log(url):
     for fix in fix_elems:
         innerHTML = fix.decode_contents()
         if "PyTK 1.23.* or earlier isn't compatible with newer SMAPI performance" in innerHTML:
-            fixes.append("PyTKPerformanceOptimizationsOff")
+            fixes.append("Pytk isn't compatible with newer SMAPI performance optimizations, consider removing it")
         elif "Consider updating these mods to fix problems:" in innerHTML:
-            fixes.append("OutdatedMods")
+            fixes.append("One or more mods are out of date, consider updating them")
         elif "PyTK's image scaling isn't compatible with SMAPI strict mode" in innerHTML:
-            fixes.append("PyTkImageScalingStrictModeOff")
+            fixes.append("Pytk's image scaling isn't compatible with SMAPI strict mode, disable it")
         elif "You don't have the " in innerHTML and "Error Handler" in innerHTML:
-            fixes.append("ErrorHandlerMissing")
+            fixes.append("You don't have the Error Handler mod installed, reinstall SMAPI to get it")
         elif "which removes all deprecated APIs. This can significantly improve performance, but some mods may not work." in innerHTML:
-            fixes.append("StrictModeOn")
-    log_info["suggested_fixes"] = fixes
+            fixes.append("SMAPI is running in strict mode, which removes all deprecated APIs. This can significantly improve performance, but some mods may not work.")
+    fixes_human = ", ".join(fixes)
+    fixes_human = fixes_human.rsplit(", ", 1)[0] + " and " + fixes_human.rsplit(", ", 1)[1]
+    log_info["suggested_fixes"] = fixes_human
+    
 
             
     return log_info
