@@ -14,6 +14,7 @@ def parse_log(url):
         "ContentPacks": data.get("data-content-packs"),
         "OS": data.get("data-os"),
         "gamepath": data.get("data-game-path"),
+        "suggested_fixes": "",
         "success": True,
     }
     for key in log_info:
