@@ -35,13 +35,9 @@ def parse_log(url):
                 fixes.append("You don't have the Error Handler mod installed, reinstall SMAPI to get it")
             elif "which removes all deprecated APIs. This can significantly improve performance, but some mods may not work." in innerHTML:
                 fixes.append("SMAPI is running in strict mode, which removes all deprecated APIs. This can significantly improve performance, but some mods may not work.")
+        fixes_human = ", ".join(fixes)
+        log_info["suggested_fixes"] = fixes_human
     except AttributeError:
         pass
-
-    fixes_human = ", ".join(fixes)
-
-    log_info["suggested_fixes"] = fixes_human
-
-
 
     return log_info
