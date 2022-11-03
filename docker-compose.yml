@@ -15,7 +15,7 @@ services:
         restart: unless-stopped
         volumes:
             - ./html:/html
-            - ./private:/private
+            - ./src/private:/private
         networks:
           - internal
     governor:
@@ -23,7 +23,6 @@ services:
         restart: unless-stopped
         volumes:
             - ./src:/governor
-            - ./private:/private
 networks:
   internal:
     driver: bridge

@@ -6,15 +6,15 @@ XP_PER_LVL = 300
 STARTING_XP = XP_PER_LVL
 
 # Read values from config file
-CONFIG_PATH = "/private/config.json"
+CONFIG_PATH = "./private/config.json"
 with open(CONFIG_PATH) as config_file:
     cfg = json.load(config_file)
 
 DISCORD_KEY = cfg['discord']
-DB_PATH = "/private/governor.db"
+DB_PATH = "./private/governor.db"
 ASSETS_PATH = "/governor/assets"
 FONTS_PATH = "/governor/fonts"
-TMP_PATH = "/private/tmp"
+TMP_PATH = "./private/tmp"
 CMD_PREFIX = cfg['command_prefix']
 
 ADMIN_ACCESS = cfg['roles']['admin_access']
@@ -48,6 +48,6 @@ MOBILE_PLATFORM = cfg['roles']['platforms']['mobile']
 VITA_PLATFORM = cfg['roles']['platforms']['vita']
 
 # Import ranks from their configuration
-RANKS_PATH = "/private/ranks.json"
+RANKS_PATH = "./private/ranks.json"
 with open(RANKS_PATH) as ranks_file:
     RANKS = json.load(ranks_file)['ranks']

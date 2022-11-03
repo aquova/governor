@@ -8,4 +8,5 @@ RUN apk update && apk add \
 ADD requirements.txt /governor/requirements.txt
 RUN pip3 install -r /governor/requirements.txt
 
-CMD ["python3", "-u", "/governor/main.py"]
+WORKDIR /governor
+CMD ["python3", "-u", "main.py"]
