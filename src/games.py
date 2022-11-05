@@ -130,6 +130,9 @@ class GameTimer:
                     eg_print(f"{name}: Could not get URL, skipping")
                     continue
 
+                # Some urls have an extra /home at the end which leads to a 404 - remove it to get the right url
+                url = url.removesuffix("/home")
+
                 if game["price"]["totalPrice"]["discountPrice"] != 0:
                     # eg_print(f"{name}: not free, skipping")
                     continue
