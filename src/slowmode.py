@@ -52,6 +52,9 @@ class Thermometer:
                 slowmode = max(slowmode, old_slowmode - DECREASE_MAX)
 
                 if old_slowmode != slowmode:
-                    await channel.edit(slowmode_delay=slowmode)
+                    try:
+                        await channel.edit(slowmode_delay=slowmode)
+                    except discord.errors.Forbidden:
+                        pass
 
             self.channel_dict.clear()
