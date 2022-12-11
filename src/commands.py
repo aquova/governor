@@ -302,9 +302,4 @@ class CustomCommands:
     Give a list of all user-defined commands
     """
     async def list_cmds(self, _) -> str:
-        output = "```\n"
-        cmds = sorted(self.cmd_dict.keys(), key=str.lower)
-        output += ", ".join(cmds)
-        output += "\n```"
-        output += f"\nYou can also see a full list of commands and their responses here: {SERVER_URL}/commands.php"
-        return output
+        return f"\nYou can also see a full list of commands and their responses here: {SERVER_URL}/commands.php"
