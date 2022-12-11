@@ -188,12 +188,12 @@ async def on_message(message: discord.Message):
 
     for log_link in re.findall(r"https://smapi.io/log/[a-zA-Z0-9]{32}", message.content):
         log_info = parse_log(log_link)
-        
+
         if log_info["suggested_fixes"] != "":
             await message.channel.send(smapi_log_message_template_fixes.substitute(log_info))
         else:
             await message.channel.send(smapi_log_message_template_nofixes.substitute(log_info))
-            
+
 
     for attachment in message.attachments:
         if attachment.filename == "SMAPI-latest.txt" or attachment.filename == "SMAPI-crash.txt":
@@ -220,7 +220,7 @@ async def on_message(message: discord.Message):
                 # First, check if they're using a built-in command
                 output_message = await FUNC_DICT[command](message)
                 if output_message:
-                    await message.channel.send(output_message)
+                    await commonbot.utils.send_message(output_message, message.channel)
             elif cc.command_available(command):
                 # Check if they're using a user-defined command
                 cmd_output = cc.parse_response(message)
