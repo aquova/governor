@@ -302,4 +302,4 @@ class CustomCommands:
     Give a list of all user-defined commands
     """
     async def list_cmds(self, _) -> str:
-        return f"\nYou can also see a full list of commands and their responses here: {SERVER_URL}/commands.php"
+        return f"You can see a full list of commands and their responses here: {SERVER_URL}/commands.php"
