@@ -3,7 +3,6 @@
 # https://github.com/aquova/governor
 
 import re
-import string
 
 import discord
 import requests
@@ -62,17 +61,6 @@ FUNC_DICT = {
 
 # The keys in the function dict cannot be used as custom commands
 cc.set_protected_keywords(list(FUNC_DICT.keys()))
-
-# Template for SMAPI log info messages
-smapi_log_message_template_nofixes = string.Template(
-    "**Log Info:** SMAPI $SMAPI_ver with SDV $StardewVersion on $OS, "
-    "with $SMAPIMods C# mods and $ContentPacks content packs."
-)
-smapi_log_message_template_fixes  = string.Template(
-    "**Log Info:** SMAPI $SMAPI_ver with SDV $StardewVersion on $OS, "
-    "with $SMAPIMods C# mods and $ContentPacks content packs. \n"
-    "Suggested fixes: $suggested_fixes"
-)
 
 """
 Update User Count
@@ -188,12 +176,7 @@ async def on_message(message: discord.Message):
 
     for log_link in re.findall(r"https://smapi.io/log/[a-zA-Z0-9]{32}", message.content):
         log_info = parse_log(log_link)
-
-        if log_info["suggested_fixes"] != "":
-            await message.channel.send(smapi_log_message_template_fixes.substitute(log_info))
-        else:
-            await message.channel.send(smapi_log_message_template_nofixes.substitute(log_info))
-
+        await message.channel.send(log_info)
 
     for attachment in message.attachments:
         if attachment.filename == "SMAPI-latest.txt" or attachment.filename == "SMAPI-crash.txt":

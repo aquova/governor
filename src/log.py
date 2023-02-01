@@ -1,11 +1,24 @@
 import bs4
 import requests
+import string
+
+# Template for SMAPI log info messages
+smapi_log_message_template = string.Template(
+    "**Log Info:** SMAPI $SMAPI_ver with SDV $StardewVersion on $OS, "
+    "with $SMAPIMods C# mods and $ContentPacks content packs."
+)
+smapi_suggested_fixes_template = string.Template(
+    "\n**Suggested fixes:** $suggested_fixes"
+)
 
 def parse_log(url):
     r = requests.get(url)
     soup = bs4.BeautifulSoup(r.text, "html.parser")
     soup.encode("utf-8")
     data = soup.find("table", {"id": "metadata"})
+
+    if data is None:
+        return "Oops, couldn't parse that file. Make sure you share a valid SMAPI log."
 
     log_info = {
         "StardewVersion": data.get("data-game-version"),
@@ -41,4 +54,7 @@ def parse_log(url):
     except AttributeError:
         pass
 
-    return log_info
+    output = smapi_log_message_template.substitute(log_info)
+    if log_info["suggested_fixes"] != "":
+        output += smapi_suggested_fixes_template.substitute(log_info)
+    return output
