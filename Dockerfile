@@ -1,7 +1,9 @@
-FROM aquova/commonbot:2.0.0.3
+FROM python:3.11-alpine
 
 RUN apk update && apk add \
+    build-base \
     freetype-dev \
+    git \
     jpeg-dev \
     zlib-dev
 
