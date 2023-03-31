@@ -18,8 +18,9 @@ class Thermometer:
 
     def start(self, server: discord.Guild):
         self.channels = server.text_channels
-        if not self.task:
-            self.task = asyncio.create_task(self._calc_slowmode())
+        if self.task:
+            self.task.cancel()
+        self.task = asyncio.create_task(self._calc_slowmode())
 
     async def user_spoke(self, message: discord.Message):
         channel = message.channel.id
