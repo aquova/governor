@@ -5,9 +5,8 @@ from commonbot.user import UserLookup
 
 import db
 from client import client
-from config import ADMIN_ACCESS, CMD_PREFIX, RANKS, SERVER_URL, LVL_CHANS, NO_SLOWMODE, XP_OFF, LOG_CHAN
-from utils import requires_admin, requires_define
-
+from config import ADMIN_ACCESS, CMD_PREFIX, RANKS, SERVER_URL, LVL_CHANS, NO_SLOWMODE, XP_OFF, LOG_CHAN, LIMIT_CHANS
+from utils import requires_admin, requires_define, CustomCommandFlags
 
 ul = UserLookup()
 
@@ -21,6 +20,7 @@ ADMIN_HELP_MES = (
     f"Define a custom message: `{CMD_PREFIX}define NAME [%mention%] MESSAGE`\n"
     f"List custom commands: `{CMD_PREFIX}list`\n"
     f"Remove a custom message: `{CMD_PREFIX}remove NAME`\n"
+    f"Limit a custom message: `{CMD_PREFIX}limit NAME`\n"
     f"\n"
     f"Speak a message as the bot: `{CMD_PREFIX}say CHAN_ID message`. If you want to send images they must be attachments *not URLs*.\n"
     f"Edit a message spoken by the bot: `{CMD_PREFIX}edit MESSAGE_ID new_message`\n"
@@ -197,6 +197,23 @@ class CustomCommands:
         return cmd in self.cmd_dict
 
     """
+    Is allowed
+
+    Checks if the given command is allowed to be sent in the given channel
+    """
+    def is_allowed(self, cmd: str, channel_id: int) -> bool:
+        if not self.command_available(cmd):
+            return False
+
+        response = self.cmd_dict[cmd]
+        limited = response[1] & CustomCommandFlags.LIMITED
+        if not limited:
+            return True
+        elif channel_id in LIMIT_CHANS:
+            return False
+        return True
+
+    """
     Parse Response
 
     Return the specified response for a custom command
@@ -228,7 +245,11 @@ class CustomCommands:
         # Then parse the new command
         cmd = commonbot.utils.get_first_word(new_cmd).lower()
         response = commonbot.utils.strip_words(new_cmd, 1)
+        flags = CustomCommandFlags.NONE
         is_admin = commonbot.utils.check_roles(message.author, ADMIN_ACCESS)
+
+        if is_admin:
+            flags |= CustomCommandFlags.ADMIN
 
         if response == "":
             # Don't allow blank responses
@@ -241,13 +262,13 @@ class CustomCommands:
         old_response = None
         if cmd in self.cmd_dict:
             # Protect commands originally made by moderators
-            if self.cmd_dict[cmd][1] and not is_admin:
+            if (self.cmd_dict[cmd][1] & CustomCommandFlags.ADMIN) and not is_admin:
                 return f"`{cmd}` was created by a moderator, and only moderators can edit its contents."
             old_response = self.cmd_dict[cmd][0]
 
         # Set new command in cache and database
-        self.cmd_dict[cmd] = (response, is_admin)
-        db.set_new_custom_cmd(cmd, self.cmd_dict[cmd])
+        self.cmd_dict[cmd] = (response, flags)
+        db.set_new_custom_cmd(cmd, response, flags)
 
         # Format confirmation to the user
         output_message = f"New command added! You can use it like `{CMD_PREFIX}{cmd}`. "
@@ -295,6 +316,30 @@ class CustomCommands:
             return f"`{cmd}` removed as a custom command!"
 
         return f"`{cmd}` was never a command..."
+
+    """
+    Limit command
+
+    Toggles limiting a command from being used in certain channels
+    """
+    @requires_admin
+    async def limit_cmd(self, message: discord.Message) -> str:
+        stripped = commonbot.utils.strip_words(message.content, 1)
+        cmd = commonbot.utils.get_first_word(stripped).lower()
+
+        if self.command_available(cmd):
+            response = self.cmd_dict[cmd]
+            flag = response[1]
+            # XOR to toggle that flag
+            flag ^= CustomCommandFlags.LIMITED
+            self.cmd_dict[cmd] = (response[0], flag)
+            db.set_new_custom_cmd(cmd, response[0], flag)
+
+            toggle_txt = "limited" if (flag & CustomCommandFlags.LIMITED) else "not limited"
+
+            return f"`{cmd}` is now {toggle_txt} to certain channels"
+
+        return f"`{cmd}` is not a known command."
 
     """
     List commands

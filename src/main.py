@@ -1,5 +1,5 @@
 # Governor
-# Written by aquova, 2020-2022
+# Written by aquova, 2020-2023
 # https://github.com/aquova/governor
 
 import re
@@ -46,6 +46,7 @@ FUNC_DICT = {
     "lb": commands.show_lb,
     "level": xp.parse_lvl_image,
     "list": cc.list_cmds,
+    "limit": cc.limit_cmd,
     "lvl": xp.parse_lvl_image,
     "nobonusxp": tr.reset_bonus_xp,
     "platforms": platforms.post_widget,
@@ -204,7 +205,7 @@ async def on_message(message: discord.Message):
                 output_message = await FUNC_DICT[command](message)
                 if output_message:
                     await commonbot.utils.send_message(output_message, message.channel)
-            elif cc.command_available(command):
+            elif cc.is_allowed(command, message.channel.id):
                 # Check if they're using a user-defined command
                 cmd_output = cc.parse_response(message)
                 await message.channel.send(cmd_output)

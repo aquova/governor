@@ -3,6 +3,11 @@ from commonbot.utils import check_roles
 from config import ADMIN_ACCESS, DEFINE_ACCESS
 import asyncio, functools
 
+class CustomCommandFlags:
+    NONE =      0b0000     # No limitations
+    ADMIN =     0b0001     # Created by an admin
+    LIMITED =   0b0010     # Usage can be limited to some channels
+
 """
 Requires define
 

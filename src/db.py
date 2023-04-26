@@ -121,7 +121,7 @@ def get_custom_cmds() -> dict[str, tuple]:
     cmd_dict = {}
 
     for cmd in cmds:
-        cmd_dict[cmd[0].lower()] = (cmd[1], cmd[2] > 0)
+        cmd_dict[cmd[0].lower()] = (cmd[1], cmd[2])
 
     return cmd_dict
 
@@ -139,9 +139,8 @@ Set new custom command
 
 Adds a new user-defined command to the database
 """
-def set_new_custom_cmd(name: str, response: tuple):
-    admin_flag = 1 if response[1] else 0
-    query = ("INSERT OR REPLACE INTO commands (name, response, flag) VALUES (?, ?, ?)", [name, response[0], admin_flag])
+def set_new_custom_cmd(name: str, response: str, flag: int):
+    query = ("INSERT OR REPLACE INTO commands (name, response, flag) VALUES (?, ?, ?)", [name, response, flag])
     _db_write(query)
 
 """
