@@ -11,27 +11,28 @@ from utils import requires_admin, requires_define, CustomCommandFlags
 ul = UserLookup()
 
 ADMIN_HELP_MES = (
+    f"## XP\n"
     f"View your XP: `{CMD_PREFIX}xp`\n"
     f"View your level: `{CMD_PREFIX}lvl`\n"
     f"Set XP to be x2: `{CMD_PREFIX}bonusxp`\n"
     f"Reset XP multiplier: `{CMD_PREFIX}nobonusxp`\n"
     f"Give XP to a user: `{CMD_PREFIX}addxp USER XP` (Can be negative)\n"
-    f"\n"
+    f"## Custom Commands\n"
     f"Define a custom message: `{CMD_PREFIX}define NAME [%mention%] MESSAGE`\n"
     f"List custom commands: `{CMD_PREFIX}list`\n"
     f"Remove a custom message: `{CMD_PREFIX}remove NAME`\n"
     f"Limit a custom message: `{CMD_PREFIX}limit NAME`\n"
-    f"\n"
+    f"## Server Control\n"
     f"Speak a message as the bot: `{CMD_PREFIX}say CHAN_ID message`. If you want to send images they must be attachments *not URLs*.\n"
     f"Edit a message spoken by the bot: `{CMD_PREFIX}edit MESSAGE_ID new_message`\n"
     f"Display info on a user: `{CMD_PREFIX}userinfo [USER]`\n"
     f"Display info on bot settings: `{CMD_PREFIX}info`\n"
     f"View available ranks: `{CMD_PREFIX}ranks`\n"
-    f"\n"
+    f"## Interactive Commands\n"
     f"Sync slash commands to the server: `{CMD_PREFIX}sync`\n"
     f"Post the platform selection menu (rarely do this): `{CMD_PREFIX}platforms CHAN_ID`\n"
     f"Post the pronoun selection menu (rarely do this): `{CMD_PREFIX}pronouns CHAN_ID`\n"
-    f"\n"
+    f"## Announce Games\n"
     f"Add a game to be announced: `{CMD_PREFIX}addgame URL`\n"
     f"View all games to be announced: `{CMD_PREFIX}getgames`\n"
     f"Post games immediately: `{CMD_PREFIX}postgames`\n"
@@ -41,9 +42,11 @@ ADMIN_HELP_MES = (
 )
 
 HELP_MES = (
+    f"## XP"
     f"View your XP: `{CMD_PREFIX}xp`\n"
     f"View your level: `{CMD_PREFIX}lvl`\n"
     f"\n"
+    f"## Custom Commands"
     f"List custom commands: `{CMD_PREFIX}list`\n"
     f"Define a custom command: `{CMD_PREFIX}define NAME [%mention%] MESSAGE` (only available to certain roles)\n"
     f"View available ranks: `{CMD_PREFIX}ranks`\n"
@@ -160,10 +163,12 @@ async def info(_) -> str:
     lvl_c = ", ".join([f"<#{x}>" for x in LVL_CHANS])
     slow_c = ", ".join([f"<#{x}>" for x in NO_SLOWMODE])
     xp_c = ", ".join([f"<#{x}>" for x in XP_OFF])
+    limit_c = ", ".join([f"<#{x}>" for x in LIMIT_CHANS])
     mes = (
         f"The `{CMD_PREFIX}lvl` command is only allowed in {lvl_c}\n"
         f"Dynamic slowmode is disabled in {slow_c}\n"
         f"Users do not gain XP in {xp_c}\n"
+        f"Commands can be disabled in {limit_c}\n"
     )
     return mes
 
