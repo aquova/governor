@@ -78,7 +78,6 @@ async def userinfo(message: discord.Message):
     if not author:
         author = message.author
 
-    username = f"{author.name}#{author.discriminator}"
     # https://strftime.org/ is great if you ever want to change this, FYI
     create_time = author.created_at.strftime("%c")
     join_time = author.joined_at.strftime("%c")
@@ -89,7 +88,7 @@ async def userinfo(message: discord.Message):
     roles = [x.name for x in author.roles[1:]]
     role_str = ", ".join(roles)
 
-    embed = discord.Embed(title=username, type="rich", color=author.color)
+    embed = discord.Embed(title=str(author), type="rich", color=author.color)
     if author.nick is not None:
         embed.description = f"aka {author.nick}"
     embed.set_thumbnail(url=author.display_avatar.url)

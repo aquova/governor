@@ -207,7 +207,7 @@ class Tracker:
             user = discord.utils.get(message.guild.members, id=userid)
             if user is not None:
                 await self.give_xp(user, message.guild, xp)
-                return f"{xp} XP given to {user.name}#{user.discriminator}"
+                return f"{xp} XP given to {str(user)}"
             else:
                 return "Was unable to find that user in the server"
         except (IndexError, ValueError):
