@@ -42,11 +42,10 @@ ADMIN_HELP_MES = (
 )
 
 HELP_MES = (
-    f"## XP"
+    f"## XP\n"
     f"View your XP: `{CMD_PREFIX}xp`\n"
     f"View your level: `{CMD_PREFIX}lvl`\n"
-    f"\n"
-    f"## Custom Commands"
+    f"## Custom Commands\n"
     f"List custom commands: `{CMD_PREFIX}list`\n"
     f"Define a custom command: `{CMD_PREFIX}define NAME [%mention%] MESSAGE` (only available to certain roles)\n"
     f"View available ranks: `{CMD_PREFIX}ranks`\n"
