@@ -2,6 +2,7 @@
     // Constants
     define("DB_PATH", "/private/governor.db");
     define("XP_PER_LVL", 300);
+    define("URL_REGEX", "/\bhttps?:\/\/\S+\b\/?/");
 
     function populate_leaderboard($use_monthly) {
         $db = new SQLite3(DB_PATH);
@@ -77,8 +78,7 @@
             $mes = str_replace("```", "", $mes);
 
             // Convert image URLs to img tags, other links to normal hyperlinks
-            $url_regex = '/https?:\/\/\S+/';
-            $found = preg_match_all($url_regex, $mes, $matches, PREG_OFFSET_CAPTURE);
+            $found = preg_match_all(URL_REGEX, $mes, $matches, PREG_OFFSET_CAPTURE);
             if ($found) {
                 foreach ($matches[0] as $match) {
                     $url = $match[0];
