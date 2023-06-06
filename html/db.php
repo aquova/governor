@@ -2,7 +2,8 @@
     // Constants
     define("DB_PATH", "/private/governor.db");
     define("XP_PER_LVL", 300);
-    define("URL_REGEX", "/\bhttps?:\/\/\S+\b\/?/");
+    define("URL_REGEX", "/\b(https?:\/\/\S+)\b\/?/");
+    define("IMG_REGEX", "/<a\ href=(https?:\/\/\S+(png|jpg)+)>\S+<\/a>/");
 
     function populate_leaderboard($use_monthly) {
         $db = new SQLite3(DB_PATH);
@@ -78,28 +79,8 @@
             $mes = str_replace("```", "", $mes);
 
             // Convert image URLs to img tags, other links to normal hyperlinks
-            $found = preg_match_all(URL_REGEX, $mes, $matches, PREG_OFFSET_CAPTURE);
-            if ($found) {
-                foreach ($matches[0] as $match) {
-                    $url = $match[0];
-                    $split = preg_split("/\./", $url);
-                    $file_type = "";
-                    if ($split) {
-                        $file_type = end($split);
-                    }
-
-                    switch ($file_type) {
-                        case "jpg":
-                        case "png":
-                            $mes = str_replace($url, "<img src=" . $url . ">", $mes);
-                            break;
-
-                        default:
-                            $mes = str_replace($url, "<a href=" . $url . ">" . $url . "</a>", $mes);
-                            break;
-                    }
-                }
-            }
+            $mes = preg_replace(URL_REGEX, "<a href=$1>$1</a>", $mes);
+            $mes = preg_replace(IMG_REGEX, "<img src=$1>", $mes);
 
             // New lines should become html breaks
             $mes = str_replace("\n", "<br/>", $mes);
