@@ -278,17 +278,18 @@ class CustomCommands:
         output_message = f"New command added! You can use it like `{CMD_PREFIX}{cmd}`. "
 
         author = message.author
+        user_name = commonbot.utils.user_str(author)
         # If user allows embedding of a ping, list various ways this can be done
         if "%mention%" in response:
             user_id = author.id
-            output_message += f"You can also use it as `{CMD_PREFIX}{cmd} {user_id}`, `{CMD_PREFIX}{cmd} {str(author)}`, or `{CMD_PREFIX}{cmd} @{str(author)}`"
+            output_message += f"You can also use it as `{CMD_PREFIX}{cmd} {user_id}`, `{CMD_PREFIX}{cmd} {user_name}`, or `{CMD_PREFIX}{cmd} @{user_name}`"
 
         log_msg = ""
         log_chan = client.get_channel(LOG_CHAN)
         if old_response:
-            log_msg = f"{str(author)} has changed the command `{cmd}` from `{old_response}` to `{response}`"
+            log_msg = f"{user_name} has changed the command `{cmd}` from `{old_response}` to `{response}`"
         else:
-            log_msg = f"{str(author)} has added the `{cmd}` command - `{response}`"
+            log_msg = f"{user_name} has added the `{cmd}` command - `{response}`"
 
         await log_chan.send(log_msg)
 
@@ -314,7 +315,7 @@ class CustomCommands:
             db.remove_custom_cmd(cmd)
 
             log_chan = client.get_channel(LOG_CHAN)
-            log_msg = f"{str(message.author)} has removed the `{cmd}` command. It used to say `{old_msg}`."
+            log_msg = f"{commonbot.utils.user_str(message.author)} has removed the `{cmd}` command. It used to say `{old_msg}`."
             await log_chan.send(log_msg)
 
             return f"`{cmd}` removed as a custom command!"

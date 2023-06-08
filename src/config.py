@@ -12,8 +12,8 @@ with open(CONFIG_PATH) as config_file:
 
 DISCORD_KEY = cfg['discord']
 DB_PATH = "./private/governor.db"
-ASSETS_PATH = "/governor/assets"
-FONTS_PATH = "/governor/fonts"
+ASSETS_PATH = "./assets"
+FONTS_PATH = "./fonts"
 TMP_PATH = "./private/tmp"
 CMD_PREFIX = cfg['command_prefix']
 

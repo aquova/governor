@@ -61,7 +61,7 @@ class Tracker:
             # Update users that are still in the server
             if user:
                 # NOTE: May be worth to populate the cache here as well
-                db.set_user_xp(leader_id, leader_xp, str(user), user.display_avatar.url, leader_monthly, leader_month, leader_year, str(user.color))
+                db.set_user_xp(leader_id, leader_xp, commonbot.utils.user_str(user), user.display_avatar.url, leader_monthly, leader_month, leader_year, str(user.color))
             # Otherwise, prune their username/avatar so that they don't appear on the leaderboard
             else:
                 db.set_user_xp(leader_id, leader_xp, None, None, leader_monthly, leader_month, leader_year, None)
@@ -134,9 +134,9 @@ class Tracker:
 
         avatar = user.display_avatar.url
         # Update their entry in the cache
-        self.user_cache[user_id] = UserData(xp, monthly_xp, curr_time, str(user), avatar, next_role)
+        self.user_cache[user_id] = UserData(xp, monthly_xp, curr_time, commonbot.utils.user_str(user), avatar, next_role)
         # Update their entry in the database
-        db.set_user_xp(user_id, xp, str(user), avatar, monthly_xp, curr_time.month, curr_time.year, str(user.color))
+        db.set_user_xp(user_id, xp, commonbot.utils.user_str(user), avatar, monthly_xp, curr_time.month, curr_time.year, str(user.color))
 
         return out_message
 
@@ -207,7 +207,7 @@ class Tracker:
             user = discord.utils.get(message.guild.members, id=userid)
             if user is not None:
                 await self.give_xp(user, message.guild, xp)
-                return f"{xp} XP given to {str(user)}"
+                return f"{xp} XP given to {commonbot.utils.user_str(user)}"
             else:
                 return "Was unable to find that user in the server"
         except (IndexError, ValueError):
