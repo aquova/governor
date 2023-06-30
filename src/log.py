@@ -17,7 +17,7 @@ def parse_log(url):
     soup.encode("utf-8")
     data = soup.find("table", {"id": "metadata"})
 
-    if data is None:
+    if not isinstance(data, bs4.Tag):
         return "Oops, couldn't parse that file. Make sure you share a valid SMAPI log."
 
     log_info = {
@@ -35,22 +35,24 @@ def parse_log(url):
             log_info["success"] = False
 
     try:
-        fix_elems = soup.find("ul", {"id": "fix-list"}).find_all("li")
-        fixes = []
-        for fix in fix_elems:
-            innerHTML = fix.decode_contents()
-            if "PyTK 1.23.* or earlier isn't compatible with newer SMAPI performance" in innerHTML:
-                fixes.append("Pytk isn't compatible with newer SMAPI performance optimizations, consider removing it")
-            elif "Consider updating these mods to fix problems:" in innerHTML:
-                fixes.append("One or more mods are out of date, consider updating them")
-            elif "PyTK's image scaling isn't compatible with SMAPI strict mode" in innerHTML:
-                fixes.append("Pytk's image scaling isn't compatible with SMAPI strict mode, disable it")
-            elif "You don't have the " in innerHTML and "Error Handler" in innerHTML:
-                fixes.append("You don't have the Error Handler mod installed, reinstall SMAPI to get it")
-            elif "which removes all deprecated APIs. This can significantly improve performance, but some mods may not work." in innerHTML:
-                fixes.append("SMAPI is running in strict mode, which removes all deprecated APIs. This can significantly improve performance, but some mods may not work.")
-        fixes_human = ", ".join(fixes)
-        log_info["suggested_fixes"] = fixes_human
+        fix_list = soup.find("ul", {"id": "fix-list"})
+        if isinstance(fix_list, bs4.Tag):
+            fix_elems = fix_list.find_all("li")
+            fixes = []
+            for fix in fix_elems:
+                innerHTML = fix.decode_contents()
+                if "PyTK 1.23.* or earlier isn't compatible with newer SMAPI performance" in innerHTML:
+                    fixes.append("Pytk isn't compatible with newer SMAPI performance optimizations, consider removing it")
+                elif "Consider updating these mods to fix problems:" in innerHTML:
+                    fixes.append("One or more mods are out of date, consider updating them")
+                elif "PyTK's image scaling isn't compatible with SMAPI strict mode" in innerHTML:
+                    fixes.append("Pytk's image scaling isn't compatible with SMAPI strict mode, disable it")
+                elif "You don't have the " in innerHTML and "Error Handler" in innerHTML:
+                    fixes.append("You don't have the Error Handler mod installed, reinstall SMAPI to get it")
+                elif "which removes all deprecated APIs. This can significantly improve performance, but some mods may not work." in innerHTML:
+                    fixes.append("SMAPI is running in strict mode, which removes all deprecated APIs. This can significantly improve performance, but some mods may not work.")
+            fixes_human = ", ".join(fixes)
+            log_info["suggested_fixes"] = fixes_human
     except AttributeError:
         pass
 

@@ -1,6 +1,6 @@
 import asyncio
 from datetime import datetime, timedelta
-from typing import Optional
+from typing import cast
 
 import discord
 
@@ -8,13 +8,14 @@ from commonbot.user import UserLookup
 import commonbot.utils
 
 import db
+from client import client
 from config import CMD_PREFIX, RANKS, XP_PER_LVL, XP_PER_MINUTE
 from utils import requires_admin
 
 SLEEP_TIME = 24 * 60 * 60 # One day
 
 class UserData:
-    def __init__(self, xp: int, monthly_xp: int, timestamp: datetime, username: str, avatar: str, next_role_at: Optional[int]):
+    def __init__(self, xp: int, monthly_xp: int, timestamp: datetime, username: str, avatar: str, next_role_at: int | None):
         self.xp = xp
         self.monthly_xp = monthly_xp
         self.timestamp = timestamp
@@ -27,8 +28,6 @@ class Tracker:
         self.user_cache = {}
         self.xp_multiplier = 1
         self.ul = UserLookup()
-        self.task = None
-        self.server = None
 
     def start(self, server: discord.Guild):
         if not self.task:
@@ -61,7 +60,7 @@ class Tracker:
             # Update users that are still in the server
             if user:
                 # NOTE: May be worth to populate the cache here as well
-                db.set_user_xp(leader_id, leader_xp, commonbot.utils.user_str(user), user.display_avatar.url, leader_monthly, leader_month, leader_year, str(user.color))
+                db.set_user_xp(leader_id, leader_xp, str(user), user.display_avatar.url, leader_monthly, leader_month, leader_year, str(user.color))
             # Otherwise, prune their username/avatar so that they don't appear on the leaderboard
             else:
                 db.set_user_xp(leader_id, leader_xp, None, None, leader_monthly, leader_month, leader_year, None)
@@ -71,7 +70,7 @@ class Tracker:
 
     Updates user XP, levels, and roles
     """
-    async def give_xp(self, user: discord.Member, server: discord.Guild, xp_add: Optional[int]=None) -> Optional[str]:
+    async def give_xp(self, user: discord.Member | discord.User, xp_add: int | None=None) -> str | None:
         user_id = user.id
         xp = 0
         monthly_xp = 0
@@ -126,17 +125,18 @@ class Tracker:
 
                     if rank['welcome']['message'] != "":
                         for welcome_id in rank['welcome']['channels']:
-                            chan = discord.utils.get(server.channels, id=welcome_id)
-                            await chan.send(f"Hello <@{user_id}>! {rank['welcome']['message']}")
+                            chan = cast(discord.TextChannel, client.get_channel(welcome_id))
+                            if chan is not None:
+                                await chan.send(f"Hello <@{user_id}>! {rank['welcome']['message']}")
                     break
 
             next_role = await self.check_roles(user, xp)
 
         avatar = user.display_avatar.url
         # Update their entry in the cache
-        self.user_cache[user_id] = UserData(xp, monthly_xp, curr_time, commonbot.utils.user_str(user), avatar, next_role)
+        self.user_cache[user_id] = UserData(xp, monthly_xp, curr_time, str(user), avatar, next_role)
         # Update their entry in the database
-        db.set_user_xp(user_id, xp, commonbot.utils.user_str(user), avatar, monthly_xp, curr_time.month, curr_time.year, str(user.color))
+        db.set_user_xp(user_id, xp, str(user), avatar, monthly_xp, curr_time.month, curr_time.year, str(user.color))
 
         return out_message
 
@@ -145,11 +145,15 @@ class Tracker:
 
     Make sure the user has the correct roles, given their XP
     """
-    async def check_roles(self, user: discord.Member, xp: int) -> Optional[int]:
+    async def check_roles(self, user: discord.Member | discord.User, xp: int) -> int | None:
+        if isinstance(user, discord.User):
+            return None
+
         try:
             user_roles = user.roles
             user_role_ids = [x.id for x in user.roles]
         except AttributeError:
+            user_roles = []
             user_role_ids = []
 
         new_roles = []
@@ -198,16 +202,19 @@ class Tracker:
     async def add_xp(self, message: discord.Message) -> str:
         try:
             payload = commonbot.utils.strip_words(message.content, 1)
+            guild = message.guild
+            if guild is None:
+                return ""
             # Treat last word as XP to be awarded
             xp = int(payload.split(" ")[-1])
             userid = self.ul.parse_id(message)
             # Incase they didn't give an XP, don't parse ID as XP lol
             if xp == userid:
                 return "Was unable to find XP value in that message"
-            user = discord.utils.get(message.guild.members, id=userid)
+            user = discord.utils.get(guild.members, id=userid)
             if user is not None:
-                await self.give_xp(user, message.guild, xp)
-                return f"{xp} XP given to {commonbot.utils.user_str(user)}"
+                await self.give_xp(user, xp)
+                return f"{xp} XP given to {str(user)}"
             else:
                 return "Was unable to find that user in the server"
         except (IndexError, ValueError):

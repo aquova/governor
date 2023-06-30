@@ -1,9 +1,11 @@
 from math import floor
+from typing import cast
 
 import discord
 
 from commonbot.utils import strip_words, get_first_word
 
+from client import client
 from config import CMD_PREFIX, PC_PLATFORM, XBOX_PLATFORM, PS_PLATFORM, NS_PLATFORM, MOBILE_PLATFORM, VITA_PLATFORM
 from utils import requires_admin
 
@@ -22,8 +24,13 @@ class PlatformWidgetButton(discord.ui.Button):
         super().__init__(style=discord.ButtonStyle.primary, label=txt, row=row, custom_id=custom_id)
 
     async def callback(self, interaction: discord.Interaction):
+        if isinstance(interaction.user, discord.User) or self.label is None:
+            return
+
         role_id = PLATFORMS[self.label]
         role = discord.utils.get(interaction.user.guild.roles, id=role_id)
+        if role is None:
+            return
         if interaction.user.get_role(role_id):
             await interaction.user.remove_roles(role)
             await interaction.response.send_message(f"{self.label} role removed!", ephemeral=True)
@@ -44,7 +51,9 @@ async def post_widget(message: discord.Message) -> str:
     try:
         payload = strip_words(message.content, 1)
         chan_id = get_first_word(payload)
-        channel = discord.utils.get(message.guild.channels, id=int(chan_id))
+        channel = cast(discord.TextChannel, client.get_channel(int(chan_id)))
+        if channel is None:
+            raise ValueError
         await channel.send("Assign yourself any of the platforms you use!", view=PlatformWidget())
         return ""
     except ValueError:

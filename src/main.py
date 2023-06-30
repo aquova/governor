@@ -81,8 +81,9 @@ Runs when Discord bot is first brought online
 @client.event
 async def on_ready():
     print("Logged in as:")
-    print(client.user.name)
-    print(client.user.id)
+    if client.user:
+        print(client.user.name)
+        print(client.user.id)
     await client.setup_hook()
 
 """
@@ -170,8 +171,8 @@ async def on_message(message: discord.Message):
     await thermo.user_spoke(message)
     # Check if we need to congratulate a user on getting a new role
     # Don't award XP if posting in specified disabled channels
-    if message.channel.id not in XP_OFF:
-        lvl_up_message = await tr.give_xp(message.author, message.guild)
+    if message.channel.id not in XP_OFF and message.guild is not None:
+        lvl_up_message = await tr.give_xp(message.author)
         if lvl_up_message:
             await message.channel.send(lvl_up_message)
 

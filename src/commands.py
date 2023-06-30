@@ -5,7 +5,7 @@ from commonbot.user import UserLookup
 
 import db
 from client import client
-from config import ADMIN_ACCESS, CMD_PREFIX, RANKS, SERVER_URL, LVL_CHANS, NO_SLOWMODE, XP_OFF, LOG_CHAN, LIMIT_CHANS
+from config import ADMIN_ACCESS, CMD_PREFIX, RANKS, SERVER_URL, LVL_CHANS, NO_SLOWMODE, XP_OFF, LIMIT_CHANS
 from utils import requires_admin, requires_define, CustomCommandFlags
 
 ul = UserLookup()
@@ -96,8 +96,15 @@ Speaks a message to the specified channel as the bot
 async def say(message: discord.Message) -> str:
     try:
         payload = commonbot.utils.strip_words(message.content, 1)
+        guild = message.guild
+        if guild is None:
+            return ""
         channel_id = commonbot.utils.get_first_word(payload)
-        channel = discord.utils.get(message.guild.channels, id=int(channel_id))
+        channel = discord.utils.get(guild.channels, id=int(channel_id))
+        if channel is None:
+            raise AttributeError
+        elif isinstance(channel, (discord.ForumChannel, discord.CategoryChannel)):
+            return ""
         output = commonbot.utils.strip_words(payload, 1)
         if output == "" and len(message.attachments) == 0:
             return "You cannot send empty messages."
@@ -131,7 +138,10 @@ async def edit(message: discord.Message) -> str:
         payload = commonbot.utils.strip_words(message.content, 1)
         edit_id = commonbot.utils.get_first_word(payload)
         edit_message = None
-        for channel in message.guild.channels:
+        guild = message.guild
+        if guild is None:
+            return ""
+        for channel in guild.channels:
             try:
                 if isinstance(channel, discord.TextChannel):
                     edit_message = await channel.fetch_message(int(edit_id))
@@ -174,12 +184,12 @@ async def info(_) -> str:
 @requires_admin
 async def sync(message: discord.Message) -> str:
     import context
-    await client.sync_guild(message.guild)
+    if message.guild is not None:
+        await client.sync_guild(message.guild)
     return "Commands synced"
 
 class CustomCommands:
     def __init__(self):
-        self.keywords = None
         self.cmd_dict = db.get_custom_cmds()
 
     """
@@ -278,20 +288,19 @@ class CustomCommands:
         output_message = f"New command added! You can use it like `{CMD_PREFIX}{cmd}`. "
 
         author = message.author
-        user_name = commonbot.utils.user_str(author)
+        user_name = str(author)
         # If user allows embedding of a ping, list various ways this can be done
         if "%mention%" in response:
             user_id = author.id
             output_message += f"You can also use it as `{CMD_PREFIX}{cmd} {user_id}`, `{CMD_PREFIX}{cmd} {user_name}`, or `{CMD_PREFIX}{cmd} @{user_name}`"
 
         log_msg = ""
-        log_chan = client.get_channel(LOG_CHAN)
         if old_response:
             log_msg = f"{user_name} has changed the command `{cmd}` from `{old_response}` to `{response}`"
         else:
             log_msg = f"{user_name} has added the `{cmd}` command - `{response}`"
 
-        await log_chan.send(log_msg)
+        await client.log.send(log_msg)
 
         return output_message
 
@@ -314,9 +323,8 @@ class CustomCommands:
             del self.cmd_dict[cmd]
             db.remove_custom_cmd(cmd)
 
-            log_chan = client.get_channel(LOG_CHAN)
-            log_msg = f"{commonbot.utils.user_str(message.author)} has removed the `{cmd}` command. It used to say `{old_msg}`."
-            await log_chan.send(log_msg)
+            log_msg = f"{str(message.author)} has removed the `{cmd}` command. It used to say `{old_msg}`."
+            await client.log.send(log_msg)
 
             return f"`{cmd}` removed as a custom command!"
 

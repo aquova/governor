@@ -12,7 +12,6 @@ DECREASE_MAX = 2
 
 class Thermometer:
     def __init__(self):
-        self.channels = None
         self.channel_dict = {}
         self.task = None
 

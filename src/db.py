@@ -190,5 +190,5 @@ Clear games
 Removes all currently stored games
 """
 def clear_games():
-    query = ("DELETE FROM games",)
+    query = ("DELETE FROM games", [])
     _db_write(query)
