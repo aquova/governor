@@ -39,6 +39,7 @@ class GameTimer:
     the auto retrieved games already posted will need to be remembered somehow.
     """
     def __init__(self):
+        self.task = None
         self._last_announcement_message = None
 
     def start(self, channel: discord.TextChannel, add_epic_games: bool):

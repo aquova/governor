@@ -5,7 +5,6 @@ import discord
 
 from commonbot.utils import strip_words, get_first_word
 
-from client import client
 from config import CMD_PREFIX, HE_PRONOUN, SHE_PRONOUN, THEY_PRONOUN, IT_PRONOUN, ANY_PRONOUN, ASK_PRONOUN
 from utils import requires_admin
 
@@ -51,7 +50,9 @@ async def post_widget(message: discord.Message) -> str:
     try:
         payload = strip_words(message.content, 1)
         chan_id = get_first_word(payload)
-        channel = cast(discord.TextChannel, client.get_channel(int(chan_id)))
+        if message.guild is None:
+            return ""
+        channel = cast(discord.TextChannel, discord.utils.get(message.guild.channels, id=int(chan_id)))
         if channel is None:
             raise ValueError
         await channel.send("Press the buttons to add/remove the role!", view=PronounWidget())

@@ -28,6 +28,7 @@ class Tracker:
         self.user_cache = {}
         self.xp_multiplier = 1
         self.ul = UserLookup()
+        self.task = None
 
     def start(self, server: discord.Guild):
         if not self.task:
