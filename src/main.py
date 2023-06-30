@@ -180,7 +180,7 @@ async def on_message(message: discord.Message):
         log_info = parse_log(log_link)
         await message.channel.send(log_info)
 
-    for community_wiki_link in re.findall(r"https://stardewcommunitywiki.com/[a-zA-Z0-9_/:-%]*", message.content):
+    for community_wiki_link in re.findall(r"https://stardewcommunitywiki\.com/[a-zA-Z0-9_/:\-%]*", message.content):
         new_wiki ="https://stardewvalleywiki.com"
 
         link_path = urllib.parse.urlparse(community_wiki_link).path
