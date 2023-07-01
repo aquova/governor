@@ -84,6 +84,7 @@ async def on_ready():
     if client.user:
         print(client.user.name)
         print(client.user.id)
+    client.set_channels()
     await client.setup_hook()
 
 """
