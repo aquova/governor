@@ -15,7 +15,6 @@ import db
 import commands
 import games
 import platforms
-import pronouns
 import xp
 from client import client
 from config import OWNER, DEBUG_BOT, CMD_PREFIX, DISCORD_KEY, GAME_ANNOUNCEMENT_CHANNEL, AUTO_ADD_EPIC_GAMES, XP_OFF
@@ -50,7 +49,6 @@ FUNC_DICT = {
     "lvl": xp.parse_lvl_image,
     "nobonusxp": tr.reset_bonus_xp,
     "platforms": platforms.post_widget,
-    "pronouns": pronouns.post_widget,
     "postgames": game_timer.post_games,
     "ranks": commands.list_ranks,
     "remove": cc.remove_cmd,

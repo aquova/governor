@@ -2,7 +2,6 @@ import discord
 
 from config import LOG_CHAN
 from platforms import PlatformWidget
-from pronouns import PronounWidget
 
 from typing import cast
 
@@ -16,7 +15,6 @@ class DiscordClient(discord.Client):
 
     async def setup_hook(self):
         self.add_view(PlatformWidget())
-        self.add_view(PronounWidget())
 
     async def sync_guild(self, guild: discord.Guild):
         self.tree.copy_global_to(guild=guild)

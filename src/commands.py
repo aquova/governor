@@ -31,7 +31,6 @@ ADMIN_HELP_MES = (
     f"## Interactive Commands\n"
     f"Sync slash commands to the server: `{CMD_PREFIX}sync`\n"
     f"Post the platform selection menu (rarely do this): `{CMD_PREFIX}platforms CHAN_ID`\n"
-    f"Post the pronoun selection menu (rarely do this): `{CMD_PREFIX}pronouns CHAN_ID`\n"
     f"## Announce Games\n"
     f"Add a game to be announced: `{CMD_PREFIX}addgame URL`\n"
     f"View all games to be announced: `{CMD_PREFIX}getgames`\n"
