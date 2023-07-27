@@ -5,7 +5,8 @@ from commonbot.user import UserLookup
 
 import db
 from client import client
-from config import ADMIN_ACCESS, CMD_PREFIX, RANKS, SERVER_URL, LVL_CHANS, NO_SLOWMODE, XP_OFF, LIMIT_CHANS
+from config import ADMIN_ACCESS, CMD_PREFIX, SERVER_URL, LVL_CHANS, NO_SLOWMODE, XP_OFF, LIMIT_CHANS
+from ranks import RANKS
 from utils import requires_admin, requires_define, CustomCommandFlags
 
 ul = UserLookup()
@@ -83,7 +84,7 @@ Lists the available earnable rank roles, and their levels
 async def list_ranks(_) -> str:
     output = ""
     for rank in RANKS:
-        output += f"Level {rank['level']}: {rank['name']}\n"
+        output += f"Level {rank.level}: {rank.name}\n"
     return output
 
 """

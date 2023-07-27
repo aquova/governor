@@ -9,7 +9,8 @@ import commonbot.utils
 
 import db
 from client import client
-from config import CMD_PREFIX, RANKS, XP_PER_LVL, XP_PER_MINUTE
+from config import CMD_PREFIX, XP_PER_LVL, XP_PER_MINUTE
+from ranks import RANKS
 from utils import requires_admin
 
 SLEEP_TIME = 24 * 60 * 60 # One day
@@ -123,16 +124,15 @@ class Tracker:
             # Find what the congratulatory message should be
             # Not very efficient, but there will likely only be a handful of ranks
             for rank in RANKS:
-                rank_xp = rank["level"] * XP_PER_LVL
+                rank_xp = rank.level * XP_PER_LVL
                 if rank_xp == next_role:
-                    if rank['message'] != "":
-                        out_message = f"<@{user_id}> {rank['message']}"
+                    if rank.message != "":
+                        out_message = f"<@{user_id}> {rank.message}"
 
-                    if rank['welcome']['message'] != "":
-                        for welcome_id in rank['welcome']['channels']:
-                            chan = cast(discord.TextChannel, client.get_channel(welcome_id))
-                            if chan is not None:
-                                await chan.send(f"Hello <@{user_id}>! {rank['welcome']['message']}")
+                    if rank.welcome_channel is not None:
+                        chan = cast(discord.TextChannel, client.get_channel(rank.welcome_channel))
+                        if chan is not None:
+                            await chan.send(f"Hello <@{user_id}>! {rank.welcome_message}")
                     break
 
             next_role = await self.check_roles(user, xp)
@@ -169,10 +169,10 @@ class Tracker:
 
         # This doesn't require RANKS to be in order
         for rank in RANKS:
-            role_id = rank["role_id"]
+            role_id = rank.roleid
             # If they're missing a role, check if they qualify
             if role_id not in user_role_ids:
-                role_xp = rank["level"] * XP_PER_LVL
+                role_xp = rank.level * XP_PER_LVL
                 # If user has enough XP, give them the role
                 if role_xp <= xp:
                     new_roles.append(role_id)
