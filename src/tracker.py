@@ -209,12 +209,11 @@ class Tracker:
     @requires_admin
     async def add_xp(self, message: discord.Message) -> str:
         try:
-            payload = commonbot.utils.strip_words(message.content, 1)
             guild = message.guild
             if guild is None:
                 return ""
             # Treat last word as XP to be awarded
-            xp = int(payload.split(" ")[-1])
+            xp = int(message.content.split(" ")[-1])
             userid = self.ul.parse_id(message)
             # Incase they didn't give an XP, don't parse ID as XP lol
             if xp == userid:
@@ -226,7 +225,7 @@ class Tracker:
             else:
                 return "Was unable to find that user in the server"
         except (IndexError, ValueError):
-            return f"`{CMD_PREFIX}addxp XP USER`"
+            return f"`{CMD_PREFIX}addxp USER XP`"
 
     """
     Set bonus XP
