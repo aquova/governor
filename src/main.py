@@ -11,6 +11,7 @@ import urllib.parse
 import commonbot.utils
 from commonbot.debug import Debug
 
+import achievements
 import db
 import commands
 import games
@@ -23,6 +24,7 @@ from tracker import Tracker
 from log import parse_log
 
 db.initialize()
+db.initialize_achievements(achievements.ACHIEVEMENTS)
 tr = Tracker()
 cc = commands.CustomCommands()
 dbg = Debug(OWNER, CMD_PREFIX, DEBUG_BOT)
@@ -32,6 +34,7 @@ thermo = Thermometer()
 # Dictionary of function pointers
 # Maps commands to functions that are called by them
 FUNC_DICT = {
+    "achievements": achievements.list_achievements,
     "addgame": games.add_game,
     "addxp": tr.add_xp,
     "bonusxp": tr.set_bonus_xp,

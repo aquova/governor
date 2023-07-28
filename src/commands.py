@@ -29,6 +29,7 @@ ADMIN_HELP_MES = (
     f"Display info on a user: `{CMD_PREFIX}userinfo [USER]`\n"
     f"Display info on bot settings: `{CMD_PREFIX}info`\n"
     f"View available ranks: `{CMD_PREFIX}ranks`\n"
+    f"View available achievements: `{CMD_PREFIX}achievements`\n"
     f"## Interactive Commands\n"
     f"Sync slash commands to the server: `{CMD_PREFIX}sync`\n"
     f"Post the platform selection menu (rarely do this): `{CMD_PREFIX}platforms CHAN_ID`\n"

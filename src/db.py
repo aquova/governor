@@ -14,6 +14,7 @@ def initialize():
     sqlconn.execute("CREATE TABLE IF NOT EXISTS xp (id INT PRIMARY KEY, xp INT, username TEXT, avatar TEXT, monthly INT, month INT, year INT, color TEXT)")
     sqlconn.execute("CREATE TABLE IF NOT EXISTS commands (name TEXT PRIMARY KEY, response TEXT, flag INT)")
     sqlconn.execute("CREATE TABLE IF NOT EXISTS games (game TEXT)")
+    sqlconn.execute("CREATE TABLE IF NOT EXISTS earned (userid INT, aid INT, FOREIGN KEY (userid) REFERENCES xp(id), FOREIGN KEY (aid) REFERENCES achievements(id))")
     sqlconn.commit()
     sqlconn.close()
 
@@ -38,6 +39,21 @@ Helper function to perform database writes
 def _db_write(query: tuple[str, list]):
     sqlconn = sqlite3.connect(DB_PATH)
     sqlconn.execute(*query)
+    sqlconn.commit()
+    sqlconn.close()
+
+"""
+Initialize achievements
+
+Sets up the achievement database
+This will be needed by the website, so a static list is established here
+"""
+def initialize_achievements(achievements: list[tuple]):
+    sqlconn = sqlite3.connect(DB_PATH)
+    sqlconn.execute("CREATE TABLE IF NOT EXISTS achievements (id INT PRIMARY KEY, name TEXT, desc TEXT, img TEXT)")
+    for index, item in enumerate(achievements):
+        sqlconn.execute("INSERT OR REPLACE INTO achievements (id, name, desc, img) VALUES (?, ?, ?, ?)", [index, item[0], item[1], item[2]])
+
     sqlconn.commit()
     sqlconn.close()
 
@@ -192,3 +208,23 @@ Removes all currently stored games
 def clear_games():
     query = ("DELETE FROM games", [])
     _db_write(query)
+
+"""
+Earn achievement
+
+Gives the specified player the given achievement
+"""
+def earn_achievement(uid: int, aid: int):
+    query = ("INSERT INTO earned (userid, aid) VALUES (?, ?)", [uid, aid])
+    _db_write(query)
+
+"""
+Get achievements
+
+Gets all achievements earned by a user
+"""
+def get_achievements(uid: int) -> list[int]:
+    query = ("SELECT aid FROM earned WHERE uid=?", [uid])
+    result = _db_read(query)
+    return [x[0] for x in result]
+

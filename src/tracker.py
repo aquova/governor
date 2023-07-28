@@ -176,6 +176,7 @@ class Tracker:
                 # If user has enough XP, give them the role
                 if role_xp <= xp:
                     new_roles.append(role_id)
+                    db.earn_achievement(user.id, rank.achivement.value)
                 # Otherwise, keep track if this should be the next role to earn
                 elif lowest_missing_xp is None or role_xp < lowest_missing_xp:
                     lowest_missing_xp = role_xp
