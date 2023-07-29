@@ -196,13 +196,6 @@ async def render_lvl_image(user: discord.Member | discord.User) -> Optional[str]
     draw.text(USERNAME_POS.shadow_tuple(), username, BACK_COLOR, font=font_22)
     draw.text(USERNAME_POS.as_tuple(), username, FONT_COLOR, font=font_22)
 
-    # TODO: Once Discord's username rework finishes rolling out, this can be deleted
-    if user.discriminator != "0":
-        # The discriminator needs to be appended on the end of the username, but in a different font size
-        username_width = font_22.getsize(username)[0]
-        y_offset = font_22.getsize(username)[1] / 6
-        draw.text((USERNAME_POS.x + username_width, USERNAME_POS.y + y_offset), f"#{user.discriminator}", BACK_COLOR, font=font_14)
-
     draw.text(LEVEL_POS.shadow_tuple(), f"Level {lvl}", BACK_COLOR, font=font_22)
     draw.text(LEVEL_POS.as_tuple(), f"Level {lvl}", FONT_COLOR, font=font_22)
 
