@@ -1,5 +1,7 @@
 import asyncio
+
 import discord
+
 from config import NO_SLOWMODE
 
 WAIT_TIME = 120 # How long to sleep between checks, in seconds

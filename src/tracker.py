@@ -4,11 +4,10 @@ from typing import cast
 
 import discord
 
-from commonbot.user import UserLookup
 import commonbot.utils
-
 import db
 from client import client
+from commonbot.user import UserLookup
 from config import CMD_PREFIX, RANKS, XP_PER_LVL, XP_PER_MINUTE
 from utils import requires_admin
 

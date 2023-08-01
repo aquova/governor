@@ -3,9 +3,9 @@ from typing import cast
 
 import discord
 
-from commonbot.utils import strip_words, get_first_word
-
-from config import CMD_PREFIX, PC_PLATFORM, XBOX_PLATFORM, PS_PLATFORM, NS_PLATFORM, MOBILE_PLATFORM, VITA_PLATFORM
+from commonbot.utils import get_first_word, strip_words
+from config import (CMD_PREFIX, MOBILE_PLATFORM, NS_PLATFORM, PC_PLATFORM,
+                    PS_PLATFORM, VITA_PLATFORM, XBOX_PLATFORM)
 from utils import requires_admin
 
 PLATFORMS = {

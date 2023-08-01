@@ -1,9 +1,10 @@
 import discord
-from client import client
+
 import commands
 import xp
-
+from client import client
 from commonbot.timestamp import calculate_timestamps
+
 
 @client.tree.command(name="leaderboard", description="Get the URL for the online leaderboard")
 async def lb_context(interaction: discord.Interaction):

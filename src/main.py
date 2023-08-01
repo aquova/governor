@@ -3,24 +3,24 @@
 # https://github.com/aquova/governor
 
 import re
+import urllib.parse
 
 import discord
 import requests
-import urllib.parse
 
-import commonbot.utils
-from commonbot.debug import Debug
-
-import db
 import commands
+import commonbot.utils
+import db
 import games
 import platforms
 import xp
 from client import client
-from config import OWNER, DEBUG_BOT, CMD_PREFIX, DISCORD_KEY, GAME_ANNOUNCEMENT_CHANNEL, AUTO_ADD_EPIC_GAMES, XP_OFF
+from commonbot.debug import Debug
+from config import (AUTO_ADD_EPIC_GAMES, CMD_PREFIX, DEBUG_BOT, DISCORD_KEY,
+                    GAME_ANNOUNCEMENT_CHANNEL, OWNER, XP_OFF)
+from log import parse_log
 from slowmode import Thermometer
 from tracker import Tracker
-from log import parse_log
 
 db.initialize()
 tr = Tracker()

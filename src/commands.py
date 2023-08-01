@@ -1,12 +1,12 @@
 import discord
 
 import commonbot.utils
-from commonbot.user import UserLookup
-
 import db
 from client import client
-from config import ADMIN_ACCESS, CMD_PREFIX, RANKS, SERVER_URL, LVL_CHANS, NO_SLOWMODE, XP_OFF, LIMIT_CHANS
-from utils import requires_admin, requires_define, CustomCommandFlags
+from commonbot.user import UserLookup
+from config import (ADMIN_ACCESS, CMD_PREFIX, LIMIT_CHANS, LVL_CHANS,
+                    NO_SLOWMODE, RANKS, SERVER_URL, XP_OFF)
+from utils import CustomCommandFlags, requires_admin, requires_define
 
 ul = UserLookup()
 

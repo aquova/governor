@@ -1,5 +1,5 @@
-from datetime import datetime
 import json
+from datetime import datetime
 
 XP_PER_MINUTE = 10
 XP_PER_LVL = 300

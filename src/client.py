@@ -1,9 +1,10 @@
+from typing import cast
+
 import discord
 
 from config import LOG_CHAN
 from platforms import PlatformWidget
 
-from typing import cast
 
 class DiscordClient(discord.Client):
     def __init__(self, *, intents: discord.Intents):

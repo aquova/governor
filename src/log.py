@@ -1,6 +1,7 @@
+import string
+
 import bs4
 import requests
-import string
 
 # Template for SMAPI log info messages
 smapi_log_message_template = string.Template(

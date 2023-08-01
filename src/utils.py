@@ -1,7 +1,10 @@
+import asyncio
+import functools
 from typing import Callable, Coroutine, Optional
+
 from commonbot.utils import check_roles
 from config import ADMIN_ACCESS, DEFINE_ACCESS
-import asyncio, functools
+
 
 class CustomCommandFlags:
     NONE =      0b0000     # No limitations
