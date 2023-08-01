@@ -1,6 +1,12 @@
 import discord
 from enum import Enum
 
+from config import CMD_PREFIX
+import db
+from utils import requires_admin
+
+from commonbot.user import UserLookup
+
 class AchivementID(Enum):
     VILLAGER        = 0
     COWPOKE         = 1
@@ -40,6 +46,37 @@ ACHIEVEMENTS = [
 ]
 
 assert(len(ACHIEVEMENTS) == AchivementID.NUM_ACHIVEMENTS.value)
+
+@requires_admin
+async def give_achievement(message: discord.Message) -> str:
+    try:
+        guild = message.guild
+        if guild is None:
+            return ""
+
+        ul = UserLookup()
+        userid = ul.parse_id(message)
+        # Treat last word as achievement ID to unlock
+        aid = int(message.content.split(" ")[-1])
+
+        if AchivementID.NUM_ACHIVEMENTS.value <= aid:
+            return "That is not a valid achievement value."
+        if userid is not None:
+            db.earn_achievement(userid, aid)
+            return f"Achivement {ACHIEVEMENTS[aid].name} awarded to <@{userid}>"
+        return f"Was unable to understand that message: `{CMD_PREFIX}unlock USER ACHIEVEMENT_ID`"
+    except (IndexError, ValueError):
+        return f"`{CMD_PREFIX}unlock USER ACHIEVEMENT_ID`"
+
+async def show_achievements(message: discord.Message) -> str:
+    author = message.author.id
+    ul = UserLookup()
+    other_uid = ul.parse_id(message)
+    if other_uid is not None:
+        author = other_uid
+
+    a_list = db.get_achievements(author)
+    return '\n'.join([f"{ACHIEVEMENTS[x][0]} - {ACHIEVEMENTS[x][1]}" for x in a_list])
 
 async def list_achievements(_: discord.Message) -> str:
     a_list = '\n'.join([f"{index}: {item[0]} - {item[1]}" for index, item in enumerate(ACHIEVEMENTS)])

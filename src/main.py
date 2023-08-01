@@ -34,7 +34,7 @@ thermo = Thermometer()
 # Dictionary of function pointers
 # Maps commands to functions that are called by them
 FUNC_DICT = {
-    "achievements": achievements.list_achievements,
+    "achievements": achievements.show_achievements,
     "addgame": games.add_game,
     "addxp": tr.add_xp,
     "bonusxp": tr.set_bonus_xp,
@@ -57,6 +57,7 @@ FUNC_DICT = {
     "remove": cc.remove_cmd,
     "say": commands.say,
     "sync": commands.sync,
+    "unlock": achievements.give_achievement,
     "userinfo": xp.userinfo,
     "xp": xp.get_xp,
 }

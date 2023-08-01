@@ -14,7 +14,7 @@ def initialize():
     sqlconn.execute("CREATE TABLE IF NOT EXISTS xp (id INT PRIMARY KEY, xp INT, username TEXT, avatar TEXT, monthly INT, month INT, year INT, color TEXT)")
     sqlconn.execute("CREATE TABLE IF NOT EXISTS commands (name TEXT PRIMARY KEY, response TEXT, flag INT)")
     sqlconn.execute("CREATE TABLE IF NOT EXISTS games (game TEXT)")
-    sqlconn.execute("CREATE TABLE IF NOT EXISTS earned (userid INT, aid INT, FOREIGN KEY (userid) REFERENCES xp(id), FOREIGN KEY (aid) REFERENCES achievements(id))")
+    sqlconn.execute("CREATE TABLE IF NOT EXISTS earned (userid INT, aid INT, UNIQUE(userid, aid))")
     sqlconn.commit()
     sqlconn.close()
 
@@ -215,6 +215,7 @@ Earn achievement
 Gives the specified player the given achievement
 """
 def earn_achievement(uid: int, aid: int):
+    # Might throw an SQL error if not unique?
     query = ("INSERT INTO earned (userid, aid) VALUES (?, ?)", [uid, aid])
     _db_write(query)
 
