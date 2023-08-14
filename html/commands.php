@@ -16,6 +16,7 @@
                 <tr>
                     <th>Command</th>
                     <th>Response</th>
+                    <th>Limited?</th>
                 </tr>
                 <?php
                     include 'db.php';

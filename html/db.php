@@ -4,6 +4,7 @@
     define("XP_PER_LVL", 300);
     define("URL_REGEX", "/\b(https?:\/\/\S+)\b\/?/");
     define("IMG_REGEX", "/<a\ href=(https?:\/\/\S+(png|jpg)+)>\S+<\/a>/");
+    define("LIMIT_FLAG", 2);
 
     function populate_leaderboard($use_monthly) {
         $db = new SQLite3(DB_PATH);
@@ -65,6 +66,7 @@
         while ($row = $ret->fetchArray()) {
             $cmd = $row['name'];
             $mes = $row['response'];
+            $flags = $row['flag'];
 
             // For closer formatting to how they'll appear in Discord,
             // we shall replace some items with html tags
@@ -85,9 +87,13 @@
             // New lines should become html breaks
             $mes = str_replace("\n", "<br/>", $mes);
 
+            // Check if command has the limit flag set
+            $limited = $flags & LIMIT_FLAG ? "Y" : "N";
+
             echo "<tr>";
             echo "<td>$cmd</td>";
             echo "<td>$mes</td>";
+            echo "<td>$limited</td>";
             echo "</tr>";
         }
 
