@@ -180,6 +180,7 @@ async def info(_) -> str:
 
 @requires_admin
 async def sync(message: discord.Message) -> str:
+    import context
     if message.guild is not None:
         await client.sync_guild(message.guild)
     return "Commands synced"
