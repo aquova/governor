@@ -25,7 +25,6 @@ ADMIN_HELP_MES = (
     f"## Server Control\n"
     f"Speak a message as the bot: `{CMD_PREFIX}say CHAN_ID message`. If you want to send images they must be attachments *not URLs*.\n"
     f"Edit a message spoken by the bot: `{CMD_PREFIX}edit MESSAGE_ID new_message`\n"
-    f"Display info on a user: `{CMD_PREFIX}userinfo [USER]`\n"
     f"Display info on bot settings: `{CMD_PREFIX}info`\n"
     f"View available ranks: `{CMD_PREFIX}ranks`\n"
     f"## Interactive Commands\n"
@@ -48,7 +47,6 @@ HELP_MES = (
     f"List custom commands: `{CMD_PREFIX}list`\n"
     f"Define a custom command: `{CMD_PREFIX}define NAME [%mention%] MESSAGE` (only available to certain roles)\n"
     f"View available ranks: `{CMD_PREFIX}ranks`\n"
-    f"Display info on a user: `{CMD_PREFIX}userinfo [USER]`\n"
     f"\n"
     f"View this message: `{CMD_PREFIX}help`\n"
 )

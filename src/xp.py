@@ -63,58 +63,6 @@ async def get_xp(message: discord.Message) -> str:
     else:
         return f"They have {xp} XP all-time, and {monthly_xp} XP this month"
 
-"""
-Userinfo
-
-Returns a 'rich' post with some of the user's information in it
-"""
-async def userinfo(message: discord.Message):
-    # First, check if the user wants to look up someone else
-    author = None
-    other_id = ul.parse_id(message)
-    if other_id:
-        if message.guild is not None:
-            author = discord.utils.get(message.guild.members, id=other_id)
-
-    # If we couldn't find a user, use the message author
-    if not author:
-        author = message.author
-
-    is_user = isinstance(author, discord.User)
-
-    embed = discord.Embed(title=str(author), type="rich", color=author.color)
-    if not is_user and author.nick is not None:
-        embed.description = f"aka {author.nick}"
-    embed.set_thumbnail(url=author.display_avatar.url)
-    embed.add_field(name="ID", value=author.id, inline=False)
-    if author.bot:
-        embed.add_field(name="Bot?", value="🤖")
-
-    if not is_user:
-        # The first role is always @everyone, so omit it
-        roles = [x.name for x in author.roles[1:]]
-        role_str = ", ".join(roles)
-        # Discord will throw an error if we try to have a field with an empty string
-        if len(roles) > 0:
-            embed.add_field(name="roles", value=role_str, inline=False)
-
-
-    if message.guild is not None and message.guild.owner == author:
-        embed.add_field(name="Owner?", value="👑")
-
-    # https://strftime.org/ is great if you ever want to change this, FYI
-    create_time = author.created_at.strftime("%c")
-    embed.add_field(name="created", value=create_time)
-
-    if not is_user and author.joined_at is not None:
-        join_time = author.joined_at.strftime("%c")
-        embed.add_field(name="joined", value=join_time)
-
-    if not is_user and author.premium_since is not None:
-        embed.add_field(name="boosted", value=author.premium_since.strftime("%c"))
-
-    await message.channel.send(embed=embed)
-
 async def parse_lvl_image(message: discord.Message):
     # Only allow this command if in whitelisted channels
     if message.channel.id not in LVL_CHANS and not check_roles(message.author, ADMIN_ACCESS):

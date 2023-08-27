@@ -19,6 +19,8 @@ CMD_PREFIX = cfg['command_prefix']
 
 ADMIN_ACCESS = cfg['roles']['admin_access']
 DEFINE_ACCESS = cfg['roles']['define_access']
+MODDER_ROLE = cfg['roles']['modder']
+MODDER_URL = cfg['modder_wiki_url']
 
 SERVER_URL = cfg['server_url']
 OWNER = cfg['owner']

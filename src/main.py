@@ -54,7 +54,6 @@ FUNC_DICT = {
     "remove": cc.remove_cmd,
     "say": commands.say,
     "sync": commands.sync,
-    "userinfo": xp.userinfo,
     "xp": xp.get_xp,
 }
 
