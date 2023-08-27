@@ -18,6 +18,7 @@ class DiscordClient(discord.Client):
         self.add_view(PlatformWidget())
 
     async def sync_guild(self, guild: discord.Guild):
+        import context
         self.tree.copy_global_to(guild=guild)
         await self.tree.sync(guild=guild)
 
