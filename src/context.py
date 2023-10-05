@@ -52,6 +52,8 @@ def find_modder_info(uid: str) -> list[tuple[str, str]]:
 
 @client.tree.context_menu(name="User Info")
 async def userinfo_context(interaction: discord.Interaction, user: discord.Member):
+    if isinstance(interaction.user, discord.User):
+        return
     username = str(user)
     if user.nick is not None:
         username += f" aka {user.nick}"

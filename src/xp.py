@@ -149,7 +149,7 @@ async def render_lvl_image(user: discord.Member | discord.User) -> Optional[str]
 
     # Since the ranks can be (currentnly) up to 5 digits, adjust dynamically
     rank_text = f"Server Rank : {rank}"
-    rank_width = font_14.getsize(rank_text)[0]
+    rank_width = font_14.getlength(rank_text)
     draw.text((RANK_POS.x - rank_width, RANK_POS.y), rank_text, BACK_COLOR, font=font_14)
 
     # Save and close images
