@@ -16,14 +16,12 @@ import platforms
 import xp
 from client import client, show_lb, list_ranks
 from commonbot.debug import Debug
-from config import (AUTO_ADD_EPIC_GAMES, CMD_PREFIX, DEBUG_BOT, DISCORD_KEY,
-                    GAME_ANNOUNCEMENT_CHANNEL, OWNER, XP_OFF)
+from config import CMD_PREFIX, DEBUG_BOT, DISCORD_KEY, OWNER, XP_OFF
 from log import parse_log
 
 db.initialize()
 cc = commands.CustomCommands()
 dbg = Debug(OWNER, CMD_PREFIX, DEBUG_BOT)
-game_timer = games.GameTimer()
 
 # Dictionary of function pointers
 # Maps commands to functions that are called by them
@@ -45,7 +43,7 @@ FUNC_DICT = {
     "lvl": xp.parse_lvl_image,
     "nobonusxp": client.tracker.reset_bonus_xp,
     "platforms": platforms.post_widget,
-    "postgames": game_timer.post_games,
+    "postgames": client.game_timer.post_games,
     "ranks": list_ranks,
     "remove": cc.remove_cmd,
     "say": commands.say,
@@ -96,24 +94,12 @@ async def on_guild_available(guild: discord.Guild):
     # This is 100% going to cause issues if we ever want to host on more than one server
     await client.setup(guild)
 
-    # TODO: If we want to fix this, make announcement channels a list in config.json, and add a server ID column to DB
-    game_channel = discord.utils.get(guild.text_channels, id=GAME_ANNOUNCEMENT_CHANNEL)
-
-    if game_channel is not None:
-        print(f"Announcing games in server '{guild.name}' channel '{game_channel.name}'")
-    else:
-        await client.close()
-        raise Exception(f"Game announcement error: couldn't find channel {GAME_ANNOUNCEMENT_CHANNEL}")
-
-    game_timer.start(game_channel, AUTO_ADD_EPIC_GAMES and not dbg.is_debug_bot())
-
     # Set Bouncer's status
     await update_user_count(guild)
 
     # Only set up slash commands for prod bot
     if not dbg.is_debug_bot():
         await client.sync_guild(guild)
-
 
 """
 On Member Join

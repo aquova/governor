@@ -1,13 +1,13 @@
-import asyncio
 import random
 from datetime import datetime, timedelta, timezone
 
 import discord
+from discord.ext import commands, tasks
 import requests
 
 import commonbot.utils
 import db
-from config import GAME_ANNOUNCE_TIME
+from config import AUTO_ADD_EPIC_GAMES, GAME_ANNOUNCEMENT_CHANNEL, GAME_ANNOUNCE_TIME
 from utils import requires_admin
 
 ANNOUNCE_MESSAGES = [
@@ -20,7 +20,7 @@ ANNOUNCE_MESSAGES = [
 ]
 
 
-class GameTimer:
+class GameTimer(commands.Cog):
     """
     Game Timer
 
@@ -37,29 +37,32 @@ class GameTimer:
     If the announcement frequency is ever increased to be more than 1 per day,
     the auto retrieved games already posted will need to be remembered somehow.
     """
-    def __init__(self):
-        self.task = None
-        self._last_announcement_message = None
+    def __init__(self, guild: discord.Guild):
+        # TODO: If we want to fix this, make announcement channels a list in config.json, and add a server ID column to DB
+        game_channel = discord.utils.get(guild.text_channels, id=GAME_ANNOUNCEMENT_CHANNEL)
+        if game_channel is not None:
+            print(f"Announcing games in server '{guild.name}' channel '{game_channel.name}'")
+        else:
+            raise Exception(f"Game announcement error: couldn't find channel {GAME_ANNOUNCEMENT_CHANNEL}")
 
-    def start(self, channel: discord.TextChannel, add_epic_games: bool):
-        if self.task is None:
-            self._channel = channel
-            self.should_add_epic_games = add_epic_games
-            self.task = asyncio.create_task(self._announce_games())
+        self._last_announcement_message = None
+        self._channel = game_channel
+        self._should_add_epic_games = AUTO_ADD_EPIC_GAMES
+        self._announce_games.start()
+
+    def cog_unload(self):
+        self._announce_games.cancel()
 
     @requires_admin
     async def post_games(self, _) -> str:
         await self._send_message()
         return "Games posted"
 
+    @tasks.loop(time=GAME_ANNOUNCE_TIME)
     async def _announce_games(self):
-        while True:
-            await self._wait_until_next_announcement()
-
-            if self.should_add_epic_games:
-                self._add_epic_games()
-
-            await self._send_message()
+        if self._should_add_epic_games:
+            self._add_epic_games()
+        await self._send_message()
 
     async def _send_message(self):
         games = db.get_games()
@@ -73,12 +76,6 @@ class GameTimer:
             db.clear_games()
             self._last_announcement_message = announcement
 
-    @staticmethod
-    async def _wait_until_next_announcement():
-        next_announcement = get_delta_to_next_announcement()
-
-        await asyncio.sleep(next_announcement.total_seconds())
-
     def _add_epic_games(self):
         games_to_add = self._get_epic_games()
         existing_games = db.get_games()
@@ -86,7 +83,6 @@ class GameTimer:
         for game_to_add in games_to_add:
             name, url = game_to_add["name"], game_to_add["url"]
             if not contains_substring(url, existing_games):
-                # eg_print(f"{name}: added to next announcement")
                 db.add_game(f"{name}: <https://store.epicgames.com/en-US/p/{url}>")
 
     @staticmethod

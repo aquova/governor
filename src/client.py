@@ -8,6 +8,7 @@ from commonbot.timestamp import calculate_timestamps
 
 import db, xp
 from config import CMD_PREFIX, LOG_CHAN, MODDER_ROLE, MODDER_URL, RANKS, SERVER_URL, XP_PER_LVL
+from games import GameTimer
 from slowmode import Thermometer
 from tracker import Tracker
 from platforms import PlatformWidget
@@ -19,8 +20,14 @@ class DiscordClient(commands.Bot):
 
     async def setup(self, guild: discord.Guild):
         self.log = cast(discord.TextChannel, self.get_channel(LOG_CHAN))
+        try:
+            self.game_timer = GameTimer(guild)
+        except Exception as e:
+            await self.close()
+            raise e
         self.thermometer = Thermometer(guild)
         self.tracker = Tracker(guild)
+        await self.add_cog(self.game_timer)
         await self.add_cog(self.thermometer)
         await self.add_cog(self.tracker)
         self.add_view(PlatformWidget())

@@ -34,7 +34,7 @@ LIMIT_CHANS = cfg['channels']['limited']
 
 GAME_ANNOUNCEMENT_CHANNEL = cfg['games']['announcement_channel']
 AUTO_ADD_EPIC_GAMES = cfg['games']['auto_add_epic_games']
-GAME_ANNOUNCE_TIME = datetime.strptime(cfg['games']['announcement_time'], "%I:%M %p")
+GAME_ANNOUNCE_TIME = datetime.strptime(cfg['games']['announcement_time'], "%I:%M %p").time()
 
 PC_PLATFORM = cfg['roles']['platforms']['pc']
 XBOX_PLATFORM = cfg['roles']['platforms']['xbox']
