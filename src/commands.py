@@ -65,25 +65,6 @@ async def print_help(message: discord.Message) -> str:
         return HELP_MES
 
 """
-Show leaderboard
-
-Posts the URL for the online leaderboard
-"""
-async def show_lb(_) -> str:
-    return f"{SERVER_URL}/leaderboard.php"
-
-"""
-List ranks
-
-Lists the available earnable rank roles, and their levels
-"""
-async def list_ranks(_) -> str:
-    output = ""
-    for rank in RANKS:
-        output += f"Level {rank['level']}: {rank['name']}\n"
-    return output
-
-"""
 Say
 
 Speaks a message to the specified channel as the bot

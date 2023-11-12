@@ -3,16 +3,17 @@ from typing import cast
 
 from bs4 import BeautifulSoup, Tag
 import discord, requests
+from discord.ext import commands
 from commonbot.timestamp import calculate_timestamps
 
-import commands, db, xp
-from config import LOG_CHAN, MODDER_ROLE, MODDER_URL, XP_PER_LVL
+import db, xp
+from config import CMD_PREFIX, LOG_CHAN, MODDER_ROLE, MODDER_URL, RANKS, SERVER_URL, XP_PER_LVL
 from platforms import PlatformWidget
 
-class DiscordClient(discord.Client):
-    def __init__(self, *, intents: discord.Intents):
-        super().__init__(intents=intents)
-        self.tree = discord.app_commands.CommandTree(self)
+class DiscordClient(commands.Bot):
+    def __init__(self):
+        my_intents = discord.Intents.all()
+        super().__init__(command_prefix=CMD_PREFIX, intents=my_intents)
 
     def set_channels(self):
         self.log = cast(discord.TextChannel, self.get_channel(LOG_CHAN))
@@ -24,17 +25,47 @@ class DiscordClient(discord.Client):
         self.tree.copy_global_to(guild=guild)
         await self.tree.sync(guild=guild)
 
-my_intents = discord.Intents.all()
-client = DiscordClient(intents=my_intents)
+client = DiscordClient()
+
+"""
+Show leaderboard
+
+Posts the URL for the online leaderboard
+"""
+async def show_lb(_) -> str:
+    return f"{SERVER_URL}/leaderboard.php"
+
+"""
+List ranks
+
+Lists the available earnable rank roles, and their levels
+"""
+async def list_ranks(_) -> str:
+    output = ""
+    for rank in RANKS:
+        output += f"Level {rank['level']}: {rank['name']}\n"
+    return output
+
+def find_modder_info(uid: str) -> list[tuple[str, str]]:
+    r = requests.get(MODDER_URL)
+    soup = BeautifulSoup(r.text, "html.parser")
+    soup.encode("utf-8")
+    info = soup.find("tr", {"data-discord-id": uid})
+    mods = []
+    if isinstance(info, Tag):
+        rows = info.find_all("td")
+        mod_links = rows[1].find_all("a") # This will break if the table adds another column
+        mods = [(a.decode_contents(), a['href']) for a in mod_links]
+    return mods
 
 @client.tree.command(name="leaderboard", description="Get the URL for the online leaderboard")
 async def lb_context(interaction: discord.Interaction):
-    url = await commands.show_lb(None)
+    url = await show_lb(None)
     await interaction.response.send_message(url, ephemeral=True)
 
 @client.tree.command(name="ranks", description="List the earnable ranks for the server")
 async def ranks_context(interaction: discord.Interaction):
-    ranks = await commands.list_ranks(None)
+    ranks = await list_ranks(None)
     await interaction.response.send_message(ranks, ephemeral=True)
 
 @client.tree.command(name="level", description="View your customized level image")
@@ -53,18 +84,6 @@ async def timestamp(interaction: discord.Interaction, date: str, time: str, tz: 
         await interaction.response.send_message(message, ephemeral=True)
     except Exception:
         await interaction.response.send_message("Error: One of the entries has an invalid format.", ephemeral=True)
-
-def find_modder_info(uid: str) -> list[tuple[str, str]]:
-    r = requests.get(MODDER_URL)
-    soup = BeautifulSoup(r.text, "html.parser")
-    soup.encode("utf-8")
-    info = soup.find("tr", {"data-discord-id": uid})
-    mods = []
-    if isinstance(info, Tag):
-        rows = info.find_all("td")
-        mod_links = rows[1].find_all("a") # This will break if the table adds another column
-        mods = [(a.decode_contents(), a['href']) for a in mod_links]
-    return mods
 
 @client.tree.context_menu(name="User Info")
 async def userinfo_context(interaction: discord.Interaction, user: discord.Member):

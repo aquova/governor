@@ -14,7 +14,7 @@ import db
 import games
 import platforms
 import xp
-from client import client
+from client import client, show_lb, list_ranks
 from commonbot.debug import Debug
 from config import (AUTO_ADD_EPIC_GAMES, CMD_PREFIX, DEBUG_BOT, DISCORD_KEY,
                     GAME_ANNOUNCEMENT_CHANNEL, OWNER, XP_OFF)
@@ -42,7 +42,7 @@ FUNC_DICT = {
     "getgames": games.get_games,
     "help": commands.print_help,
     "info": commands.info,
-    "lb": commands.show_lb,
+    "lb": show_lb,
     "level": xp.parse_lvl_image,
     "list": cc.list_cmds,
     "limit": cc.limit_cmd,
@@ -50,7 +50,7 @@ FUNC_DICT = {
     "nobonusxp": tr.reset_bonus_xp,
     "platforms": platforms.post_widget,
     "postgames": game_timer.post_games,
-    "ranks": commands.list_ranks,
+    "ranks": list_ranks,
     "remove": cc.remove_cmd,
     "say": commands.say,
     "xp": xp.get_xp,
