@@ -28,7 +28,6 @@ ADMIN_HELP_MES = (
     f"Display info on bot settings: `{CMD_PREFIX}info`\n"
     f"View available ranks: `{CMD_PREFIX}ranks`\n"
     f"## Interactive Commands\n"
-    f"Sync slash commands to the server: `{CMD_PREFIX}sync`\n"
     f"Post the platform selection menu (rarely do this): `{CMD_PREFIX}platforms CHAN_ID`\n"
     f"## Announce Games\n"
     f"Add a game to be announced: `{CMD_PREFIX}addgame URL`\n"
@@ -177,13 +176,6 @@ async def info(_) -> str:
         f"Commands can be disabled in {limit_c}\n"
     )
     return mes
-
-@requires_admin
-async def sync(message: discord.Message) -> str:
-    import context
-    if message.guild is not None:
-        await client.sync_guild(message.guild)
-    return "Commands synced"
 
 class CustomCommands:
     def __init__(self):

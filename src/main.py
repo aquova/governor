@@ -53,7 +53,6 @@ FUNC_DICT = {
     "ranks": commands.list_ranks,
     "remove": cc.remove_cmd,
     "say": commands.say,
-    "sync": commands.sync,
     "xp": xp.get_xp,
 }
 
@@ -119,7 +118,6 @@ async def on_guild_available(guild: discord.Guild):
 
     # Only set up slash commands for prod bot
     if not dbg.is_debug_bot():
-        import context
         await client.sync_guild(guild)
 
 
