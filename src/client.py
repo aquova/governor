@@ -4,10 +4,11 @@ from typing import cast
 from bs4 import BeautifulSoup, Tag
 import discord, requests
 from discord.ext import commands
+from commonbot.debug import Debug
 from commonbot.timestamp import calculate_timestamps
 
 import db, xp
-from config import CMD_PREFIX, LOG_CHAN, MODDER_ROLE, MODDER_URL, RANKS, SERVER_URL, XP_PER_LVL
+from config import CMD_PREFIX, DEBUG_BOT, LOG_CHAN, MODDER_ROLE, MODDER_URL, OWNER, RANKS, SERVER_URL, XP_PER_LVL
 from games import GameTimer
 from slowmode import Thermometer
 from tracker import Tracker
@@ -17,16 +18,19 @@ class DiscordClient(commands.Bot):
     def __init__(self):
         my_intents = discord.Intents.all()
         super().__init__(command_prefix=CMD_PREFIX, intents=my_intents)
+        self.dbg = Debug(OWNER, CMD_PREFIX, DEBUG_BOT)
 
     async def setup(self, guild: discord.Guild):
         self.log = cast(discord.TextChannel, self.get_channel(LOG_CHAN))
+
         try:
-            self.game_timer = GameTimer(guild)
+            self.game_timer = GameTimer(guild, self.dbg.is_debug_bot())
         except Exception as e:
             await self.close()
             raise e
         self.thermometer = Thermometer(guild)
         self.tracker = Tracker(guild)
+
         await self.add_cog(self.game_timer)
         await self.add_cog(self.thermometer)
         await self.add_cog(self.tracker)

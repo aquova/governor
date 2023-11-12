@@ -15,13 +15,11 @@ import games
 import platforms
 import xp
 from client import client, show_lb, list_ranks
-from commonbot.debug import Debug
-from config import CMD_PREFIX, DEBUG_BOT, DISCORD_KEY, OWNER, XP_OFF
+from config import CMD_PREFIX, DISCORD_KEY, XP_OFF
 from log import parse_log
 
 db.initialize()
 cc = commands.CustomCommands()
-dbg = Debug(OWNER, CMD_PREFIX, DEBUG_BOT)
 
 # Dictionary of function pointers
 # Maps commands to functions that are called by them
@@ -98,7 +96,7 @@ async def on_guild_available(guild: discord.Guild):
     await update_user_count(guild)
 
     # Only set up slash commands for prod bot
-    if not dbg.is_debug_bot():
+    if not client.dbg.is_debug_bot():
         await client.sync_guild(guild)
 
 """
@@ -137,10 +135,10 @@ async def on_message(message: discord.Message):
 
     # Check first if we're toggling debug mode
     # Need to do this before we discard a message
-    if dbg.check_toggle(message):
-        await dbg.toggle_debug(message)
+    if client.dbg.check_toggle(message):
+        await client.dbg.toggle_debug(message)
         return
-    elif dbg.should_ignore_message(message):
+    elif client.dbg.should_ignore_message(message):
         return
 
     # Keep track of the user's message for dynamic slowmode
