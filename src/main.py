@@ -19,10 +19,8 @@ from commonbot.debug import Debug
 from config import (AUTO_ADD_EPIC_GAMES, CMD_PREFIX, DEBUG_BOT, DISCORD_KEY,
                     GAME_ANNOUNCEMENT_CHANNEL, OWNER, XP_OFF)
 from log import parse_log
-from tracker import Tracker
 
 db.initialize()
-tr = Tracker()
 cc = commands.CustomCommands()
 dbg = Debug(OWNER, CMD_PREFIX, DEBUG_BOT)
 game_timer = games.GameTimer()
@@ -31,8 +29,8 @@ game_timer = games.GameTimer()
 # Maps commands to functions that are called by them
 FUNC_DICT = {
     "addgame": games.add_game,
-    "addxp": tr.add_xp,
-    "bonusxp": tr.set_bonus_xp,
+    "addxp": client.tracker.add_xp,
+    "bonusxp": client.tracker.set_bonus_xp,
     "cleargames": games.clear_games,
     "custom": commands.print_help,
     "define": cc.define_cmd,
@@ -45,7 +43,7 @@ FUNC_DICT = {
     "list": cc.list_cmds,
     "limit": cc.limit_cmd,
     "lvl": xp.parse_lvl_image,
-    "nobonusxp": tr.reset_bonus_xp,
+    "nobonusxp": client.tracker.reset_bonus_xp,
     "platforms": platforms.post_widget,
     "postgames": game_timer.post_games,
     "ranks": list_ranks,
@@ -108,7 +106,6 @@ async def on_guild_available(guild: discord.Guild):
         raise Exception(f"Game announcement error: couldn't find channel {GAME_ANNOUNCEMENT_CHANNEL}")
 
     game_timer.start(game_channel, AUTO_ADD_EPIC_GAMES and not dbg.is_debug_bot())
-    tr.start(guild)
 
     # Set Bouncer's status
     await update_user_count(guild)
@@ -134,7 +131,7 @@ Runs when a member leaves the server
 """
 @client.event
 async def on_member_remove(user: discord.Member):
-    tr.remove_from_cache(user.id)
+    client.tracker.remove_from_cache(user.id)
     await update_user_count(user.guild)
 
 """
@@ -165,7 +162,7 @@ async def on_message(message: discord.Message):
     # Check if we need to congratulate a user on getting a new role
     # Don't award XP if posting in specified disabled channels
     if message.channel.id not in XP_OFF and message.guild is not None:
-        lvl_up_message = await tr.give_xp(message.author)
+        lvl_up_message = await client.tracker.give_xp(message.author)
         if lvl_up_message:
             await message.channel.send(lvl_up_message)
 

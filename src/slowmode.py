@@ -11,7 +11,7 @@ THRESHOLD = 100 # Threshold between slowmode levels, arbitrary units
 INCREASE_MAX = 4
 DECREASE_MAX = 2
 
-class ThermometerCog(commands.Cog):
+class Thermometer(commands.Cog):
     def __init__(self, guild: discord.Guild):
         self.channel_dict = {}
         self.channels = guild.text_channels

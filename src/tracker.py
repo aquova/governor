@@ -1,17 +1,14 @@
-import asyncio
 from datetime import datetime, timedelta
 from typing import cast
 
 import discord
+from discord.ext import commands, tasks
 
-import commonbot.utils
 import db
 from client import client
 from commonbot.user import UserLookup
 from config import CMD_PREFIX, RANKS, XP_PER_LVL, XP_PER_MINUTE
 from utils import requires_admin
-
-SLEEP_TIME = 24 * 60 * 60 # One day
 
 class UserData:
     def __init__(self, xp: int, monthly_xp: int, timestamp: datetime, username: str, avatar: str, next_role_at: int | None):
@@ -22,32 +19,25 @@ class UserData:
         self.avatar = avatar
         self.next_role_at = next_role_at
 
-class Tracker:
-    def __init__(self):
+class Tracker(commands.Cog):
+    def __init__(self, guild: discord.Guild):
         self.user_cache = {}
         self.xp_multiplier = 1
         self.ul = UserLookup()
-        self.task = None
+        self.server = guild
+        self._refresh_db.start()
 
-    def start(self, server: discord.Guild):
-        if not self.task:
-            self.server = server
-            self.task = asyncio.create_task(self.refresh_db())
+    def cog_unload(self) -> None:
+        self._refresh_db.cancel()
 
-    """
-    Refresh database
+    @tasks.loop(hours=24)
+    async def _refresh_db(self):
+        all_leaders = db.get_leaders()
+        self._refresh_helper(all_leaders)
+        monthly_leaders = db.get_monthly_leaders()
+        self._refresh_helper(monthly_leaders)
 
-    Collects up-to-date data for leaderboard members
-    """
-    async def refresh_db(self):
-        while True:
-            all_leaders = db.get_leaders()
-            self.refresh_helper(all_leaders)
-            monthly_leaders = db.get_monthly_leaders()
-            self.refresh_helper(monthly_leaders)
-            await asyncio.sleep(SLEEP_TIME)
-
-    def refresh_helper(self, leaders: list[tuple]):
+    def _refresh_helper(self, leaders: list[tuple]):
         # Iterate thru every leader on the leaderboard and collect data
         for leader in leaders:
             leader_id = leader[0]
@@ -87,7 +77,7 @@ class Tracker:
             monthly_xp = db.fetch_user_monthly_xp(user_id)
 
             # Since they weren't in the cache, make sure they have the correct roles
-            next_role = await self.check_roles(user, xp)
+            next_role = await self._check_roles(user, xp)
         else:
             # If user is in cache, get that value instead
             user_data = self.user_cache[user_id]
@@ -134,7 +124,7 @@ class Tracker:
                                 await chan.send(f"Hello <@{user_id}>! {rank['welcome']['message']}")
                     break
 
-            next_role = await self.check_roles(user, xp)
+            next_role = await self._check_roles(user, xp)
 
         try:
             avatar = user.display_avatar.replace(size=64, format="gif", static_format="webp")
@@ -152,7 +142,7 @@ class Tracker:
 
     Make sure the user has the correct roles, given their XP
     """
-    async def check_roles(self, user: discord.Member | discord.User, xp: int) -> int | None:
+    async def _check_roles(self, user: discord.Member | discord.User, xp: int) -> int | None:
         if isinstance(user, discord.User):
             return None
 
