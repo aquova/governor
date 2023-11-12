@@ -8,6 +8,7 @@ from commonbot.timestamp import calculate_timestamps
 
 import db, xp
 from config import CMD_PREFIX, LOG_CHAN, MODDER_ROLE, MODDER_URL, RANKS, SERVER_URL, XP_PER_LVL
+from slowmode import ThermometerCog
 from platforms import PlatformWidget
 
 class DiscordClient(commands.Bot):
@@ -15,10 +16,10 @@ class DiscordClient(commands.Bot):
         my_intents = discord.Intents.all()
         super().__init__(command_prefix=CMD_PREFIX, intents=my_intents)
 
-    def set_channels(self):
+    async def setup(self, guild: discord.Guild):
         self.log = cast(discord.TextChannel, self.get_channel(LOG_CHAN))
-
-    async def setup_hook(self):
+        self.thermometer = ThermometerCog(guild)
+        await self.add_cog(self.thermometer)
         self.add_view(PlatformWidget())
 
     async def sync_guild(self, guild: discord.Guild):

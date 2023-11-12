@@ -19,7 +19,6 @@ from commonbot.debug import Debug
 from config import (AUTO_ADD_EPIC_GAMES, CMD_PREFIX, DEBUG_BOT, DISCORD_KEY,
                     GAME_ANNOUNCEMENT_CHANNEL, OWNER, XP_OFF)
 from log import parse_log
-from slowmode import Thermometer
 from tracker import Tracker
 
 db.initialize()
@@ -27,7 +26,6 @@ tr = Tracker()
 cc = commands.CustomCommands()
 dbg = Debug(OWNER, CMD_PREFIX, DEBUG_BOT)
 game_timer = games.GameTimer()
-thermo = Thermometer()
 
 # Dictionary of function pointers
 # Maps commands to functions that are called by them
@@ -80,8 +78,6 @@ async def on_ready():
     if client.user:
         print(client.user.name)
         print(client.user.id)
-    client.set_channels()
-    await client.setup_hook()
 
 """
 On Thread Create
@@ -100,6 +96,8 @@ Runs when a guild (server) that the bot is connected to becomes ready
 @client.event
 async def on_guild_available(guild: discord.Guild):
     # This is 100% going to cause issues if we ever want to host on more than one server
+    await client.setup(guild)
+
     # TODO: If we want to fix this, make announcement channels a list in config.json, and add a server ID column to DB
     game_channel = discord.utils.get(guild.text_channels, id=GAME_ANNOUNCEMENT_CHANNEL)
 
@@ -110,7 +108,6 @@ async def on_guild_available(guild: discord.Guild):
         raise Exception(f"Game announcement error: couldn't find channel {GAME_ANNOUNCEMENT_CHANNEL}")
 
     game_timer.start(game_channel, AUTO_ADD_EPIC_GAMES and not dbg.is_debug_bot())
-    thermo.start(guild)
     tr.start(guild)
 
     # Set Bouncer's status
@@ -164,7 +161,7 @@ async def on_message(message: discord.Message):
         return
 
     # Keep track of the user's message for dynamic slowmode
-    await thermo.user_spoke(message)
+    await client.thermometer.user_spoke(message)
     # Check if we need to congratulate a user on getting a new role
     # Don't award XP if posting in specified disabled channels
     if message.channel.id not in XP_OFF and message.guild is not None:
