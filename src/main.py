@@ -8,13 +8,10 @@ import urllib.parse
 import discord
 import requests
 
-import commands
 import commonbot.utils
-import db
-import games
-import platforms
-import xp
-from client import client, show_lb, list_ranks
+
+import commands, db, games, platforms, utils, xp
+from client import client
 from config import CMD_PREFIX, DISCORD_KEY, XP_OFF
 from log import parse_log
 
@@ -34,7 +31,7 @@ FUNC_DICT = {
     "getgames": games.get_games,
     "help": commands.print_help,
     "info": commands.info,
-    "lb": show_lb,
+    "lb": utils.show_lb,
     "level": xp.parse_lvl_image,
     "list": cc.list_cmds,
     "limit": cc.limit_cmd,
@@ -42,7 +39,7 @@ FUNC_DICT = {
     "nobonusxp": client.tracker.reset_bonus_xp,
     "platforms": platforms.post_widget,
     "postgames": client.game_timer.post_games,
-    "ranks": list_ranks,
+    "ranks": utils.list_ranks,
     "remove": cc.remove_cmd,
     "say": commands.say,
     "xp": xp.get_xp,

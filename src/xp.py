@@ -3,6 +3,7 @@ import shutil
 from math import ceil, floor
 from typing import Optional
 
+from bs4 import BeautifulSoup, Tag
 import discord
 import requests
 from PIL import Image, ImageDraw, ImageFont
@@ -10,7 +11,7 @@ from PIL import Image, ImageDraw, ImageFont
 import db
 from commonbot.user import UserLookup
 from commonbot.utils import check_roles
-from config import (ADMIN_ACCESS, ASSETS_PATH, FONTS_PATH, LVL_CHANS, TMP_PATH,
+from config import (ADMIN_ACCESS, ASSETS_PATH, FONTS_PATH, LVL_CHANS, MODDER_ROLE, MODDER_URL, TMP_PATH,
                     XP_PER_LVL)
 from utils import to_thread
 
@@ -161,6 +162,55 @@ async def render_lvl_image(user: discord.Member | discord.User) -> Optional[str]
     large_bar.close()
 
     return out_filename
+
+def _find_modder_info(uid: str) -> list[tuple[str, str]]:
+    r = requests.get(MODDER_URL)
+    soup = BeautifulSoup(r.text, "html.parser")
+    soup.encode("utf-8")
+    info = soup.find("tr", {"data-discord-id": uid})
+    mods = []
+    if isinstance(info, Tag):
+        rows = info.find_all("td")
+        mod_links = rows[1].find_all("a") # This will break if the table adds another column
+        mods = [(a.decode_contents(), a['href']) for a in mod_links]
+    return mods
+
+def create_user_info_embed(user: discord.Member) -> discord.Embed:
+    username = str(user)
+    if user.nick is not None:
+        username += f" aka {user.nick}"
+    embed = discord.Embed(title=username, type="rich", color=user.color)
+    embed.description = str(user.id)
+    embed.set_thumbnail(url=user.display_avatar.url)
+
+    xp = db.fetch_user_xp(user.id)
+    lvl = floor(xp / XP_PER_LVL)
+    monthly = db.fetch_user_monthly_xp(user.id)
+    embed.add_field(name="Level", value=lvl)
+    embed.add_field(name="Total XP", value=xp)
+    embed.add_field(name="Monthly XP", value=monthly)
+
+    # Only bother accessing and parsing the wiki if they have the modder role
+    if MODDER_ROLE in [x.id for x in user.roles]:
+        mod_info = _find_modder_info(str(user.id))
+        for mod in mod_info:
+            embed.add_field(name=mod[0], value=mod[1], inline=False)
+
+    # The first role is always @everyone, so omit it
+    roles = [x.name for x in user.roles[1:]]
+    role_str = ", ".join(roles)
+    # Discord will throw an error if we try to have a field with an empty string
+    if len(roles) > 0:
+        embed.add_field(name="Roles", value=role_str, inline=False)
+
+    # https://strftime.org/ is great if you ever want to change this, FYI
+    create_time = user.created_at.strftime("%c")
+    embed.add_field(name="Created", value=create_time)
+
+    if user.joined_at is not None:
+        join_time = user.joined_at.strftime("%c")
+        embed.add_field(name="Joined", value=join_time)
+    return embed
 
 @to_thread
 def download_avatar(url: str, filename: str) -> bool:

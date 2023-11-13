@@ -5,7 +5,7 @@ import db
 from client import client
 from commonbot.user import UserLookup
 from config import (ADMIN_ACCESS, CMD_PREFIX, LIMIT_CHANS, LVL_CHANS,
-                    NO_SLOWMODE, RANKS, SERVER_URL, XP_OFF)
+                    NO_SLOWMODE, SERVER_URL, XP_OFF)
 from utils import CustomCommandFlags, requires_admin, requires_define
 
 ul = UserLookup()

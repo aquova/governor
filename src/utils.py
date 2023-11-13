@@ -3,13 +3,32 @@ import functools
 from typing import Callable, Coroutine, Optional
 
 from commonbot.utils import check_roles
-from config import ADMIN_ACCESS, DEFINE_ACCESS
+from config import ADMIN_ACCESS, DEFINE_ACCESS, RANKS, SERVER_URL
 
 
 class CustomCommandFlags:
     NONE =      0b0000     # No limitations
     ADMIN =     0b0001     # Created by an admin
     LIMITED =   0b0010     # Usage can be limited to some channels
+
+"""
+Show leaderboard
+
+Posts the URL for the online leaderboard
+"""
+async def show_lb(_) -> str:
+    return f"{SERVER_URL}/leaderboard.php"
+
+"""
+List ranks
+
+Lists the available earnable rank roles, and their levels
+"""
+async def list_ranks(_) -> str:
+    output = ""
+    for rank in RANKS:
+        output += f"Level {rank['level']}: {rank['name']}\n"
+    return output
 
 """
 Requires define
