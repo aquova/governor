@@ -19,17 +19,20 @@ class DiscordClient(commands.Bot):
         my_intents = discord.Intents.all()
         super().__init__(command_prefix=CMD_PREFIX, intents=my_intents)
         self.dbg = Debug(OWNER, CMD_PREFIX, DEBUG_BOT)
+        self.game_timer = GameTimer(self.dbg.is_debug_bot())
+        self.thermometer = Thermometer()
+        self.tracker = Tracker()
 
     async def setup(self, guild: discord.Guild):
         self.log = cast(discord.TextChannel, self.get_channel(LOG_CHAN))
 
         try:
-            self.game_timer = GameTimer(guild, self.dbg.is_debug_bot())
+            self.game_timer.setup(guild)
         except Exception as e:
             await self.close()
             raise e
-        self.thermometer = Thermometer(guild)
-        self.tracker = Tracker(guild)
+        self.thermometer.setup(guild)
+        self.tracker.setup(guild)
 
         await self.add_cog(self.game_timer)
         await self.add_cog(self.thermometer)

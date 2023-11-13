@@ -12,8 +12,10 @@ INCREASE_MAX = 4
 DECREASE_MAX = 2
 
 class Thermometer(commands.Cog):
-    def __init__(self, guild: discord.Guild):
+    def __init__(self):
         self.channel_dict = {}
+
+    def setup(self, guild: discord.Guild):
         self.channels = guild.text_channels
         self._calc_slowmode.start()
 

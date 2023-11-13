@@ -5,7 +5,6 @@ import discord
 from discord.ext import commands, tasks
 
 import db
-from client import client
 from commonbot.user import UserLookup
 from config import CMD_PREFIX, RANKS, XP_PER_LVL, XP_PER_MINUTE
 from utils import requires_admin
@@ -20,10 +19,12 @@ class UserData:
         self.next_role_at = next_role_at
 
 class Tracker(commands.Cog):
-    def __init__(self, guild: discord.Guild):
+    def __init__(self):
         self.user_cache = {}
         self.xp_multiplier = 1
         self.ul = UserLookup()
+
+    def setup(self, guild: discord.Guild):
         self.server = guild
         self._refresh_db.start()
 
@@ -119,7 +120,7 @@ class Tracker(commands.Cog):
 
                     if rank['welcome']['message'] != "":
                         for welcome_id in rank['welcome']['channels']:
-                            chan = cast(discord.TextChannel, client.get_channel(welcome_id))
+                            chan = cast(discord.TextChannel, self.server.get_channel(welcome_id))
                             if chan is not None:
                                 await chan.send(f"Hello <@{user_id}>! {rank['welcome']['message']}")
                     break

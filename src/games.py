@@ -37,17 +37,18 @@ class GameTimer(commands.Cog):
     If the announcement frequency is ever increased to be more than 1 per day,
     the auto retrieved games already posted will need to be remembered somehow.
     """
-    def __init__(self, guild: discord.Guild, is_debug: bool):
+    def __init__(self, is_debug: bool):
+        self._last_announcement_message = None
+        self._should_add_epic_games = AUTO_ADD_EPIC_GAMES and not is_debug
+
+    def setup(self, guild: discord.Guild):
         # TODO: If we want to fix this, make announcement channels a list in config.json, and add a server ID column to DB
         game_channel = discord.utils.get(guild.text_channels, id=GAME_ANNOUNCEMENT_CHANNEL)
         if game_channel is not None:
             print(f"Announcing games in server '{guild.name}' channel '{game_channel.name}'")
         else:
             raise Exception(f"Game announcement error: couldn't find channel {GAME_ANNOUNCEMENT_CHANNEL}")
-
-        self._last_announcement_message = None
         self._channel = game_channel
-        self._should_add_epic_games = AUTO_ADD_EPIC_GAMES and not is_debug
         self._announce_games.start()
 
     def cog_unload(self):
