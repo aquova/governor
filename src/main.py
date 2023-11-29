@@ -87,16 +87,8 @@ async def on_message(message: discord.Message):
     if message.author.bot:
         return
 
-    # For now, completely ignore DMs
+    # Completely ignore DMs
     if isinstance(message.channel, discord.channel.DMChannel):
-        return
-
-    # Check first if we're toggling debug mode
-    # Need to do this before we discard a message
-    if client.dbg.check_toggle(message):
-        await client.dbg.toggle_debug(message)
-        return
-    elif client.dbg.should_ignore_message(message):
         return
 
     # Keep track of the user's message for dynamic slowmode

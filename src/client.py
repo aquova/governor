@@ -2,10 +2,9 @@ from typing import cast
 
 import discord
 from discord.ext import commands
-from commonbot.debug import Debug
 from commonbot.timestamp import calculate_timestamps
 
-from config import CMD_PREFIX, DEBUG_BOT, LIMIT_CHANS, LOG_CHAN, LVL_CHANS, NO_SLOWMODE, OWNER, XP_OFF
+from config import CMD_PREFIX, LIMIT_CHANS, LOG_CHAN, NO_SLOWMODE, XP_OFF
 from slowmode import Thermometer
 from tracker import Tracker
 from platforms import PlatformWidget
@@ -17,8 +16,7 @@ class DiscordClient(commands.Bot):
         super().__init__(command_prefix=CMD_PREFIX, intents=my_intents)
         db.initialize()
 
-        self.dbg = Debug(OWNER, CMD_PREFIX, DEBUG_BOT)
-        self.game_timer = games.GameTimer(self.dbg.is_debug_bot())
+        self.game_timer = games.GameTimer()
         self.thermometer = Thermometer()
         self.tracker = Tracker()
 
@@ -90,12 +88,10 @@ async def getxp_context(interaction: discord.Interaction, user: discord.Member):
 
 @client.tree.command(name="info", description="Print info about bot settings")
 async def info_context(interaction: discord.Interaction):
-    lvl_c = ", ".join([f"<#{x}>" for x in LVL_CHANS])
     slow_c = ", ".join([f"<#{x}>" for x in NO_SLOWMODE])
     xp_c = ", ".join([f"<#{x}>" for x in XP_OFF])
     limit_c = ", ".join([f"<#{x}>" for x in LIMIT_CHANS])
     response = (
-        f"The `{CMD_PREFIX}lvl` command is only allowed in {lvl_c}\n"
         f"Dynamic slowmode is disabled in {slow_c}\n"
         f"Users do not gain XP in {xp_c}\n"
         f"Commands can be disabled in {limit_c}\n"

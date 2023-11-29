@@ -6,7 +6,7 @@ from discord.ext import commands, tasks
 import requests
 
 import db
-from config import AUTO_ADD_EPIC_GAMES, GAME_ANNOUNCEMENT_CHANNEL, GAME_ANNOUNCE_TIME
+from config import AUTO_ADD_EPIC_GAMES, DEBUG_BOT, GAME_ANNOUNCEMENT_CHANNEL, GAME_ANNOUNCE_TIME
 
 ANNOUNCE_MESSAGES = [
     "Oh ho ho, what are all these free games I've found?",
@@ -35,9 +35,9 @@ class GameTimer(commands.Cog):
     If the announcement frequency is ever increased to be more than 1 per day,
     the auto retrieved games already posted will need to be remembered somehow.
     """
-    def __init__(self, is_debug: bool):
+    def __init__(self):
         self._last_announcement_message = None
-        self._should_add_epic_games = AUTO_ADD_EPIC_GAMES and not is_debug
+        self._should_add_epic_games = AUTO_ADD_EPIC_GAMES and not DEBUG_BOT
 
     def setup(self, guild: discord.Guild):
         # TODO: If we want to fix this, make announcement channels a list in config.json, and add a server ID column to DB

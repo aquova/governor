@@ -18,15 +18,12 @@ TMP_PATH = "./private/tmp"
 CMD_PREFIX = cfg['command_prefix']
 
 ADMIN_ACCESS = cfg['roles']['admin_access']
-DEFINE_ACCESS = cfg['roles']['define_access']
 MODDER_ROLE = cfg['roles']['modder']
 MODDER_URL = cfg['modder_wiki_url']
 
 SERVER_URL = cfg['server_url']
-OWNER = cfg['owner']
-DEBUG_BOT = (cfg['debug'].upper() == "TRUE")
+DEBUG_BOT = cfg['debug']
 
-LVL_CHANS = cfg['channels']['lvl_allowed']
 NO_SLOWMODE = cfg['channels']['slowmode_disabled']
 XP_OFF = cfg['channels']['xp_disabled']
 LOG_CHAN = cfg['channels']['log']
