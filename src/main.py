@@ -22,7 +22,6 @@ cc = commands.CustomCommands()
 # Maps commands to functions that are called by them
 FUNC_DICT = {
     "define": cc.define_cmd,
-    "edit": commands.edit,
     "list": cc.list_cmds,
     "limit": cc.limit_cmd,
     "remove": cc.remove_cmd,
