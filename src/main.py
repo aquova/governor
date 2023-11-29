@@ -10,25 +10,21 @@ import requests
 
 import commonbot.utils
 
-import commands, db
+import custom, db
 from client import client
 from config import CMD_PREFIX, DISCORD_KEY, XP_OFF
 from log import parse_log
 
 db.initialize()
-cc = commands.CustomCommands()
 
 # Dictionary of function pointers
 # Maps commands to functions that are called by them
 FUNC_DICT = {
-    "define": cc.define_cmd,
-    "list": cc.list_cmds,
-    "limit": cc.limit_cmd,
-    "remove": cc.remove_cmd,
+    "define": custom.define_cmd,
+    "list": custom.list_cmds,
+    "limit": custom.limit_cmd,
+    "remove": custom.remove_cmd,
 }
-
-# The keys in the function dict cannot be used as custom commands
-cc.set_protected_keywords(list(FUNC_DICT.keys()))
 
 """
 Update User Count
@@ -163,9 +159,9 @@ async def on_message(message: discord.Message):
                 output_message = await FUNC_DICT[command](message)
                 if output_message:
                     await commonbot.utils.send_message(output_message, message.channel)
-            elif cc.is_allowed(command, message.channel.id):
+            elif custom.is_allowed(command, message.channel.id):
                 # Check if they're using a user-defined command
-                cmd_output = cc.parse_response(message)
+                cmd_output = custom.parse_response(message)
                 await message.channel.send(cmd_output)
         except discord.errors.Forbidden as err:
             if err.code == 50013:
