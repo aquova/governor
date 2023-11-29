@@ -1,12 +1,8 @@
 from math import floor
-from typing import cast
 
 import discord
 
-from commonbot.utils import get_first_word, strip_words
-from config import (CMD_PREFIX, MOBILE_PLATFORM, NS_PLATFORM, PC_PLATFORM,
-                    PS_PLATFORM, VITA_PLATFORM, XBOX_PLATFORM)
-from utils import requires_admin
+from config import MOBILE_PLATFORM, NS_PLATFORM, PC_PLATFORM, PS_PLATFORM, VITA_PLATFORM, XBOX_PLATFORM
 
 PLATFORMS = {
     "Xbox": XBOX_PLATFORM,
@@ -44,18 +40,3 @@ class PlatformWidget(discord.ui.View):
         for platform, _ in PLATFORMS.items():
             self.add_item(PlatformWidgetButton(platform, floor(idx / 3)))
             idx += 1
-
-@requires_admin
-async def post_widget(message: discord.Message) -> str:
-    try:
-        payload = strip_words(message.content, 1)
-        chan_id = get_first_word(payload)
-        if message.guild is None:
-            return ""
-        channel = cast(discord.TextChannel, discord.utils.get(message.guild.channels, id=int(chan_id)))
-        if channel is None:
-            raise ValueError
-        await channel.send("Assign yourself any of the platforms you use!", view=PlatformWidget())
-        return ""
-    except ValueError:
-        return f"I was unable to find a channel ID in that message. `{CMD_PREFIX}roles CHAN_ID`"

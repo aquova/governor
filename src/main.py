@@ -10,7 +10,7 @@ import requests
 
 import commonbot.utils
 
-import commands, db, platforms, xp
+import commands, db
 from client import client
 from config import CMD_PREFIX, DISCORD_KEY, XP_OFF
 from log import parse_log
@@ -25,7 +25,6 @@ FUNC_DICT = {
     "edit": commands.edit,
     "list": cc.list_cmds,
     "limit": cc.limit_cmd,
-    "platforms": platforms.post_widget,
     "remove": cc.remove_cmd,
 }
 

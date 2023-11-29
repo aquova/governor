@@ -115,6 +115,12 @@ async def postgames_context(interaction: discord.Interaction):
     response = await client.game_timer.post_games()
     await interaction.response.send_message(response)
 
+@client.tree.command(name="postplatforms", description="Post the platform selection buttons")
+@discord.app_commands.describe(channel="Channel to post in")
+async def postplatforms_context(interaction: discord.Interaction, channel: discord.TextChannel):
+    await channel.send("Assign yourself any of the platforms you use!", view=PlatformWidget())
+    await interaction.response.send_message("Widget posted!")
+
 @client.tree.command(name="ranks", description="List the earnable ranks for the server")
 async def ranks_context(interaction: discord.Interaction):
     ranks = utils.list_ranks()
