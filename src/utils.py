@@ -16,7 +16,7 @@ Show leaderboard
 
 Posts the URL for the online leaderboard
 """
-async def show_lb(_) -> str:
+def show_lb() -> str:
     return f"{SERVER_URL}/leaderboard.php"
 
 """
@@ -24,7 +24,7 @@ List ranks
 
 Lists the available earnable rank roles, and their levels
 """
-async def list_ranks(_) -> str:
+def list_ranks() -> str:
     output = ""
     for rank in RANKS:
         output += f"Level {rank['level']}: {rank['name']}\n"

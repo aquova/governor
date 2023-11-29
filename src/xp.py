@@ -64,29 +64,6 @@ async def get_xp(message: discord.Message) -> str:
     else:
         return f"They have {xp} XP all-time, and {monthly_xp} XP this month"
 
-async def parse_lvl_image(message: discord.Message):
-    # Only allow this command if in whitelisted channels
-    if message.channel.id not in LVL_CHANS and not check_roles(message.author, ADMIN_ACCESS):
-        return None
-
-    # Check if the user wants to look up someone else
-    author = None
-    other_id = ul.parse_id(message)
-    if other_id:
-        if message.guild is not None:
-            author = discord.utils.get(message.guild.members, id=other_id)
-
-    # If we couldn't find a user, use the message author
-    if not author:
-        author = message.author
-
-    filename = await render_lvl_image(author)
-    if filename:
-        with open(filename, 'rb') as my_file:
-            discord_file = discord.File(my_file)
-            await message.channel.send(file=discord_file)
-    return None
-
 """
 Render level image
 

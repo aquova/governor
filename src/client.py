@@ -59,16 +59,18 @@ async def lvl_context(interaction: discord.Interaction):
     if filename:
         with open(filename, 'rb') as my_file:
             discord_file = discord.File(my_file)
-            await interaction.response.send_message(file=discord_file, ephemeral=True)
+            await interaction.response.send_message(file=discord_file)
+    else:
+        await interaction.response.send_message("Error: Something went wrong. Please try again.", ephemeral=True)
 
 @client.tree.command(name="leaderboard", description="Get the URL for the online leaderboard")
 async def lb_context(interaction: discord.Interaction):
-    url = await utils.show_lb(None)
+    url = utils.show_lb()
     await interaction.response.send_message(url, ephemeral=True)
 
 @client.tree.command(name="ranks", description="List the earnable ranks for the server")
 async def ranks_context(interaction: discord.Interaction):
-    ranks = await utils.list_ranks(None)
+    ranks = utils.list_ranks()
     await interaction.response.send_message(ranks, ephemeral=True)
 
 @client.tree.command(name="timestamp", description="Convert a time into a universal timestamp")
@@ -81,6 +83,16 @@ async def timestamp(interaction: discord.Interaction, date: str, time: str, tz: 
         await interaction.response.send_message("Error: One of the entries has an invalid format.", ephemeral=True)
 
 ### Member Context Commands ###
+@client.tree.context_menu(name="Level")
+async def lvl_member(interaction: discord.Interaction, user: discord.Member):
+    filename = await xp.render_lvl_image(user)
+    if filename:
+        with open(filename, 'rb') as my_file:
+            discord_file = discord.File(my_file)
+            await interaction.response.send_message(file=discord_file)
+    else:
+        await interaction.response.send_message("Error: Something went wrong. Please try again.", ephemeral=True)
+
 @client.tree.context_menu(name="User Info")
 async def userinfo_context(interaction: discord.Interaction, user: discord.Member):
     if isinstance(interaction.user, discord.User):

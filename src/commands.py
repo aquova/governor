@@ -13,7 +13,6 @@ ul = UserLookup()
 ADMIN_HELP_MES = (
     f"## XP\n"
     f"View your XP: `{CMD_PREFIX}xp`\n"
-    f"View your level: `{CMD_PREFIX}lvl`\n"
     f"Give XP to a user: `{CMD_PREFIX}addxp USER XP` (Can be negative)\n"
     f"## Custom Commands\n"
     f"Define a custom message: `{CMD_PREFIX}define NAME [%mention%] MESSAGE`\n"
@@ -24,7 +23,6 @@ ADMIN_HELP_MES = (
     f"Speak a message as the bot: `{CMD_PREFIX}say CHAN_ID message`. If you want to send images they must be attachments *not URLs*.\n"
     f"Edit a message spoken by the bot: `{CMD_PREFIX}edit MESSAGE_ID new_message`\n"
     f"Display info on bot settings: `{CMD_PREFIX}info`\n"
-    f"View available ranks: `{CMD_PREFIX}ranks`\n"
     f"## Interactive Commands\n"
     f"Post the platform selection menu (rarely do this): `{CMD_PREFIX}platforms CHAN_ID`\n"
     f"## Announce Games\n"
@@ -39,11 +37,9 @@ ADMIN_HELP_MES = (
 HELP_MES = (
     f"## XP\n"
     f"View your XP: `{CMD_PREFIX}xp`\n"
-    f"View your level: `{CMD_PREFIX}lvl`\n"
     f"## Custom Commands\n"
     f"List custom commands: `{CMD_PREFIX}list`\n"
     f"Define a custom command: `{CMD_PREFIX}define NAME [%mention%] MESSAGE` (only available to certain roles)\n"
-    f"View available ranks: `{CMD_PREFIX}ranks`\n"
     f"\n"
     f"View this message: `{CMD_PREFIX}help`\n"
 )

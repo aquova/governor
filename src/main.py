@@ -10,7 +10,7 @@ import requests
 
 import commonbot.utils
 
-import commands, db, games, platforms, utils, xp
+import commands, db, games, platforms, xp
 from client import client
 from config import CMD_PREFIX, DISCORD_KEY, XP_OFF
 from log import parse_log
@@ -30,14 +30,10 @@ FUNC_DICT = {
     "getgames": games.get_games,
     "help": commands.print_help,
     "info": commands.info,
-    "lb": utils.show_lb,
-    "level": xp.parse_lvl_image,
     "list": cc.list_cmds,
     "limit": cc.limit_cmd,
-    "lvl": xp.parse_lvl_image,
     "platforms": platforms.post_widget,
     "postgames": client.game_timer.post_games,
-    "ranks": utils.list_ranks,
     "remove": cc.remove_cmd,
     "say": commands.say,
     "xp": xp.get_xp,
