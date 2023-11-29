@@ -21,7 +21,6 @@ cc = commands.CustomCommands()
 # Dictionary of function pointers
 # Maps commands to functions that are called by them
 FUNC_DICT = {
-    "addxp": client.tracker.add_xp,
     "custom": commands.print_help,
     "define": cc.define_cmd,
     "edit": commands.edit,

@@ -13,7 +13,6 @@ ul = UserLookup()
 ADMIN_HELP_MES = (
     f"## XP\n"
     f"View your XP: `{CMD_PREFIX}xp`\n"
-    f"Give XP to a user: `{CMD_PREFIX}addxp USER XP` (Can be negative)\n"
     f"## Custom Commands\n"
     f"Define a custom message: `{CMD_PREFIX}define NAME [%mention%] MESSAGE`\n"
     f"List custom commands: `{CMD_PREFIX}list`\n"

@@ -196,26 +196,9 @@ class Tracker(commands.Cog):
 
     Adds the specified amout of XP to a user
     """
-    @requires_admin
-    async def add_xp(self, message: discord.Message) -> str:
-        try:
-            guild = message.guild
-            if guild is None:
-                return ""
-            # Treat last word as XP to be awarded
-            xp = int(message.content.split(" ")[-1])
-            userid = self.ul.parse_id(message)
-            # Incase they didn't give an XP, don't parse ID as XP lol
-            if xp == userid:
-                return "Was unable to find XP value in that message"
-            user = discord.utils.get(guild.members, id=userid)
-            if user is not None:
-                await self.give_xp(user, xp)
-                return f"{xp} XP given to {str(user)}"
-            else:
-                return "Was unable to find that user in the server"
-        except (IndexError, ValueError):
-            return f"`{CMD_PREFIX}addxp USER XP`"
+    async def add_xp(self, user: discord.Member, xp: int) -> str:
+        await self.give_xp(user, xp)
+        return f"{xp} XP given to {str(user)}"
 
     """
     Set bonus XP

@@ -51,6 +51,12 @@ async def addgame_context(interaction: discord.Interaction, url: str):
     response = games.add_game(url)
     await interaction.response.send_message(response)
 
+@client.tree.command(name="addxp", description="Award XP to a user")
+@discord.app_commands.describe(user="User", xp="XP points to add")
+async def addxp_context(interaction: discord.Interaction, user: discord.Member, xp: int):
+    response = await client.tracker.add_xp(user, xp)
+    await interaction.response.send_message(response)
+
 @client.tree.command(name="bonusxp", description="Enable/Disable XP multiplier")
 @discord.app_commands.describe(enabled="y/N")
 async def bonus_xp_context(interaction: discord.Interaction, enabled: str):
