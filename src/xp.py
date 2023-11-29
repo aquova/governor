@@ -9,11 +9,8 @@ import requests
 from PIL import Image, ImageDraw, ImageFont
 
 import db
-from commonbot.user import UserLookup
 from config import ASSETS_PATH, FONTS_PATH, MODDER_ROLE, MODDER_URL, TMP_PATH, XP_PER_LVL
 from utils import to_thread
-
-ul = UserLookup()
 
 class Point:
     def __init__(self, x: int, y: int):

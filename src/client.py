@@ -9,12 +9,14 @@ from config import CMD_PREFIX, DEBUG_BOT, LIMIT_CHANS, LOG_CHAN, LVL_CHANS, NO_S
 from slowmode import Thermometer
 from tracker import Tracker
 from platforms import PlatformWidget
-import custom, games, utils, xp
+import custom, db, games, utils, xp
 
 class DiscordClient(commands.Bot):
     def __init__(self):
         my_intents = discord.Intents.all()
         super().__init__(command_prefix=CMD_PREFIX, intents=my_intents)
+        db.initialize()
+
         self.dbg = Debug(OWNER, CMD_PREFIX, DEBUG_BOT)
         self.game_timer = games.GameTimer(self.dbg.is_debug_bot())
         self.thermometer = Thermometer()

@@ -8,19 +8,10 @@ import urllib.parse
 import discord
 import requests
 
-import commonbot.utils
-
-import custom, db
+import custom
 from client import client
 from config import CMD_PREFIX, DISCORD_KEY, XP_OFF
 from log import parse_log
-
-db.initialize()
-
-# Dictionary of function pointers
-# Maps commands to functions that are called by them
-FUNC_DICT = {
-}
 
 """
 Update User Count
@@ -141,26 +132,13 @@ async def on_message(message: discord.Message):
             logurl = s.text.split('</strong> <code>')[1].split('</code>')[0]
             await message.channel.send("Log found, uploaded to: " + logurl)
 
-
-    # Check if someone is trying to use a bot command
+    # Check if someone is trying to use a custom command
     if message.content != "" and message.content[0] == CMD_PREFIX:
-        prefix_removed = commonbot.utils.strip_prefix(message.content, CMD_PREFIX)
-        if prefix_removed == "":
-            return
-        command = commonbot.utils.get_first_word(prefix_removed).lower()
-
-        try:
-            if command in FUNC_DICT:
-                # First, check if they're using a built-in command
-                output_message = await FUNC_DICT[command](message)
-                if output_message:
-                    await commonbot.utils.send_message(output_message, message.channel)
-            elif custom.is_allowed(command, message.channel.id):
-                # Check if they're using a user-defined command
-                cmd_output = custom.parse_response(message)
-                await message.channel.send(cmd_output)
-        except discord.errors.Forbidden as err:
-            if err.code == 50013:
-                print(f"I can see messages, but cannot send in #{message.channel.name}")
+        raw_command = message.content[1:]
+        command = raw_command.split(" ")[0].lower()
+        if custom.is_allowed(command, message.channel.id):
+            # Check if they're using a user-defined command
+            response = custom.parse_response(command)
+            await message.channel.send(response)
 
 client.run(DISCORD_KEY)

@@ -3,11 +3,8 @@ import discord
 import commonbot.utils
 import db
 from client import client
-from commonbot.user import UserLookup
 from config import (ADMIN_ACCESS, CMD_PREFIX, LIMIT_CHANS, SERVER_URL)
 from utils import CustomCommandFlags
-
-ul = UserLookup()
 
 """
 Is allowed
@@ -31,20 +28,9 @@ Parse Response
 
 Return the specified response for a custom command
 """
-def parse_response(message: discord.Message) -> str:
-    prefix_removed = commonbot.utils.strip_prefix(message.content, CMD_PREFIX)
-    command = commonbot.utils.get_first_word(prefix_removed).lower()
+def parse_response(command) -> str:
     commands = db.get_custom_cmds()
     response = commands[command][0]
-
-    # Check if they want to embed a ping within the response
-    mentioned_id = ul.parse_id(message)
-    if mentioned_id is not None:
-        ping = f"<@!{mentioned_id}>"
-    else:
-        ping = ""
-
-    response = response.replace("%mention%", ping)
     return response
 
 """
@@ -73,20 +59,13 @@ async def define_cmd(name, response: str, author: discord.User | discord.Member)
     # Format confirmation to the user
     output_message = f"New command added! You can use it like `{CMD_PREFIX}{name}`. "
 
-    user_name = str(author)
-    # If user allows embedding of a ping, list various ways this can be done
-    if "%mention%" in response:
-        user_id = author.id
-        output_message += f"You can also use it as `{CMD_PREFIX}{name} {user_id}`, `{CMD_PREFIX}{name} {user_name}`, or `{CMD_PREFIX}{name} @{user_name}`"
-
     log_msg = ""
     if old_response:
-        log_msg = f"{user_name} has changed the command `{name}` from `{old_response}` to `{response}`"
+        log_msg = f"{str(author)} has changed the command `{name}` from `{old_response}` to `{response}`"
     else:
-        log_msg = f"{user_name} has added the `{name}` command - `{response}`"
+        log_msg = f"{str(author)} has added the `{name}` command - `{response}`"
 
     await client.log.send(log_msg)
-
     return output_message
 
 """

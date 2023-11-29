@@ -5,9 +5,7 @@ import discord
 from discord.ext import commands, tasks
 
 import db
-from commonbot.user import UserLookup
-from config import CMD_PREFIX, RANKS, XP_PER_LVL, XP_PER_MINUTE
-from utils import requires_admin
+from config import RANKS, XP_PER_LVL, XP_PER_MINUTE
 
 class UserData:
     def __init__(self, xp: int, monthly_xp: int, timestamp: datetime, username: str, avatar: str, next_role_at: int | None):
@@ -22,7 +20,6 @@ class Tracker(commands.Cog):
     def __init__(self):
         self.user_cache = {}
         self.xp_multiplier = 1
-        self.ul = UserLookup()
 
     def setup(self, guild: discord.Guild):
         self.server = guild

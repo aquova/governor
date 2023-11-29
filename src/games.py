@@ -7,7 +7,6 @@ import requests
 
 import db
 from config import AUTO_ADD_EPIC_GAMES, GAME_ANNOUNCEMENT_CHANNEL, GAME_ANNOUNCE_TIME
-from utils import requires_admin
 
 ANNOUNCE_MESSAGES = [
     "Oh ho ho, what are all these free games I've found?",
