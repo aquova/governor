@@ -4,8 +4,7 @@ import commonbot.utils
 import db
 from client import client
 from commonbot.user import UserLookup
-from config import (ADMIN_ACCESS, CMD_PREFIX, LIMIT_CHANS, LVL_CHANS,
-                    NO_SLOWMODE, SERVER_URL, XP_OFF)
+from config import (ADMIN_ACCESS, CMD_PREFIX, LIMIT_CHANS, SERVER_URL)
 from utils import CustomCommandFlags, requires_admin, requires_define
 
 ul = UserLookup()
@@ -19,9 +18,7 @@ ADMIN_HELP_MES = (
     f"Remove a custom message: `{CMD_PREFIX}remove NAME`\n"
     f"Limit a custom message: `{CMD_PREFIX}limit NAME`\n"
     f"## Server Control\n"
-    f"Speak a message as the bot: `{CMD_PREFIX}say CHAN_ID message`. If you want to send images they must be attachments *not URLs*.\n"
     f"Edit a message spoken by the bot: `{CMD_PREFIX}edit MESSAGE_ID new_message`\n"
-    f"Display info on bot settings: `{CMD_PREFIX}info`\n"
     f"## Interactive Commands\n"
     f"Post the platform selection menu (rarely do this): `{CMD_PREFIX}platforms CHAN_ID`\n"
     f"\n"
@@ -51,46 +48,6 @@ async def print_help(message: discord.Message) -> str:
         return HELP_MES
     except AttributeError:
         return HELP_MES
-
-"""
-Say
-
-Speaks a message to the specified channel as the bot
-"""
-@requires_admin
-async def say(message: discord.Message) -> str:
-    try:
-        payload = commonbot.utils.strip_words(message.content, 1)
-        guild = message.guild
-        if guild is None:
-            return ""
-        channel_id = commonbot.utils.get_first_word(payload)
-        channel = discord.utils.get(guild.channels, id=int(channel_id))
-        if channel is None:
-            raise AttributeError
-        elif isinstance(channel, (discord.ForumChannel, discord.CategoryChannel)):
-            return ""
-        output = commonbot.utils.strip_words(payload, 1)
-        if output == "" and len(message.attachments) == 0:
-            return "You cannot send empty messages."
-
-        for item in message.attachments:
-            my_file = await item.to_file()
-            await channel.send(file=my_file)
-
-        if output != "":
-            await channel.send(output, allowed_mentions=discord.AllowedMentions.none())
-
-        return "Message sent."
-    except (IndexError, ValueError):
-        return f"I was unable to find a channel ID in that message. `{CMD_PREFIX}say CHAN_ID message`"
-    except AttributeError:
-        return "Are you sure that was a channel ID?"
-    except discord.errors.HTTPException as err:
-        if err.code == 50013:
-            return "You do not have permissions to post in that channel."
-        else:
-            return f"Oh god something went wrong, everyone panic! {str(err)}"
 
 """
 Edit message
@@ -131,20 +88,6 @@ async def edit(message: discord.Message) -> str:
             return "You cannot edit a message from another user."
         else:
             return f"Oh god something went wrong, everyone panic! {str(err)}"
-
-@requires_admin
-async def info(_) -> str:
-    lvl_c = ", ".join([f"<#{x}>" for x in LVL_CHANS])
-    slow_c = ", ".join([f"<#{x}>" for x in NO_SLOWMODE])
-    xp_c = ", ".join([f"<#{x}>" for x in XP_OFF])
-    limit_c = ", ".join([f"<#{x}>" for x in LIMIT_CHANS])
-    mes = (
-        f"The `{CMD_PREFIX}lvl` command is only allowed in {lvl_c}\n"
-        f"Dynamic slowmode is disabled in {slow_c}\n"
-        f"Users do not gain XP in {xp_c}\n"
-        f"Commands can be disabled in {limit_c}\n"
-    )
-    return mes
 
 class CustomCommands:
     def __init__(self):

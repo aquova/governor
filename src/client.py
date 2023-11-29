@@ -5,7 +5,7 @@ from discord.ext import commands
 from commonbot.debug import Debug
 from commonbot.timestamp import calculate_timestamps
 
-from config import CMD_PREFIX, DEBUG_BOT, LOG_CHAN, OWNER
+from config import CMD_PREFIX, DEBUG_BOT, LIMIT_CHANS, LOG_CHAN, LVL_CHANS, NO_SLOWMODE, OWNER, XP_OFF
 from slowmode import Thermometer
 from tracker import Tracker
 from platforms import PlatformWidget
@@ -74,6 +74,20 @@ async def getgames_context(interaction: discord.Interaction):
     response = games.get_games()
     await interaction.response.send_message(response)
 
+@client.tree.command(name="info", description="Print info about bot settings")
+async def info_context(interaction: discord.Interaction):
+    lvl_c = ", ".join([f"<#{x}>" for x in LVL_CHANS])
+    slow_c = ", ".join([f"<#{x}>" for x in NO_SLOWMODE])
+    xp_c = ", ".join([f"<#{x}>" for x in XP_OFF])
+    limit_c = ", ".join([f"<#{x}>" for x in LIMIT_CHANS])
+    response = (
+        f"The `{CMD_PREFIX}lvl` command is only allowed in {lvl_c}\n"
+        f"Dynamic slowmode is disabled in {slow_c}\n"
+        f"Users do not gain XP in {xp_c}\n"
+        f"Commands can be disabled in {limit_c}\n"
+    )
+    await interaction.response.send_message(response)
+
 @client.tree.command(name="level", description="View a customized level image")
 @discord.app_commands.describe(user="User")
 async def lvl_context(interaction: discord.Interaction, user: discord.Member):
@@ -99,6 +113,12 @@ async def postgames_context(interaction: discord.Interaction):
 async def ranks_context(interaction: discord.Interaction):
     ranks = utils.list_ranks()
     await interaction.response.send_message(ranks, ephemeral=True)
+
+@client.tree.command(name="say", description="Say a message as the bot")
+@discord.app_commands.describe(message="Message to send", channel="Channel to post in")
+async def say_context(interaction: discord.Interaction, message: str, channel: discord.TextChannel):
+    await channel.send(message)
+    await interaction.response.send_message("Message sent")
 
 @client.tree.command(name="timestamp", description="Convert a time into a universal timestamp")
 @discord.app_commands.describe(date="YYYY/MM/DD", time="HH:MM", tz="Either UTC±X or common name (ex. CST)")

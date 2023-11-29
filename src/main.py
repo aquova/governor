@@ -21,16 +21,12 @@ cc = commands.CustomCommands()
 # Dictionary of function pointers
 # Maps commands to functions that are called by them
 FUNC_DICT = {
-    "custom": commands.print_help,
     "define": cc.define_cmd,
     "edit": commands.edit,
-    "help": commands.print_help,
-    "info": commands.info,
     "list": cc.list_cmds,
     "limit": cc.limit_cmd,
     "platforms": platforms.post_widget,
     "remove": cc.remove_cmd,
-    "say": commands.say,
     "xp": xp.get_xp,
 }
 
