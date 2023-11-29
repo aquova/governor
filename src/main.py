@@ -2,16 +2,11 @@
 # Written by aquova, 2020-2023
 # https://github.com/aquova/governor
 
-import re
-import urllib.parse
-
 import discord
-import requests
 
-import custom
+import custom, log
 from client import client
 from config import CMD_PREFIX, DISCORD_KEY, XP_OFF
-from log import parse_log
 
 """
 Update User Count
@@ -100,36 +95,16 @@ async def on_message(message: discord.Message):
         if lvl_up_message:
             await message.channel.send(lvl_up_message)
 
-    for log_link in re.findall(r"https://smapi.io/log/[a-zA-Z0-9]{32}", message.content):
-        log_info = parse_log(log_link)
-        await message.channel.send(log_info)
-
-    for community_wiki_link in re.findall(r"https://stardewcommunitywiki\.com/[a-zA-Z0-9_/:\-%]*", message.content):
-        new_wiki ="https://stardewvalleywiki.com"
-
-        link_path = urllib.parse.urlparse(community_wiki_link).path
-        new_url = urllib.parse.urljoin(new_wiki, link_path)
-        await message.channel.send(f"I notice you're linking to the old wiki, that wiki has been in a read-only state for several months. Here are the links to that page on the new wiki: {new_url}")
-
-
-    for attachment in message.attachments:
-        if attachment.filename == "SMAPI-latest.txt" or attachment.filename == "SMAPI-crash.txt":
-            r = requests.get(attachment.url)
-            log = urllib.parse.quote(r.text)
-            headers = {
-                "Content-Type": "application/x-www-form-urlencoded",
-            }
-
-            s = requests.post('https://smapi.io/log/', data="input={0}".format(log), headers=headers)
-            logurl = s.text.split('</strong> <code>')[1].split('</code>')[0]
-            await message.channel.send("Log found, uploaded to: " + logurl)
+    # Check if the user has uploaded SMAPI diagnostic info
+    await log.check_log_link(message)
+    await log.check_wiki_link(message)
+    await log.check_attachments(message)
 
     # Check if someone is trying to use a custom command
     if message.content != "" and message.content[0] == CMD_PREFIX:
         raw_command = message.content[1:]
         command = raw_command.split(" ")[0].lower()
         if custom.is_allowed(command, message.channel.id):
-            # Check if they're using a user-defined command
             response = custom.parse_response(command)
             await message.channel.send(response)
 

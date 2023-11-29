@@ -1,7 +1,12 @@
+import re
 import string
+import urllib.parse
 
 import bs4
+import discord
 import requests
+
+_NEW_WIKI = "https://stardewvalleywiki.com"
 
 # Template for SMAPI log info messages
 smapi_log_message_template = string.Template(
@@ -12,7 +17,31 @@ smapi_suggested_fixes_template = string.Template(
     "\n**Suggested fixes:** $suggested_fixes"
 )
 
-def parse_log(url):
+async def check_log_link(message: discord.Message):
+    for log_link in re.findall(r"https://smapi.io/log/[a-zA-Z0-9]{32}", message.content):
+        log_info = _parse_log(log_link)
+        await message.channel.send(log_info)
+
+async def check_wiki_link(message: discord.Message):
+    for community_wiki_link in re.findall(r"https://stardewcommunitywiki\.com/[a-zA-Z0-9_/:\-%]*", message.content):
+        link_path = urllib.parse.urlparse(community_wiki_link).path
+        new_url = urllib.parse.urljoin(_NEW_WIKI, link_path)
+        await message.channel.send(f"I notice you're linking to the old wiki, that wiki has been in a read-only state for several months. Here are the links to that page on the new wiki: {new_url}")
+
+async def check_attachments(message: discord.Message):
+    for attachment in message.attachments:
+        if attachment.filename == "SMAPI-latest.txt" or attachment.filename == "SMAPI-crash.txt":
+            r = requests.get(attachment.url)
+            log = urllib.parse.quote(r.text)
+            headers = {
+                "Content-Type": "application/x-www-form-urlencoded",
+            }
+
+            s = requests.post('https://smapi.io/log/', data="input={0}".format(log), headers=headers)
+            logurl = s.text.split('</strong> <code>')[1].split('</code>')[0]
+            await message.channel.send("Log found, uploaded to: " + logurl)
+
+def _parse_log(url):
     r = requests.get(url)
     soup = bs4.BeautifulSoup(r.text, "html.parser")
     soup.encode("utf-8")
