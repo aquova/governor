@@ -20,10 +20,6 @@ db.initialize()
 # Dictionary of function pointers
 # Maps commands to functions that are called by them
 FUNC_DICT = {
-    "define": custom.define_cmd,
-    "list": custom.list_cmds,
-    "limit": custom.limit_cmd,
-    "remove": custom.remove_cmd,
 }
 
 """

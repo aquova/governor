@@ -9,7 +9,7 @@ from config import CMD_PREFIX, DEBUG_BOT, LIMIT_CHANS, LOG_CHAN, LVL_CHANS, NO_S
 from slowmode import Thermometer
 from tracker import Tracker
 from platforms import PlatformWidget
-import games, utils, xp
+import custom, games, utils, xp
 
 class DiscordClient(commands.Bot):
     def __init__(self):
@@ -69,6 +69,12 @@ async def cleargames_context(interaction: discord.Interaction):
     response = games.clear_games()
     await interaction.response.send_message(response)
 
+@client.tree.command(name="define", description="Create a new custom command")
+@discord.app_commands.describe(name="Command Name", result="Command Response")
+async def define_context(interaction: discord.Interaction, name: str, result: str):
+    response = await custom.define_cmd(name, result, interaction.user)
+    await interaction.response.send_message(response)
+
 @client.tree.command(name="getgames", description="Get the list of giveaways to be announced")
 async def getgames_context(interaction: discord.Interaction):
     response = games.get_games()
@@ -110,6 +116,17 @@ async def lb_context(interaction: discord.Interaction):
     url = utils.show_lb()
     await interaction.response.send_message(url, ephemeral=True)
 
+@client.tree.command(name="limit", description="Limit usage of a command in certain channels")
+@discord.app_commands.describe(name="Command Name")
+async def limit_context(interaction: discord.Interaction, name: str):
+    response = custom.limit_cmd(name)
+    await interaction.response.send_message(response)
+
+@client.tree.command(name="list", description="List the custom commands")
+async def list_context(interaction: discord.Interaction):
+    response = custom.list_cmds()
+    await interaction.response.send_message(response)
+
 @client.tree.command(name="postgames", description="Immediately post the list of game giveaways, if any")
 async def postgames_context(interaction: discord.Interaction):
     response = await client.game_timer.post_games()
@@ -125,6 +142,12 @@ async def postplatforms_context(interaction: discord.Interaction, channel: disco
 async def ranks_context(interaction: discord.Interaction):
     ranks = utils.list_ranks()
     await interaction.response.send_message(ranks, ephemeral=True)
+
+@client.tree.command(name="remove", description="Remove a custom command")
+@discord.app_commands.describe(name="Command Name")
+async def remove_context(interaction: discord.Interaction, name: str):
+    response = await custom.remove_cmd(name, interaction.user)
+    await interaction.response.send_message(response)
 
 @client.tree.command(name="say", description="Say a message as the bot")
 @discord.app_commands.describe(message="Message to send", channel="Channel to post in")
