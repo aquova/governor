@@ -5,7 +5,6 @@ import discord
 from discord.ext import commands, tasks
 import requests
 
-import commonbot.utils
 import db
 from config import AUTO_ADD_EPIC_GAMES, GAME_ANNOUNCEMENT_CHANNEL, GAME_ANNOUNCE_TIME
 from utils import requires_admin
@@ -54,8 +53,7 @@ class GameTimer(commands.Cog):
     def cog_unload(self):
         self._announce_games.cancel()
 
-    @requires_admin
-    async def post_games(self, _) -> str:
+    async def post_games(self) -> str:
         await self._send_message()
         return "Games posted"
 
@@ -172,17 +170,12 @@ def eg_print(msg: str):
     print(f"epic_games_auto_add: {msg}")
 
 
-@requires_admin
-async def add_game(message: discord.Message) -> str:
+def add_game(game: str) -> str:
     """
     Add game
 
     Adds a game to be announced
     """
-    game = commonbot.utils.strip_words(message.content, 1).strip()
-    if len(game) == 0:
-        return "Can't add game: no message provided."
-
     games = db.get_games()
     time_info = get_next_announcement_info()
 
@@ -194,8 +187,7 @@ async def add_game(message: discord.Message) -> str:
     return f"Game added! {len(games) + 1} game(s) will be announced at {time_info}."
 
 
-@requires_admin
-async def get_games(_) -> str:
+def get_games() -> str:
     """
     Get games
 
@@ -212,8 +204,7 @@ async def get_games(_) -> str:
         return f"There are no games to announce so the next announcement at {time_info} will be skipped."
 
 
-@requires_admin
-async def clear_games(_) -> str:
+def clear_games() -> str:
     """
     Clear games
 

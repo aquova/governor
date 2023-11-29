@@ -10,7 +10,7 @@ import requests
 
 import commonbot.utils
 
-import commands, db, games, platforms, xp
+import commands, db, platforms, xp
 from client import client
 from config import CMD_PREFIX, DISCORD_KEY, XP_OFF
 from log import parse_log
@@ -21,19 +21,15 @@ cc = commands.CustomCommands()
 # Dictionary of function pointers
 # Maps commands to functions that are called by them
 FUNC_DICT = {
-    "addgame": games.add_game,
     "addxp": client.tracker.add_xp,
-    "cleargames": games.clear_games,
     "custom": commands.print_help,
     "define": cc.define_cmd,
     "edit": commands.edit,
-    "getgames": games.get_games,
     "help": commands.print_help,
     "info": commands.info,
     "list": cc.list_cmds,
     "limit": cc.limit_cmd,
     "platforms": platforms.post_widget,
-    "postgames": client.game_timer.post_games,
     "remove": cc.remove_cmd,
     "say": commands.say,
     "xp": xp.get_xp,

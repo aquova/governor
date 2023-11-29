@@ -6,18 +6,17 @@ from commonbot.debug import Debug
 from commonbot.timestamp import calculate_timestamps
 
 from config import CMD_PREFIX, DEBUG_BOT, LOG_CHAN, OWNER
-from games import GameTimer
 from slowmode import Thermometer
 from tracker import Tracker
 from platforms import PlatformWidget
-import utils, xp
+import games, utils, xp
 
 class DiscordClient(commands.Bot):
     def __init__(self):
         my_intents = discord.Intents.all()
         super().__init__(command_prefix=CMD_PREFIX, intents=my_intents)
         self.dbg = Debug(OWNER, CMD_PREFIX, DEBUG_BOT)
-        self.game_timer = GameTimer(self.dbg.is_debug_bot())
+        self.game_timer = games.GameTimer(self.dbg.is_debug_bot())
         self.thermometer = Thermometer()
         self.tracker = Tracker()
 
@@ -46,12 +45,28 @@ client = DiscordClient()
 ### Slash Commands ###
 # Keep in alphabetical order
 
+@client.tree.command(name="addgame", description="Add a game giveaway URL to be posted")
+@discord.app_commands.describe(url="URL")
+async def addgame_context(interaction: discord.Interaction, url: str):
+    response = games.add_game(url)
+    await interaction.response.send_message(response)
+
 @client.tree.command(name="bonusxp", description="Enable/Disable XP multiplier")
 @discord.app_commands.describe(enabled="y/N")
 async def bonus_xp_context(interaction: discord.Interaction, enabled: str):
     set_bonus = enabled.upper() == "Y"
     response = await client.tracker.set_bonus_xp(set_bonus)
     await interaction.response.send_message(response, ephemeral=True)
+
+@client.tree.command(name="cleargames", description="Clears the games giveaway queue")
+async def cleargames_context(interaction: discord.Interaction):
+    response = games.clear_games()
+    await interaction.response.send_message(response)
+
+@client.tree.command(name="getgames", description="Get the list of giveaways to be announced")
+async def getgames_context(interaction: discord.Interaction):
+    response = games.get_games()
+    await interaction.response.send_message(response)
 
 @client.tree.command(name="level", description="View your customized level image")
 async def lvl_context(interaction: discord.Interaction):
@@ -67,6 +82,11 @@ async def lvl_context(interaction: discord.Interaction):
 async def lb_context(interaction: discord.Interaction):
     url = utils.show_lb()
     await interaction.response.send_message(url, ephemeral=True)
+
+@client.tree.command(name="postgames", description="Immediately post the list of game giveaways, if any")
+async def postgames_context(interaction: discord.Interaction):
+    response = await client.game_timer.post_games()
+    await interaction.response.send_message(response)
 
 @client.tree.command(name="ranks", description="List the earnable ranks for the server")
 async def ranks_context(interaction: discord.Interaction):

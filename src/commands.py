@@ -25,11 +25,6 @@ ADMIN_HELP_MES = (
     f"Display info on bot settings: `{CMD_PREFIX}info`\n"
     f"## Interactive Commands\n"
     f"Post the platform selection menu (rarely do this): `{CMD_PREFIX}platforms CHAN_ID`\n"
-    f"## Announce Games\n"
-    f"Add a game to be announced: `{CMD_PREFIX}addgame URL`\n"
-    f"View all games to be announced: `{CMD_PREFIX}getgames`\n"
-    f"Post games immediately: `{CMD_PREFIX}postgames`\n"
-    f"Remove all games to be announced: `{CMD_PREFIX}cleargames`\n"
     f"\n"
     f"View this message: `{CMD_PREFIX}help`"
 )
