@@ -14,8 +14,6 @@ ADMIN_HELP_MES = (
     f"## XP\n"
     f"View your XP: `{CMD_PREFIX}xp`\n"
     f"View your level: `{CMD_PREFIX}lvl`\n"
-    f"Set XP to be x2: `{CMD_PREFIX}bonusxp`\n"
-    f"Reset XP multiplier: `{CMD_PREFIX}nobonusxp`\n"
     f"Give XP to a user: `{CMD_PREFIX}addxp USER XP` (Can be negative)\n"
     f"## Custom Commands\n"
     f"Define a custom message: `{CMD_PREFIX}define NAME [%mention%] MESSAGE`\n"

@@ -222,18 +222,10 @@ class Tracker(commands.Cog):
 
     Sets the XP multiplier
     """
-    @requires_admin
-    async def set_bonus_xp(self, _) -> str:
-        self.xp_multiplier = 2
-        return "XP multiplier is now x2!"
-
-    """
-    Reset bonus XP
-
-    Resets the XP multiplier
-    """
-    @requires_admin
-    async def reset_bonus_xp(self, _) -> str:
-        self.xp_multiplier = 1
-        return "XP multiplier has been reset"
-
+    async def set_bonus_xp(self, enabled: bool) -> str:
+        if enabled:
+            self.xp_multiplier = 2
+            return "XP multiplier is now x2!"
+        else:
+            self.xp_multiplier = 1
+            return "XP multiplier has been reset"

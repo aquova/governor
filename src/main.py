@@ -23,7 +23,6 @@ cc = commands.CustomCommands()
 FUNC_DICT = {
     "addgame": games.add_game,
     "addxp": client.tracker.add_xp,
-    "bonusxp": client.tracker.set_bonus_xp,
     "cleargames": games.clear_games,
     "custom": commands.print_help,
     "define": cc.define_cmd,
@@ -36,7 +35,6 @@ FUNC_DICT = {
     "list": cc.list_cmds,
     "limit": cc.limit_cmd,
     "lvl": xp.parse_lvl_image,
-    "nobonusxp": client.tracker.reset_bonus_xp,
     "platforms": platforms.post_widget,
     "postgames": client.game_timer.post_games,
     "ranks": utils.list_ranks,
@@ -88,13 +86,9 @@ Runs when a guild (server) that the bot is connected to becomes ready
 async def on_guild_available(guild: discord.Guild):
     # This is 100% going to cause issues if we ever want to host on more than one server
     await client.setup(guild)
+    await client.sync_guild(guild)
 
-    # Set Bouncer's status
     await update_user_count(guild)
-
-    # Only set up slash commands for prod bot
-    if not client.dbg.is_debug_bot():
-        await client.sync_guild(guild)
 
 """
 On Member Join

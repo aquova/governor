@@ -43,6 +43,24 @@ class DiscordClient(commands.Bot):
 
 client = DiscordClient()
 
+### Slash Commands ###
+# Keep in alphabetical order
+
+@client.tree.command(name="bonusxp", description="Enable/Disable XP multiplier")
+@discord.app_commands.describe(enabled="y/N")
+async def bonus_xp_context(interaction: discord.Interaction, enabled: str):
+    set_bonus = enabled.upper() == "Y"
+    response = await client.tracker.set_bonus_xp(set_bonus)
+    await interaction.response.send_message(response, ephemeral=True)
+
+@client.tree.command(name="level", description="View your customized level image")
+async def lvl_context(interaction: discord.Interaction):
+    filename = await xp.render_lvl_image(interaction.user)
+    if filename:
+        with open(filename, 'rb') as my_file:
+            discord_file = discord.File(my_file)
+            await interaction.response.send_message(file=discord_file, ephemeral=True)
+
 @client.tree.command(name="leaderboard", description="Get the URL for the online leaderboard")
 async def lb_context(interaction: discord.Interaction):
     url = await utils.show_lb(None)
@@ -53,14 +71,6 @@ async def ranks_context(interaction: discord.Interaction):
     ranks = await utils.list_ranks(None)
     await interaction.response.send_message(ranks, ephemeral=True)
 
-@client.tree.command(name="level", description="View your customized level image")
-async def lvl_context(interaction: discord.Interaction):
-    filename = await xp.render_lvl_image(interaction.user)
-    if filename:
-        with open(filename, 'rb') as my_file:
-            discord_file = discord.File(my_file)
-            await interaction.response.send_message(file=discord_file, ephemeral=True)
-
 @client.tree.command(name="timestamp", description="Convert a time into a universal timestamp")
 @discord.app_commands.describe(date="YYYY/MM/DD", time="HH:MM", tz="Either UTC±X or common name (ex. CST)")
 async def timestamp(interaction: discord.Interaction, date: str, time: str, tz: str):
@@ -70,6 +80,7 @@ async def timestamp(interaction: discord.Interaction, date: str, time: str, tz: 
     except Exception:
         await interaction.response.send_message("Error: One of the entries has an invalid format.", ephemeral=True)
 
+### Member Context Commands ###
 @client.tree.context_menu(name="User Info")
 async def userinfo_context(interaction: discord.Interaction, user: discord.Member):
     if isinstance(interaction.user, discord.User):
