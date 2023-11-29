@@ -1,10 +1,9 @@
 import discord
 
-import commonbot.utils
 import db
 from client import client
 from config import (ADMIN_ACCESS, CMD_PREFIX, LIMIT_CHANS, SERVER_URL)
-from utils import CustomCommandFlags
+from utils import CustomCommandFlags, check_roles
 
 """
 Is allowed
@@ -40,7 +39,7 @@ Sets a new user-defined command
 """
 async def define_cmd(name, response: str, author: discord.User | discord.Member) -> str:
     flags = CustomCommandFlags.NONE
-    is_admin = commonbot.utils.check_roles(author, ADMIN_ACCESS)
+    is_admin = check_roles(author, ADMIN_ACCESS)
 
     if is_admin:
         flags |= CustomCommandFlags.ADMIN

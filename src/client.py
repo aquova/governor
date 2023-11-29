@@ -2,12 +2,12 @@ from typing import cast
 
 import discord
 from discord.ext import commands
-from commonbot.timestamp import calculate_timestamps
 
-from config import CMD_PREFIX, LIMIT_CHANS, LOG_CHAN, NO_SLOWMODE, XP_OFF
-from slowmode import Thermometer
-from tracker import Tracker
+from config import CMD_PREFIX, LOG_CHAN
 from platforms import PlatformWidget
+from slowmode import Thermometer
+from timestamp import calculate_timestamps
+from tracker import Tracker
 import custom, db, games, utils, xp
 
 class DiscordClient(commands.Bot):
@@ -88,14 +88,7 @@ async def getxp_context(interaction: discord.Interaction, user: discord.Member):
 
 @client.tree.command(name="info", description="Print info about bot settings")
 async def info_context(interaction: discord.Interaction):
-    slow_c = ", ".join([f"<#{x}>" for x in NO_SLOWMODE])
-    xp_c = ", ".join([f"<#{x}>" for x in XP_OFF])
-    limit_c = ", ".join([f"<#{x}>" for x in LIMIT_CHANS])
-    response = (
-        f"Dynamic slowmode is disabled in {slow_c}\n"
-        f"Users do not gain XP in {xp_c}\n"
-        f"Commands can be disabled in {limit_c}\n"
-    )
+    response = utils.get_bot_info()
     await interaction.response.send_message(response)
 
 @client.tree.command(name="level", description="View a customized level image")
