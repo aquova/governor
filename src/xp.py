@@ -10,9 +10,7 @@ from PIL import Image, ImageDraw, ImageFont
 
 import db
 from commonbot.user import UserLookup
-from commonbot.utils import check_roles
-from config import (ADMIN_ACCESS, ASSETS_PATH, FONTS_PATH, LVL_CHANS, MODDER_ROLE, MODDER_URL, TMP_PATH,
-                    XP_PER_LVL)
+from config import ASSETS_PATH, FONTS_PATH, MODDER_ROLE, MODDER_URL, TMP_PATH, XP_PER_LVL
 from utils import to_thread
 
 ul = UserLookup()
@@ -46,23 +44,10 @@ Get XP
 
 Returns the given user's XP value, as a formatted string
 """
-async def get_xp(message: discord.Message) -> str:
-    author = None
-    other_id = ul.parse_id(message)
-    if other_id:
-        if message.guild is not None:
-            author = discord.utils.get(message.guild.members, id=other_id)
-
-    # If we couldn't find a user, use the message author
-    if not author:
-        author = message.author
-
-    xp = db.fetch_user_xp(author.id)
-    monthly_xp = db.fetch_user_monthly_xp(author.id)
-    if author == message.author:
-        return f"You have {xp} XP all-time, and {monthly_xp} XP this month"
-    else:
-        return f"They have {xp} XP all-time, and {monthly_xp} XP this month"
+def get_xp(user: discord.Member) -> str:
+    xp = db.fetch_user_xp(user.id)
+    monthly_xp = db.fetch_user_monthly_xp(user.id)
+    return f"{xp} XP all-time, {monthly_xp} XP this month"
 
 """
 Render level image

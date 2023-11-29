@@ -27,7 +27,6 @@ FUNC_DICT = {
     "limit": cc.limit_cmd,
     "platforms": platforms.post_widget,
     "remove": cc.remove_cmd,
-    "xp": xp.get_xp,
 }
 
 # The keys in the function dict cannot be used as custom commands

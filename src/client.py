@@ -74,6 +74,12 @@ async def getgames_context(interaction: discord.Interaction):
     response = games.get_games()
     await interaction.response.send_message(response)
 
+@client.tree.command(name="getxp", description="Gets the user's XP value")
+@discord.app_commands.describe(user="User")
+async def getxp_context(interaction: discord.Interaction, user: discord.Member):
+    response = xp.get_xp(user)
+    await interaction.response.send_message(response)
+
 @client.tree.command(name="info", description="Print info about bot settings")
 async def info_context(interaction: discord.Interaction):
     lvl_c = ", ".join([f"<#{x}>" for x in LVL_CHANS])
