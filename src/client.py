@@ -74,9 +74,10 @@ async def getgames_context(interaction: discord.Interaction):
     response = games.get_games()
     await interaction.response.send_message(response)
 
-@client.tree.command(name="level", description="View your customized level image")
-async def lvl_context(interaction: discord.Interaction):
-    filename = await xp.render_lvl_image(interaction.user)
+@client.tree.command(name="level", description="View a customized level image")
+@discord.app_commands.describe(user="User")
+async def lvl_context(interaction: discord.Interaction, user: discord.Member):
+    filename = await xp.render_lvl_image(user)
     if filename:
         with open(filename, 'rb') as my_file:
             discord_file = discord.File(my_file)
