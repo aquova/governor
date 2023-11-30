@@ -85,6 +85,11 @@ async def info_context(interaction: discord.Interaction):
     response = utils.get_bot_info()
     await interaction.response.send_message(response)
 
+@client.tree.command(name="lb", description="Get the URL for the online leaderboard")
+async def lb_context(interaction: discord.Interaction):
+    url = utils.show_lb()
+    await interaction.response.send_message(url, ephemeral=True)
+
 @client.tree.command(name="level", description="View a customized level image")
 @discord.app_commands.describe(user="User")
 async def level_context(interaction: discord.Interaction, user: discord.Member):
@@ -105,11 +110,6 @@ async def lvl_context(interaction: discord.Interaction):
             await interaction.response.send_message(file=discord_file)
             return
     await interaction.response.send_message("Error: Something went wrong. Please try again.", ephemeral=True)
-
-@client.tree.command(name="leaderboard", description="Get the URL for the online leaderboard")
-async def lb_context(interaction: discord.Interaction):
-    url = utils.show_lb()
-    await interaction.response.send_message(url, ephemeral=True)
 
 @client.tree.command(name="limit", description="Limit usage of a command in certain channels")
 @discord.app_commands.describe(name="Command Name")
