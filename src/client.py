@@ -80,12 +80,6 @@ async def getgames_context(interaction: discord.Interaction):
     response = games.get_games()
     await interaction.response.send_message(response)
 
-@client.tree.command(name="getxp", description="Gets the user's XP value")
-@discord.app_commands.describe(user="User")
-async def getxp_context(interaction: discord.Interaction, user: discord.Member):
-    response = xp.get_xp(user)
-    await interaction.response.send_message(response)
-
 @client.tree.command(name="info", description="Print info about bot settings")
 async def info_context(interaction: discord.Interaction):
     response = utils.get_bot_info()
@@ -93,14 +87,24 @@ async def info_context(interaction: discord.Interaction):
 
 @client.tree.command(name="level", description="View a customized level image")
 @discord.app_commands.describe(user="User")
-async def lvl_context(interaction: discord.Interaction, user: discord.Member):
+async def level_context(interaction: discord.Interaction, user: discord.Member):
     filename = await xp.render_lvl_image(user)
     if filename:
         with open(filename, 'rb') as my_file:
             discord_file = discord.File(my_file)
             await interaction.response.send_message(file=discord_file)
-    else:
-        await interaction.response.send_message("Error: Something went wrong. Please try again.", ephemeral=True)
+            return
+    await interaction.response.send_message("Error: Something went wrong. Please try again.", ephemeral=True)
+
+@client.tree.command(name="lvl", description="View your level image")
+async def lvl_context(interaction: discord.Interaction):
+    filename = await xp.render_lvl_image(interaction.user)
+    if filename:
+        with open(filename, 'rb') as my_file:
+            discord_file = discord.File(my_file)
+            await interaction.response.send_message(file=discord_file)
+            return
+    await interaction.response.send_message("Error: Something went wrong. Please try again.", ephemeral=True)
 
 @client.tree.command(name="leaderboard", description="Get the URL for the online leaderboard")
 async def lb_context(interaction: discord.Interaction):
@@ -155,6 +159,12 @@ async def timestamp(interaction: discord.Interaction, date: str, time: str, tz: 
     except Exception:
         await interaction.response.send_message("Error: One of the entries has an invalid format.", ephemeral=True)
 
+@client.tree.command(name="xp", description="Gets the user's XP value")
+@discord.app_commands.describe(user="User")
+async def getxp_context(interaction: discord.Interaction, user: discord.Member):
+    response = xp.get_xp(user)
+    await interaction.response.send_message(response)
+
 ### Member Context Commands ###
 @client.tree.context_menu(name="Level")
 async def lvl_member(interaction: discord.Interaction, user: discord.Member):
@@ -163,8 +173,8 @@ async def lvl_member(interaction: discord.Interaction, user: discord.Member):
         with open(filename, 'rb') as my_file:
             discord_file = discord.File(my_file)
             await interaction.response.send_message(file=discord_file)
-    else:
-        await interaction.response.send_message("Error: Something went wrong. Please try again.", ephemeral=True)
+            return
+    await interaction.response.send_message("Error: Something went wrong. Please try again.", ephemeral=True)
 
 @client.tree.context_menu(name="User Info")
 async def userinfo_context(interaction: discord.Interaction, user: discord.Member):
