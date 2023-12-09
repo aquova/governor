@@ -163,11 +163,11 @@ def create_user_info_embed(user: discord.Member) -> discord.Embed:
         embed.add_field(name="Roles", value=role_str, inline=False)
 
     # https://strftime.org/ is great if you ever want to change this, FYI
-    create_time = user.created_at.strftime("%c")
+    create_time = f'<t:{user.created_at}:D>'
     embed.add_field(name="Created", value=create_time)
 
     if user.joined_at is not None:
-        join_time = user.joined_at.strftime("%c")
+        join_time = f'<t:{user.joined_at}:D>'
         embed.add_field(name="Joined", value=join_time)
     return embed
 
