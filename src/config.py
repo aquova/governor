@@ -22,7 +22,6 @@ MODDER_ROLE = cfg['roles']['modder']
 MODDER_URL = cfg['modder_wiki_url']
 
 SERVER_URL = cfg['server_url']
-DEBUG_BOT = cfg['debug']
 
 NO_SLOWMODE = cfg['channels']['slowmode_disabled']
 XP_OFF = cfg['channels']['xp_disabled']
