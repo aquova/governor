@@ -8,7 +8,7 @@ from platforms import PlatformWidget
 from slowmode import Thermometer
 from timestamp import calculate_timestamps
 from tracker import Tracker
-import custom, db, games, utils, xp
+import custom, db, edit, games, utils, xp
 
 class DiscordClient(commands.Bot):
     def __init__(self):
@@ -74,25 +74,9 @@ async def define_context(interaction: discord.Interaction):
     await interaction.response.send_modal(custom.DefineModal())
 
 @client.tree.command(name="edit", description="Edit a message sent by the bot")
-@discord.app_commands.describe(channel="Channel message is in", message_id="Message ID", new_text="New message")
-async def edit_context(interaction: discord.Interaction, channel: discord.TextChannel, message_id: str, new_text: str):
-    try:
-        message_int = int(message_id)
-    except ValueError:
-        await interaction.response.send_message("That's not a valid ID", ephemeral=True)
-        return
-
-    edit_message = await channel.fetch_message(message_int)
-    if edit_message is None:
-        await interaction.response.send_message("I was unable to find a message with that ID", ephemeral=True)
-        return
-
-    if edit_message.author != client.user:
-        await interaction.response.send_message("I didn't write that message! I can't edit that!", ephemeral=True)
-        return
-
-    await edit_message.edit(content=new_text)
-    await interaction.response.send_message("Message edited!")
+@discord.app_commands.describe(channel="Channel message is in", message_id="Message ID")
+async def edit_context(interaction: discord.Interaction, channel: discord.TextChannel, message_id: str):
+    await interaction.response.send_modal(edit.EditModal(channel, message_id))
 
 @client.tree.command(name="getgames", description="Get the list of giveaways to be announced")
 async def getgames_context(interaction: discord.Interaction):
