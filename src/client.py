@@ -184,7 +184,7 @@ async def timestamp(interaction: discord.Interaction, date: str, time: str, tz: 
 @discord.app_commands.describe(user="User")
 async def getxp_context(interaction: discord.Interaction, user: discord.Member):
     response = xp.get_xp(user)
-    await interaction.response.send_message(response)
+    await interaction.response.send_message(response, ephemeral=True)
 
 ### Member Context Commands ###
 @client.tree.context_menu(name="Level")
