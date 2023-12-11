@@ -1,4 +1,4 @@
-import json
+import yaml
 from datetime import datetime
 
 XP_PER_MINUTE = 10
@@ -6,9 +6,9 @@ XP_PER_LVL = 300
 STARTING_XP = XP_PER_LVL
 
 # Read values from config file
-CONFIG_PATH = "./private/config.json"
+CONFIG_PATH = "private/config.yaml"
 with open(CONFIG_PATH) as config_file:
-    cfg = json.load(config_file)
+    cfg = yaml.safe_load(config_file)
 
 DISCORD_KEY = cfg['discord']
 DB_PATH = "./private/governor.db"
@@ -20,6 +20,7 @@ CMD_PREFIX = cfg['command_prefix']
 ADMIN_ACCESS = cfg['roles']['admin_access']
 MODDER_ROLE = cfg['roles']['modder']
 MODDER_URL = cfg['modder_wiki_url']
+RANKS = cfg["ranks"]
 
 SERVER_URL = cfg['server_url']
 
@@ -38,8 +39,3 @@ PS_PLATFORM = cfg['roles']['platforms']['ps']
 NS_PLATFORM = cfg['roles']['platforms']['ns']
 MOBILE_PLATFORM = cfg['roles']['platforms']['mobile']
 VITA_PLATFORM = cfg['roles']['platforms']['vita']
-
-# Import ranks from their configuration
-RANKS_PATH = "./private/ranks.json"
-with open(RANKS_PATH) as ranks_file:
-    RANKS = json.load(ranks_file)['ranks']
