@@ -5,6 +5,54 @@ from client import client
 from config import (ADMIN_ACCESS, CMD_PREFIX, LIMIT_CHANS, SERVER_URL)
 from utils import CustomCommandFlags, check_roles
 
+class DefineModal(discord.ui.Modal):
+    def __init__(self):
+        super().__init__(title="Define a new custom command")
+        self.name = discord.ui.TextInput(
+            label="Command Name",
+            style=discord.TextStyle.short,
+            required=True
+        )
+        self.response = discord.ui.TextInput(
+            label="Command Response",
+            style=discord.TextStyle.long,
+            required=True
+        )
+        self.add_item(self.name)
+        self.add_item(self.response)
+
+    async def on_submit(self, interaction: discord.Interaction):
+        name = self.name.value
+        response = self.response.value
+        flags = CustomCommandFlags.NONE
+        is_admin = check_roles(interaction.user, ADMIN_ACCESS)
+
+        if is_admin:
+            flags |= CustomCommandFlags.ADMIN
+
+        commands = db.get_custom_cmds()
+        # Store what the command used to say, if anything
+        old_response = None
+        if name in commands:
+            # Protect commands originally made by moderators
+            if (commands[name][1] & CustomCommandFlags.ADMIN) and not is_admin:
+                return f"`{name}` was created by a moderator, and only moderators can edit its contents."
+            old_response = commands[name][0]
+
+        db.set_new_custom_cmd(name, response, flags)
+
+        # Format confirmation to the user
+        output_message = f"New command added! You can use it like `{CMD_PREFIX}{name}`. "
+
+        log_msg = ""
+        if old_response:
+            log_msg = f"{str(interaction.user)} has changed the command `{name}` from `{old_response}` to `{response}`"
+        else:
+            log_msg = f"{str(interaction.user)} has added the `{name}` command - `{response}`"
+
+        await client.log.send(log_msg)
+        await interaction.response.send_message(output_message)
+
 """
 Is allowed
 
@@ -31,41 +79,6 @@ def parse_response(command) -> str:
     commands = db.get_custom_cmds()
     response = commands[command][0]
     return response
-
-"""
-Define command
-
-Sets a new user-defined command
-"""
-async def define_cmd(name, response: str, author: discord.User | discord.Member) -> str:
-    flags = CustomCommandFlags.NONE
-    is_admin = check_roles(author, ADMIN_ACCESS)
-
-    if is_admin:
-        flags |= CustomCommandFlags.ADMIN
-
-    commands = db.get_custom_cmds()
-    # Store what the command used to say, if anything
-    old_response = None
-    if name in commands:
-        # Protect commands originally made by moderators
-        if (commands[name][1] & CustomCommandFlags.ADMIN) and not is_admin:
-            return f"`{name}` was created by a moderator, and only moderators can edit its contents."
-        old_response = commands[name][0]
-
-    db.set_new_custom_cmd(name, response, flags)
-
-    # Format confirmation to the user
-    output_message = f"New command added! You can use it like `{CMD_PREFIX}{name}`. "
-
-    log_msg = ""
-    if old_response:
-        log_msg = f"{str(author)} has changed the command `{name}` from `{old_response}` to `{response}`"
-    else:
-        log_msg = f"{str(author)} has added the `{name}` command - `{response}`"
-
-    await client.log.send(log_msg)
-    return output_message
 
 """
 Remove command
