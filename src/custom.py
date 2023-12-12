@@ -58,21 +58,11 @@ async def define_cmd(name, response: str, author: discord.User | discord.Member)
     # Format confirmation to the user
     output_message = f"New command added! You can use it like `{CMD_PREFIX}{name}`. "
 
-    if '\n' in response:
-        response = f'```\n{response}\n```'
-    else:
-        response = f'`{response}`'
-
-    if '\n' in old_response and old_response != None:
-        old_response = f'```\n{old_response}\n```'
-    elif old_response != None:
-        old_response = f'`{old_response}`'
-
     log_msg = ""
     if old_response:
-        log_msg = f"{str(author)} has changed the command `{name}` from {old_response} to {response}"
+        log_msg = f"{str(author)} has changed the command `{name}` from ```\n{old_response}\n``` to ```\n{response}\n```"
     else:
-        log_msg = f"{str(author)} has added the `{name}` command - {response}"
+        log_msg = f"{str(author)} has added the `{name}` command - ```\n{response}\n```"
 
     await client.log.send(log_msg)
     return output_message
