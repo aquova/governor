@@ -1,0 +1,3 @@
+[submodule "html/paste"]
+	path = html/paste
+	url = https://github.com/topaz/paste
