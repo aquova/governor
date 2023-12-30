@@ -123,7 +123,7 @@ async def limit_context(interaction: discord.Interaction, name: str):
 @client.tree.command(name="list", description="List the custom commands")
 async def list_context(interaction: discord.Interaction):
     response = custom.list_cmds()
-    await interaction.response.send_message(response)
+    await interaction.response.send_message(response, ephemeral=True)
 
 @client.tree.command(name="postgames", description="Immediately post the list of game giveaways, if any")
 async def postgames_context(interaction: discord.Interaction):
