@@ -1,5 +1,5 @@
 # Governor
-# Written by aquova, 2020-2023
+# Written by aquova, 2020-2024
 # https://github.com/aquova/governor
 
 import discord
