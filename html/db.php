@@ -61,12 +61,21 @@
 
     function populate_cmd_tbl() {
         $db = new SQLite3(DB_PATH);
-        $ret = $db->query('SELECT * FROM commands ORDER BY name');
+        $ret = $db->query('SELECT * FROM commands LEFT OUTER JOIN aliases ON commands.name = aliases.command ORDER BY commands.name');
+
+        echo "<table>";
+        echo "<tr>";
+        echo "<th>Command</th>";
+        echo "<th>Aliases</th>";
+        echo "<th>Response</th>";
+        echo "<th>Limited?</th>";
+        echo "</tr>";
 
         while ($row = $ret->fetchArray()) {
             $cmd = $row['name'];
             $mes = $row['response'];
             $flags = $row['flag'];
+            $aliases = $row['alias'];
 
             // For closer formatting to how they'll appear in Discord,
             // we shall replace some items with html tags
@@ -88,15 +97,19 @@
             $mes = str_replace("\n", "<br/>", $mes);
 
             // Check if command has the limit flag set
-            $limited = $flags & LIMIT_FLAG ? "Y" : "N";
+            $limited = $flags & LIMIT_FLAG ? "Y" : "";
+
+            // List any aliases this command might have
+            $alias_list = $aliases ? $aliases : "";
 
             echo "<tr>";
             echo "<td>$cmd</td>";
+            echo "<td>$alias_list</td>";
             echo "<td>$mes</td>";
             echo "<td>$limited</td>";
             echo "</tr>";
         }
-
+        echo "</table>";
         $db->close();
     };
 ?>

@@ -12,17 +12,10 @@
             <h1>Discord Custom Commands</h1>
         </header>
         <main>
-            <table>
-                <tr>
-                    <th>Command</th>
-                    <th>Response</th>
-                    <th>Limited?</th>
-                </tr>
-                <?php
-                    include 'db.php';
-                    populate_cmd_tbl();
-                ?>
-            </table>
+            <?php
+                include 'db.php';
+                populate_cmd_tbl();
+            ?>
         </main>
     </body>
 </html>
