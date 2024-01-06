@@ -75,7 +75,7 @@ async def cleargames_context(interaction: discord.Interaction):
     response = games.clear_games()
     await interaction.response.send_message(response)
 
-@client.tree.command(name="define", description="Create a new custom command")
+@client.tree.command(name="define", description="Open a window to add a new custom command")
 async def define_context(interaction: discord.Interaction):
     await interaction.response.send_modal(custom.DefineModal())
 
