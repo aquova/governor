@@ -57,6 +57,12 @@ async def addxp_context(interaction: discord.Interaction, user: discord.Member, 
     response = await client.tracker.add_xp(user, xp)
     await interaction.response.send_message(response)
 
+@client.tree.command(name="alias", description="Add an alias to an existing command")
+@discord.app_commands.describe(command="Command Name", alias="Alias")
+async def alias_context(interaction: discord.Interaction, command: str, alias: str):
+    response = custom.add_alias(command, alias)
+    await interaction.response.send_message(response)
+
 @client.tree.command(name="bonusxp", description="Enable/Disable XP multiplier")
 @discord.app_commands.describe(enabled="y/N")
 async def bonus_xp_context(interaction: discord.Interaction, enabled: str):
@@ -141,7 +147,7 @@ async def ranks_context(interaction: discord.Interaction):
     ranks = utils.list_ranks()
     await interaction.response.send_message(ranks, ephemeral=True)
 
-@client.tree.command(name="remove", description="Remove a custom command")
+@client.tree.command(name="remove", description="Remove a custom command or alias")
 @discord.app_commands.describe(name="Command Name")
 async def remove_context(interaction: discord.Interaction, name: str):
     response = await custom.remove_cmd(name, interaction.user)

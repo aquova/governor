@@ -13,6 +13,7 @@ def initialize():
     sqlconn = sqlite3.connect(DB_PATH)
     sqlconn.execute("CREATE TABLE IF NOT EXISTS xp (id INT PRIMARY KEY, xp INT, username TEXT, avatar TEXT, monthly INT, month INT, year INT, color TEXT)")
     sqlconn.execute("CREATE TABLE IF NOT EXISTS commands (name TEXT PRIMARY KEY, response TEXT, flag INT)")
+    sqlconn.execute("CREATE TABLE IF NOT EXISTS aliases (alias TEXT PRIMARY KEY, command TEXT, FOREIGN KEY(command) REFERENCES commands(name))")
     sqlconn.execute("CREATE TABLE IF NOT EXISTS games (game TEXT)")
     sqlconn.commit()
     sqlconn.close()
@@ -113,17 +114,45 @@ def get_monthly_leaders() -> list[tuple]:
 Get custom commands
 
 Returns the user-set custom commands
+
+Parameter: Include aliases in the output
 """
-def get_custom_cmds() -> dict[str, tuple]:
+def get_custom_cmds(include_aliases: bool = True) -> dict[str, tuple]:
     query = ("SELECT * FROM commands",)
     cmds = _db_read(query)
 
     cmd_dict = {}
-
     for cmd in cmds:
         cmd_dict[cmd[0].lower()] = (cmd[1], cmd[2])
 
+    if include_aliases:
+        aliases = get_aliases()
+        for k, v in aliases.items():
+            cmd_dict[k] = cmd_dict[v]
+
     return cmd_dict
+
+"""
+Get Aliases
+
+Returns the list of custom command aliases
+"""
+def get_aliases() -> dict[str, str]:
+    query = ("SELECT * FROM aliases",)
+    aliases = _db_read(query)
+
+    alias_dict = {}
+    for alias in aliases:
+        alias_dict[alias[0].lower()] = alias[1]
+    return alias_dict
+
+"""Remove alias
+
+Removes an existing alias for a command
+"""
+def remove_alias(alias: str):
+    query = ("DELETE FROM aliases WHERE alias=?", [alias])
+    _db_write(query)
 
 """
 Remove custom command
@@ -134,6 +163,11 @@ def remove_custom_cmd(name: str):
     query = ("DELETE FROM commands WHERE name=?", [name])
     _db_write(query)
 
+    aliases = get_aliases()
+    for k, v in aliases.items():
+        if v == name:
+            remove_alias(k)
+
 """
 Set new custom command
 
@@ -141,6 +175,15 @@ Adds a new user-defined command to the database
 """
 def set_new_custom_cmd(name: str, response: str, flag: int):
     query = ("INSERT OR REPLACE INTO commands (name, response, flag) VALUES (?, ?, ?)", [name, response, flag])
+    _db_write(query)
+
+"""
+Set new alias
+
+Adds a new alias for a pre-exist command to the database
+"""
+def set_new_alias(alias: str, command: str):
+    query = ("INSERT OR REPLACE INTO aliases (alias, command) VALUES (?, ?)", [alias, command])
     _db_write(query)
 
 """

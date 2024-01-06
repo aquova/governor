@@ -22,7 +22,7 @@ class DefineModal(discord.ui.Modal):
         self.add_item(self.response)
 
     async def on_submit(self, interaction: discord.Interaction):
-        name = self.name.value
+        name = self.name.value.lower()
         response = self.response.value
         flags = CustomCommandFlags.NONE
         is_admin = check_roles(interaction.user, ADMIN_ACCESS)
@@ -81,17 +81,36 @@ def parse_response(command) -> str:
     return response
 
 """
+Add Alias
+
+Adds an alias to a pre-existing command
+"""
+def add_alias(command: str, alias: str) -> str:
+    cmds = db.get_custom_cmds(False)
+    if command not in cmds:
+        return "I cannot make an alias for a command that does not exist"
+    db.set_new_alias(alias, command)
+    return f"`{alias}` is now an alias for `{command}`!"
+
+"""
 Remove command
 
 Removes a user-defined command
 """
 async def remove_cmd(name: str, author: discord.User | discord.Member) -> str:
-    # If this command did exist, remove it from cache and database
-    commands = db.get_custom_cmds()
+    # First check if the command was an alias, as that is simpler to remove
+    aliases = db.get_aliases()
+    if name in aliases:
+        db.remove_alias(name)
+        log_msg = f"{str(author)} has removed the `{name}` alias. It used to point to `{aliases[name]}`."
+        await client.log.send(log_msg)
+        return f"The `{name}` alias has been removed!"
+
+    # If the command exists, remove both it and any aliases pointing to it
+    commands = db.get_custom_cmds(False)
     if name in commands:
-        old_msg = commands[name]
         db.remove_custom_cmd(name)
-        log_msg = f"{str(author)} has removed the `{name}` command. It used to say `{old_msg}`."
+        log_msg = f"{str(author)} has removed the `{name}` command, and any aliases it had. It used to say `{commands[name]}`."
         await client.log.send(log_msg)
         return f"`{name}` removed as a custom command!"
     return f"`{name}` was never a command..."
