@@ -8,7 +8,7 @@ from platforms import PlatformWidget
 from slowmode import Thermometer
 from timestamp import calculate_timestamps
 from tracker import Tracker
-import custom, db, edit, games, utils, xp
+import custom, db, games, say, utils, xp
 
 class DiscordClient(commands.Bot):
     def __init__(self):
@@ -82,7 +82,7 @@ async def define_context(interaction: discord.Interaction):
 @client.tree.command(name="edit", description="Edit a message sent by the bot")
 @discord.app_commands.describe(channel="Channel message is in", message_id="Message ID")
 async def edit_context(interaction: discord.Interaction, channel: discord.TextChannel, message_id: str):
-    await interaction.response.send_modal(edit.EditModal(channel, message_id))
+    await interaction.response.send_modal(say.EditModal(channel, message_id))
 
 @client.tree.command(name="getgames", description="Get the list of giveaways to be announced")
 async def getgames_context(interaction: discord.Interaction):
@@ -153,11 +153,10 @@ async def remove_context(interaction: discord.Interaction, name: str):
     response = await custom.remove_cmd(name, interaction.user)
     await interaction.response.send_message(response)
 
-@client.tree.command(name="say", description="Say a message as the bot")
-@discord.app_commands.describe(message="Message to send", channel="Channel to post in")
-async def say_context(interaction: discord.Interaction, message: str, channel: discord.TextChannel):
-    await channel.send(message)
-    await interaction.response.send_message("Message sent")
+@client.tree.command(name="say", description="Open a window to post a message as the bot")
+@discord.app_commands.describe(channel="Channel to post in")
+async def say_context(interaction: discord.Interaction, channel: discord.TextChannel):
+    await interaction.response.send_modal(say.SayModal(channel))
 
 @client.tree.command(name="timestamp", description="Convert a time into a universal timestamp")
 @discord.app_commands.describe(date="YYYY/MM/DD", time="HH:MM", tz="Either UTC±X or common name (ex. CST)")
