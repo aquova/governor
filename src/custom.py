@@ -16,6 +16,7 @@ class DefineModal(discord.ui.Modal):
         self.response = discord.ui.TextInput(
             label="Command Response",
             style=discord.TextStyle.long,
+            max_length=1999,
             required=True
         )
         self.add_item(self.name)

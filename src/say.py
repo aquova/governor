@@ -7,6 +7,7 @@ class SayModal(discord.ui.Modal):
         self.content = discord.ui.TextInput(
             label="Bot message",
             style=discord.TextStyle.long,
+            max_length=1999,
             required=True
         )
         self.add_item(self.content)
@@ -23,6 +24,7 @@ class EditModal(discord.ui.Modal):
         self.content = discord.ui.TextInput(
             label="New bot message",
             style=discord.TextStyle.long,
+            max_length=1999,
             required=True
         )
         self.add_item(self.content)
