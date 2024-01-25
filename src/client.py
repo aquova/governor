@@ -10,6 +10,36 @@ from timestamp import calculate_timestamps
 from tracker import Tracker
 import custom, db, games, say, utils, xp
 
+HELP_MESSAGE = (
+    "# Governor Slash Command Reference\n"
+    "`/help` - Print this message\n"
+    "## User Levels\n"
+    "`/level` - Render a user's level image\n"
+    "`/lvl` - Render your level image\n"
+    "`/xp` - Gets the user's XP\n"
+    "`/addxp` - Award XP to a user\n"
+    "`/bonusxp` - Toggle XP multiplier\n"
+    "`/ranks` - List earnable ranks\n"
+    "`/lb` - Get the URL for the leaderboard\n"
+    "## Game Giveaways\n"
+    "`/addgame` - Add giveway URL to be posted\n"
+    "`/getgames` - Get the list of giveaways to be posted\n"
+    "`/cleargames` - Clear games giveaway queue\n"
+    "`/postgames` - Immediately post the giveaway queue\n"
+    "## Custom Commands\n"
+    "`/define` - Add a new custom command\n"
+    "`/alias` - Add an alias to an existing custom command\n"
+    "`/remove` - Remove a custom command or alias\n"
+    "`/list` - List the custom commands\n"
+    "`/limit` - Limit usage of a custom command\n"
+    "## Misc.\n"
+    "`/say` - Say a message as the bot\n"
+    "`/edit` - Edit a message sent by the bot\n"
+    "`/postplatforms` - Post the platform role selection buttons\n"
+    "`/info` - Print info about bot setttings\n"
+    "`/timestamp` - Convert a time into a Discord timestamp\n"
+)
+
 class DiscordClient(commands.Bot):
     def __init__(self):
         my_intents = discord.Intents.all()
@@ -88,6 +118,10 @@ async def edit_context(interaction: discord.Interaction, channel: discord.TextCh
 async def getgames_context(interaction: discord.Interaction):
     response = games.get_games()
     await interaction.response.send_message(response)
+
+@client.tree.command(name="help", description="Print slash command help message")
+async def help_context(interaction: discord.Interaction):
+    await interaction.response.send_message(HELP_MESSAGE)
 
 @client.tree.command(name="info", description="Print info about bot settings")
 async def info_context(interaction: discord.Interaction):
