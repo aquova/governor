@@ -36,7 +36,7 @@ HELP_MESSAGE = (
     "`/say` - Say a message as the bot\n"
     "`/edit` - Edit a message sent by the bot\n"
     "`/postplatforms` - Post the platform role selection buttons\n"
-    "`/info` - Print info about bot setttings\n"
+    "`/info` - Print info about bot settings\n"
     "`/timestamp` - Convert a time into a Discord timestamp\n"
 )
 
