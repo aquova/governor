@@ -98,7 +98,7 @@ async def alias_context(interaction: discord.Interaction, command: str, alias: s
 async def bonus_xp_context(interaction: discord.Interaction, enabled: str):
     set_bonus = enabled.upper() == "Y"
     response = await client.tracker.set_bonus_xp(set_bonus)
-    await interaction.response.send_message(response, ephemeral=True)
+    await interaction.response.send_message(response)
 
 @client.tree.command(name="cleargames", description="Clears the games giveaway queue")
 async def cleargames_context(interaction: discord.Interaction):
