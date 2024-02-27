@@ -35,9 +35,6 @@ class DefineModal(discord.ui.Modal):
         # Store what the command used to say, if anything
         old_response = None
         if name in commands:
-            # Protect commands originally made by moderators
-            if (commands[name][1] & CustomCommandFlags.ADMIN) and not is_admin:
-                return f"`{name}` was created by a moderator, and only moderators can edit its contents."
             old_response = commands[name][0]
 
         db.set_new_custom_cmd(name, response, flags)
