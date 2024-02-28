@@ -71,14 +71,14 @@ Flatten Nexus Files Index
 
 Flattens the Nexusmods file index to be a single array of files with no directories or sub-arrays.
 """
-def flatten_index(index):
+def flatten_index(index: list) -> list:
     result = []
 
     def _flatten(node):
         if 'children' in node:
             for child in node['children']:
                 _flatten(child)
-        elif 'type' in node and node['type'] == 'file' and node['name'].endswith('xnb'):
+        elif 'type' in node and node['type'] == 'file':
             result.append(node)
 
     for child in index['children']:

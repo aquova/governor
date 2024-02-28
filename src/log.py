@@ -54,11 +54,12 @@ async def check_xnb_mods(message: discord.Message):
             'accept': 'application/json',
         }).json()
 
-        xnbs = flatten_index(index)
+        flat = flatten_index(index)
+        xnbs = [f for f in flat if f.name.endswith('.xnb')]
+        manifests = [f for f in flat if f.name.endswith('manifest.json')]
+        
 
-        print(xnbs)
-
-        if len(xnbs) != 0:
+        if len(xnbs) != 0 and len(manifests) == 0:
             await message.reply(custom.parse_response('xnbzola'))
         else:
             continue
