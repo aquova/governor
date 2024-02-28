@@ -6,8 +6,6 @@ import bs4
 import discord
 import requests
 
-_NEW_WIKI = "https://stardewvalleywiki.com"
-
 # Template for SMAPI log info messages
 smapi_log_message_template = string.Template(
     "**Log Info:** SMAPI $SMAPI_ver with SDV $StardewVersion on $OS, "
@@ -21,12 +19,6 @@ async def check_log_link(message: discord.Message):
     for log_link in re.findall(r"https://smapi.io/log/[a-zA-Z0-9]{32}", message.content):
         log_info = _parse_log(log_link)
         await message.channel.send(log_info)
-
-async def check_wiki_link(message: discord.Message):
-    for community_wiki_link in re.findall(r"https://stardewcommunitywiki\.com/[a-zA-Z0-9_/:\-%]*", message.content):
-        link_path = urllib.parse.urlparse(community_wiki_link).path
-        new_url = urllib.parse.urljoin(_NEW_WIKI, link_path)
-        await message.channel.send(f"I notice you're linking to the old wiki, that wiki has been in a read-only state for several months. Here are the links to that page on the new wiki: {new_url}")
 
 async def check_attachments(message: discord.Message):
     for attachment in message.attachments:
