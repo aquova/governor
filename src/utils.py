@@ -65,3 +65,23 @@ def to_thread(func: Callable) -> Coroutine:
     async def wrapper(*args, **kwargs):
         return await asyncio.to_thread(func, *args, **kwargs)
     return wrapper
+
+"""
+Flatten Nexus Files Index
+
+Flattens the Nexusmods file index to be a single array of files with no directories or sub-arrays.
+"""
+def flatten_index(index):
+    result = []
+
+    def _flatten(node):
+        if 'children' in node:
+            for child in node['children']:
+                _flatten(child)
+        elif 'type' in node and node['type'] == 'file' and node['name'].endswith('xnb'):
+            result.append(node)
+
+    for child in index['children']:
+        _flatten(child)
+
+    return result

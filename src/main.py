@@ -98,6 +98,7 @@ async def on_message(message: discord.Message):
     # Check if the user has uploaded SMAPI diagnostic info
     await log.check_log_link(message)
     await log.check_attachments(message)
+    await log.check_xnb_mods(message)
 
     # Check if someone is trying to use a custom command
     if message.content != "" and message.content[0] == CMD_PREFIX:
