@@ -18,6 +18,6 @@ My personal hosting of the bot will be private, but users are free to host a ver
 
 ## Installation
 
-- For the bot to run, `ranks.json` and `config.json` files must be created and placed in the `private` directory. These establish the settings for the bot. Examples are currently not provided, but they must match the layout specified in `src/config.py` and other files.
+- For the bot to run, a `config.yaml` file must be created and placed in the `private` directory. These establish the settings for the bot. Examples are currently not provided, but they must match the layout specified in `src/config.py` and other files.
 
 - While it is possible to run this directly on a machine, the full system can be run within Docker. Simply install both `Docker` and `Docker-Compose`, then start the project with `docker-compose up`. This will initiate both the bot, as well as a webserver hosting the leaderboard. You will need to provide your own `site.conf` file with your Nginx configuration.
