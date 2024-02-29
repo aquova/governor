@@ -89,9 +89,8 @@
             // TODO: Someday make these into <code> blocks
             $mes = str_replace("```", "", $mes);
 
-            // Convert image URLs to img tags, other links to normal hyperlinks
+            // Convert URLs to hyperlinks
             $mes = preg_replace(URL_REGEX, "<a href=$1>$1</a>", $mes);
-            $mes = preg_replace(IMG_REGEX, "<img src=$1>", $mes);
 
             // New lines should become html breaks
             $mes = str_replace("\n", "<br/>", $mes);
