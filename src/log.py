@@ -6,6 +6,10 @@ import bs4
 import discord
 import requests
 
+from config import NEXUS_API_KEY
+import custom
+from utils import flatten_index
+
 # Template for SMAPI log info messages
 smapi_log_message_template = string.Template(
     "**Log Info:** SMAPI $SMAPI_ver with SDV $StardewVersion on $OS, "
@@ -32,6 +36,34 @@ async def check_attachments(message: discord.Message):
             s = requests.post('https://smapi.io/log/', data="input={0}".format(log), headers=headers)
             logurl = s.text.split('</strong> <code>')[1].split('</code>')[0]
             await message.channel.send("Log found, uploaded to: " + logurl)
+
+async def check_xnb_mods(message: discord.Message):
+    for mod_id in re.findall(r"https://www\.nexusmods\.com/stardewvalley/mods/(\d+)", message.content.replace("<", "").replace(">", "")):
+        mod_id = mod_id.strip()
+        files_endpoint = f'https://api.nexusmods.com/v1/games/stardewvalley/mods/{mod_id}/files.json"'
+        
+        files_info = requests.get(files_endpoint, params={
+            'category': 'main'
+        }, headers={
+            'accept': 'application/json',
+            'apikey': NEXUS_API_KEY
+        }).json()
+        
+        index_url = files_info['files'][0]['content_preview_link']
+        index = requests.get(index_url, headers={
+            'accept': 'application/json',
+        }).json()
+
+        flat = flatten_index(index)
+        xnbs = [f for f in flat if f.name.endswith('.xnb')]
+        manifests = [f for f in flat if f.name.endswith('manifest.json')]
+        
+
+        if len(xnbs) != 0 and len(manifests) == 0:
+            await message.reply(custom.parse_response('xnbzola'))
+        else:
+            continue
+        break
 
 def _parse_log(url):
     r = requests.get(url)
