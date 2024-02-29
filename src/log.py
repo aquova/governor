@@ -49,14 +49,17 @@ async def check_xnb_mods(message: discord.Message):
             'apikey': NEXUS_API_KEY
         }).json()
         
+        if len(files_info['files']) == 0: 
+            continue
+        
         index_url = files_info['files'][0]['content_preview_link']
         index = requests.get(index_url, headers={
             'accept': 'application/json',
         }).json()
 
         flat = flatten_index(index)
-        xnbs = [f for f in flat if f.name.endswith('.xnb')]
-        manifests = [f for f in flat if f.name.endswith('manifest.json')]
+        xnbs = [f for f in flat if f['name'].endswith('.xnb')]
+        manifests = [f for f in flat if f['name'].endswith('manifest.json')]
         
 
         if len(xnbs) != 0 and len(manifests) == 0:
