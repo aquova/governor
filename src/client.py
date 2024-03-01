@@ -136,23 +136,25 @@ async def lb_context(interaction: discord.Interaction):
 @client.tree.command(name="level", description="View a customized level image")
 @discord.app_commands.describe(user="User")
 async def level_context(interaction: discord.Interaction, user: discord.Member):
+    await interaction.response.defer()
     filename = await xp.render_lvl_image(user)
     if filename:
         with open(filename, 'rb') as my_file:
             discord_file = discord.File(my_file)
-            await interaction.response.send_message(file=discord_file)
+            await interaction.followup.send(file=discord_file)
             return
-    await interaction.response.send_message("Error: Something went wrong. Please try again.", ephemeral=True)
+    await interaction.followup.send("Error: Something went wrong. Please try again.", ephemeral=True)
 
 @client.tree.command(name="lvl", description="View your level image")
 async def lvl_context(interaction: discord.Interaction):
+    await interaction.response.defer()
     filename = await xp.render_lvl_image(interaction.user)
     if filename:
         with open(filename, 'rb') as my_file:
             discord_file = discord.File(my_file)
-            await interaction.response.send_message(file=discord_file)
+            await interaction.followup.send(file=discord_file)
             return
-    await interaction.response.send_message("Error: Something went wrong. Please try again.", ephemeral=True)
+    await interaction.followup.send("Error: Something went wrong. Please try again.", ephemeral=True)
 
 @client.tree.command(name="limit", description="Limit usage of a command in certain channels")
 @discord.app_commands.describe(name="Command Name")
