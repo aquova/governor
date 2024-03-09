@@ -3,7 +3,7 @@ import discord
 import db
 from client import client
 from config import (ADMIN_ACCESS, CMD_PREFIX, LIMIT_CHANS, SERVER_URL)
-from utils import CustomCommandFlags, check_roles
+from utils import CustomCommandFlags, CHAR_LIMIT, check_roles, send_message
 
 class DefineModal(discord.ui.Modal):
     def __init__(self):
@@ -16,7 +16,7 @@ class DefineModal(discord.ui.Modal):
         self.response = discord.ui.TextInput(
             label="Command Response",
             style=discord.TextStyle.long,
-            max_length=1999,
+            max_length=CHAR_LIMIT,
             required=True
         )
         self.add_item(self.name)
@@ -48,7 +48,7 @@ class DefineModal(discord.ui.Modal):
         else:
             log_msg = f"{str(interaction.user)} has added the `{name}` command - `{response}`"
 
-        await client.log.send(log_msg)
+        await send_message(log_msg, client.log)
         await interaction.response.send_message(output_message)
 
 """

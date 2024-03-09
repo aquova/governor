@@ -1,10 +1,13 @@
 import asyncio
 import functools
+from textwrap import wrap
 from typing import Callable, Coroutine
 
 import discord
 
 from config import LIMIT_CHANS, NO_SLOWMODE, RANKS, SERVER_URL, XP_OFF
+
+CHAR_LIMIT = 1990 # The actual limit is 2000, but we'll have a buffer
 
 
 class CustomCommandFlags:
@@ -59,6 +62,27 @@ def get_bot_info() -> str:
         f"Commands can be disabled in {limit_c}\n"
     )
     return response
+
+def split_message(message: str) -> list[str]:
+    messages = message.split('\n')
+    to_send = [messages[0]]
+    for msg in messages[1:]:
+        if len(msg) >= CHAR_LIMIT:
+            to_send += wrap(msg, width=CHAR_LIMIT)
+        elif len(msg) + len(to_send[-1]) < CHAR_LIMIT:
+            to_send[-1] += f"\n{msg}"
+        else:
+            to_send.append(msg)
+    return to_send
+
+async def send_message(message: str, channel: discord.TextChannel | discord.Thread) -> discord.Message | None:
+    messages = split_message(message)
+    first_id = None
+    for msg in messages:
+        if len(msg) > 0:
+            mid = await channel.send(msg)
+            first_id = mid if first_id is None else first_id
+    return first_id
 
 def to_thread(func: Callable) -> Coroutine:
     @functools.wraps(func)
