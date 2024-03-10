@@ -206,8 +206,9 @@ async def timestamp(interaction: discord.Interaction, date: str, time: str, tz: 
 @client.tree.command(name="userinfo", description="Get information about a user's profile")
 @discord.app_commands.describe(user="User")
 async def userinfo_slash(interaction: discord.Interaction, user: discord.Member):
+    await interaction.response.defer()
     embed = xp.create_user_info_embed(user)
-    await interaction.response.send_message(embed=embed, ephemeral=True)
+    await interaction.followup.send(embed=embed, ephemeral=True)
 
 @client.tree.command(name="xp", description="Gets the user's XP value")
 @discord.app_commands.describe(user="User")
