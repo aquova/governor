@@ -203,6 +203,12 @@ async def timestamp(interaction: discord.Interaction, date: str, time: str, tz: 
     except Exception:
         await interaction.response.send_message("Error: One of the entries has an invalid format.", ephemeral=True)
 
+@client.tree.command(name="userinfo", description="Get information about a user's profile")
+@discord.app_commands.describe(user="User")
+async def userinfo_slash(interaction: discord.Interaction, user: discord.Member):
+    embed = xp.create_user_info_embed(user)
+    await interaction.response.send_message(embed=embed, ephemeral=True)
+
 @client.tree.command(name="xp", description="Gets the user's XP value")
 @discord.app_commands.describe(user="User")
 async def getxp_context(interaction: discord.Interaction, user: discord.Member):
