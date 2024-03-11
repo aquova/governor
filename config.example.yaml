@@ -1,0 +1,40 @@
+discord: "<TOKEN>"                                                  # Your Discord bot token
+nexus_key: "<NEXUS>"                                                # Nexus Mods API key, used to detect links to outdated SDV mods
+command_prefix: "?"                                                 # Prefix for custom bot commands
+roles:
+    admin_access:
+        - 1234567890123456789                                       # List of role IDs the bot should treat as administrator
+    platforms:
+        pc: 1234567890123456789                                     # ID for cosmetic PC player role
+        xbox: 1234567890123456789                                   # ID for cosmetic Xbox player role
+        ps: 1234567890123456789                                     # ID for cosmetic PlayStation player role
+        ns: 1234567890123456789                                     # ID for cosmetic Nintendo Switch player role
+        mobile: 1234567890123456789                                 # ID for cosmetic mobile player role
+        vita: 1234567890123456789                                   # ID for cosmetic PS Vita player role
+    modder: 1234567890123456789                                     # Role ID for those who have created mods, fetches URLs to their contributions
+
+server_url: "https://example.com"                                   # URL for hosted webpage, for leaderboard and custom command list
+modder_wiki_url: "https://stardewvalleywiki.com/Modding:Community"  # URL for list of modder contributions, for use in their userinfo
+games:
+    announcement_channel: 1234567890123456789                       # Channel ID for free games to be posted
+    announcement_time: "7:00 PM"                                    # Time at which free games should be posted, in UTC
+    auto_add_epic_games: False                                      # Whether free games from the Epic Games Store should be added automatically
+
+channels:
+    slowmode_disabled:
+        - 1234567890123456789                                       # List of channels which shouldn't have dynamic slowmode
+    xp_disabled:
+        - 1234567890123456789                                       # List of channels where users don't gain XP
+    log: 1234567890123456789                                        # Channel where bot actions are logged
+    limited:
+        - 1234567890123456789                                       # List of channels where flagged custom commands aren't allowed
+
+ranks:                                                              # List of configurations for awarding roles to users based on XP. Each entry needs to have the following items
+    - name: "Example"                                               # Name of role
+      level: 1                                                      # Level at which role is earned
+      message: ""                                                   # Message posted in chat when user earns the role
+      role_id: 1234567890123456789                                  # Corresponding Discord role ID
+      welcome:
+          channels: []                                              # List of channel IDs where supplimentary message should be posted. Usually for if new channel has been unlocked
+          message: ""                                               # Message to post in aforemented channels
+
