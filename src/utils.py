@@ -105,7 +105,8 @@ def flatten_index(index: list) -> list:
         elif 'type' in node and node['type'] == 'file':
             result.append(node)
 
-    for child in index['children']:
-        _flatten(child)
+    if 'children' in index:
+        for child in index['children']:
+            _flatten(child)
 
     return result
