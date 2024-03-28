@@ -1,8 +1,18 @@
 import sqlite3
+from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import Optional
 
 from config import DB_PATH, STARTING_XP
+from err import InvalidInputError
+
+@dataclass
+class CommandEntry:
+    name: str
+    title: str | None
+    response: str | None
+    img: str | None
+    flags: int
 
 """
 Initialize database
@@ -12,7 +22,7 @@ Generates database with needed tables if doesn't exist
 def initialize():
     sqlconn = sqlite3.connect(DB_PATH)
     sqlconn.execute("CREATE TABLE IF NOT EXISTS xp (id INT PRIMARY KEY, xp INT, username TEXT, avatar TEXT, monthly INT, month INT, year INT, color TEXT)")
-    sqlconn.execute("CREATE TABLE IF NOT EXISTS commands (name TEXT PRIMARY KEY, response TEXT, flag INT)")
+    sqlconn.execute("CREATE TABLE IF NOT EXISTS commands (name TEXT PRIMARY KEY, title TEXT, response TEXT, img TEXT, flag INT)")
     sqlconn.execute("CREATE TABLE IF NOT EXISTS aliases (alias TEXT PRIMARY KEY, command TEXT, FOREIGN KEY(command) REFERENCES commands(name))")
     sqlconn.execute("CREATE TABLE IF NOT EXISTS games (game TEXT)")
     sqlconn.commit()
@@ -117,13 +127,14 @@ Returns the user-set custom commands
 
 Parameter: Include aliases in the output
 """
-def get_custom_cmds(include_aliases: bool = True) -> dict[str, tuple]:
+def get_custom_cmds(include_aliases: bool = True) -> dict[str, CommandEntry]:
     query = ("SELECT * FROM commands",)
     cmds = _db_read(query)
 
     cmd_dict = {}
     for cmd in cmds:
-        cmd_dict[cmd[0].lower()] = (cmd[1], cmd[2])
+        entry = CommandEntry(cmd[0].lower(), cmd[1], cmd[2], cmd[3], cmd[4])
+        cmd_dict[cmd[0].lower()] = entry
 
     if include_aliases:
         aliases = get_aliases()
@@ -173,8 +184,11 @@ Set new custom command
 
 Adds a new user-defined command to the database
 """
-def set_new_custom_cmd(name: str, response: str, flag: int):
-    query = ("INSERT OR REPLACE INTO commands (name, response, flag) VALUES (?, ?, ?)", [name, response, flag])
+def set_new_custom_cmd(name: str, title: str | None, response: str | None, img: str | None, flag: int):
+    if response is None and img is None:
+        raise InvalidInputError
+
+    query = ("INSERT OR REPLACE INTO commands (name, title, response, img, flag) VALUES (?, ?, ?, ?, ?)", [name, title, response, img, flag])
     _db_write(query)
 
 """

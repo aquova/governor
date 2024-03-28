@@ -106,6 +106,6 @@ async def on_message(message: discord.Message):
         command = raw_command.split(" ")[0].lower()
         if custom.is_allowed(command, message.channel.id):
             response = custom.parse_response(command)
-            await message.channel.send(response)
+            await message.channel.send(embed=response)
 
 client.run(DISCORD_KEY)

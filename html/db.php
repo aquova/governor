@@ -67,36 +67,41 @@
         echo "<tr>";
         echo "<th>Command</th>";
         echo "<th>Aliases</th>";
+        echo "<th>Title</th>";
         echo "<th>Response</th>";
+        echo "<th>Image</th>";
         echo "<th>Limited?</th>";
         echo "</tr>";
 
         while ($row = $ret->fetchArray()) {
             $cmd = $row['name'];
+            $title = $row['title'];
             $mes = $row['response'];
+            $img = $row['img'];
             $flags = $row['flag'];
             $aliases = $row['alias'];
 
-            // For closer formatting to how they'll appear in Discord,
-            // we shall replace some items with html tags
+            if ($mes) {
+                // We often use '<>' in the server to remove embeds, or '()' in the commands
+                $mes = preg_replace("/<(\S+)>/", "$1", $mes);
+                $mes = preg_replace("/\((\S+)\)/", "$1", $mes);
+                // Convert URLs to hyperlinks
+                $mes = preg_replace(URL_REGEX, "<a href=$1>$1</a>", $mes);
+                // New lines should become html breaks
+                $mes = str_replace("\n", "<br/>", $mes);
+            }
 
-            // We often use '<>' in the server to remove embeds, or '()' in the commands
-            // These mess up the regex later on, so just strip them out now.
-            $mes = preg_replace("/<(\S+)>/", "$1", $mes);
-            $mes = preg_replace("/\((\S+)\)/", "$1", $mes);
-
-            // Remove ``` Discord markdown notes
-            // TODO: Someday make these into <code> blocks
-            $mes = str_replace("```", "", $mes);
-
-            // Convert URLs to hyperlinks
-            $mes = preg_replace(URL_REGEX, "<a href=$1>$1</a>", $mes);
-
-            // New lines should become html breaks
-            $mes = str_replace("\n", "<br/>", $mes);
+            if ($img) {
+                $img = preg_replace(URL_REGEX, "<a href=$1>$1</a>", $img);
+            }
 
             // Check if command has the limit flag set
             $limited = $flags & LIMIT_FLAG ? "Y" : "";
+
+            // Format correctly if fields are empty
+            $title_format = $title ? $title : "";
+            $mes_format = $mes ? $mes : "";
+            $img_format = $img ? $img : "";
 
             // List any aliases this command might have
             $alias_list = $aliases ? $aliases : "";
@@ -104,7 +109,9 @@
             echo "<tr>";
             echo "<td>$cmd</td>";
             echo "<td>$alias_list</td>";
-            echo "<td>$mes</td>";
+            echo "<td>$title_format</td>";
+            echo "<td>$mes_format</td>";
+            echo "<td>$img_format</td>";
             echo "<td>$limited</td>";
             echo "</tr>";
         }

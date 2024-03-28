@@ -41,17 +41,17 @@ async def check_xnb_mods(message: discord.Message):
     for mod_id in re.findall(r"https://www\.nexusmods\.com/stardewvalley/mods/(\d+)", message.content.replace("<", "").replace(">", "")):
         mod_id = mod_id.strip()
         files_endpoint = f'https://api.nexusmods.com/v1/games/stardewvalley/mods/{mod_id}/files.json"'
-        
+
         files_info = requests.get(files_endpoint, params={
             'category': 'main'
         }, headers={
             'accept': 'application/json',
             'apikey': NEXUS_API_KEY
         }).json()
-        
-        if len(files_info['files']) == 0: 
+
+        if len(files_info['files']) == 0:
             continue
-        
+
         index_url = files_info['files'][0]['content_preview_link']
         index = requests.get(index_url, headers={
             'accept': 'application/json',
@@ -60,10 +60,11 @@ async def check_xnb_mods(message: discord.Message):
         flat = flatten_index(index)
         xnbs = [f for f in flat if f['name'].endswith('.xnb')]
         manifests = [f for f in flat if f['name'].endswith('manifest.json')]
-        
+
 
         if len(xnbs) != 0 and len(manifests) == 0:
-            await message.reply(custom.parse_response('xnbzola'))
+            xnbzola = custom.parse_response('xnbzola')
+            await message.reply(embed=xnbzola)
         else:
             continue
         break
