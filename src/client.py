@@ -106,8 +106,9 @@ async def cleargames_context(interaction: discord.Interaction):
     await interaction.response.send_message(response)
 
 @client.tree.command(name="define", description="Open a window to add a new custom command")
-async def define_context(interaction: discord.Interaction):
-    await interaction.response.send_modal(custom.DefineModal())
+@discord.app_commands.describe(command="Command Name")
+async def define_context(interaction: discord.Interaction, command: str):
+    await interaction.response.send_modal(custom.DefineModal(command))
 
 @client.tree.command(name="edit", description="Edit a message sent by the bot")
 @discord.app_commands.describe(channel="Channel message is in", message_id="Message ID")

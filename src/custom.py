@@ -7,27 +7,43 @@ from err import InvalidInputError
 from utils import CustomCommandFlags, CHAR_LIMIT, check_roles, send_message
 
 class DefineModal(discord.ui.Modal):
-    def __init__(self):
+    def __init__(self, command_name: str):
         super().__init__(title="Define a new custom command.")
+
+
+        default_title = None
+        default_response = None
+        default_img = None
+        commands = db.get_custom_cmds()
+        if command_name in commands:
+            response = commands[command_name]
+            default_title = response.title
+            default_response = response.response
+            default_img = response.img
+
         self.name = discord.ui.TextInput(
             label="Command Name",
+            default=command_name,
             style=discord.TextStyle.short,
             required=True
         )
         self.embed_title = discord.ui.TextInput(
             label="Embed Title (Optional)",
             style=discord.TextStyle.short,
+            default=default_title,
             required=False,
         )
         self.response = discord.ui.TextInput(
             label="Text Response (Needed if no image)",
             style=discord.TextStyle.long,
             max_length=CHAR_LIMIT,
+            default=default_response,
             required=False,
         )
         self.img = discord.ui.TextInput(
             label="Image URL (Needed if no text)",
             style=discord.TextStyle.short,
+            default=default_img,
             required=False,
         )
         self.add_item(self.name)
