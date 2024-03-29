@@ -13,13 +13,13 @@ main {
 
 details {
     user-select: none;
-    border: 1px solid #aaa;
+    border: 1px solid #888;
     border-radius: 4px;
     padding: 0.5em 0.5em 0;
 }
 
 details:hover {
-    border-color: #333;
+    border-color: #eee;
 }
 
 details[open] {
