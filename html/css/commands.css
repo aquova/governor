@@ -3,29 +3,32 @@ img {
     max-height: 300px;
 }
 
-table, th, td {
-    border: 1px solid black;
-}
-
 a {
     color: #3391ff;
 }
 
-* {
-  box-sizing: border-box;
-}
-
-body {
-  display: grid;
-  grid-template-rows: 50px 1fr;
-  grid-template-columns: 50px calc(100% - 100px) 50px;
-  height: 100%;
-  margin: 0;
-}
-
 main {
-  margin: 0 auto;
-  grid-column: 2;
-  grid-row: 2;
   padding: 30px 30px 0 30px;
+}
+
+details {
+  user-select: none;
+  border: 1px solid #aaa;
+  border-radius: 4px;
+  padding: 0.5em 0.5em 0;
+}
+
+summary {
+  font-weight: bold;
+  margin: -0.5em -0.5em 0;
+  padding: 0.5em;
+}
+
+details[open] {
+  padding: 0.5em;
+}
+
+details[open] summary {
+  border-bottom: 1px solid #aaa;
+  margin-bottom: 0.5em;
 }

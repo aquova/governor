@@ -3,7 +3,6 @@
     define("DB_PATH", "/private/governor.db");
     define("XP_PER_LVL", 300);
     define("URL_REGEX", "/\b(https?:\/\/\S+)\b\/?/");
-    define("IMG_REGEX", "/<a\ href=(https?:\/\/\S+(png|jpg)+)>\S+<\/a>/");
     define("LIMIT_FLAG", 2);
 
     function populate_leaderboard($use_monthly) {
@@ -63,16 +62,6 @@
         $db = new SQLite3(DB_PATH);
         $ret = $db->query('SELECT * FROM commands LEFT OUTER JOIN aliases ON commands.name = aliases.command ORDER BY commands.name');
 
-        echo "<table>";
-        echo "<tr>";
-        echo "<th>Command</th>";
-        echo "<th>Aliases</th>";
-        echo "<th>Title</th>";
-        echo "<th>Response</th>";
-        echo "<th>Image</th>";
-        echo "<th>Limited?</th>";
-        echo "</tr>";
-
         while ($row = $ret->fetchArray()) {
             $cmd = $row['name'];
             $title = $row['title'];
@@ -91,31 +80,29 @@
                 $mes = str_replace("\n", "<br/>", $mes);
             }
 
-            if ($img) {
-                $img = preg_replace(URL_REGEX, "<a href=$1>$1</a>", $img);
-            }
-
             // Check if command has the limit flag set
-            $limited = $flags & LIMIT_FLAG ? "Y" : "";
+            $limited = $flags & LIMIT_FLAG;
 
-            // Format correctly if fields are empty
-            $title_format = $title ? $title : "";
-            $mes_format = $mes ? $mes : "";
-            $img_format = $img ? $img : "";
-
-            // List any aliases this command might have
-            $alias_list = $aliases ? $aliases : "";
-
-            echo "<tr>";
-            echo "<td>$cmd</td>";
-            echo "<td>$alias_list</td>";
-            echo "<td>$title_format</td>";
-            echo "<td>$mes_format</td>";
-            echo "<td>$img_format</td>";
-            echo "<td>$limited</td>";
-            echo "</tr>";
+            echo "<details>";
+            echo "<summary>$cmd</summary>";
+            if ($title) {
+                echo "<h2>$title</h2>";
+            }
+            if ($mes) {
+                echo "<p>$mes</p>";
+            }
+            if ($img) {
+                echo "<img src='$img'/>";
+            }
+            if ($aliases) {
+                echo "<p>Aliases: $aliases</p>";
+            }
+            if ($limited) {
+                echo "<p><small>This command is limited in some channels</small></p>";
+            }
+            echo "</details>";
+            echo "<br/>";
         }
-        echo "</table>";
         $db->close();
     };
 ?>
