@@ -71,6 +71,8 @@
             $aliases = $row['alias'];
 
             if ($mes) {
+                // Strip out any HTML tags, to prevent injection
+                $mes = htmlspecialchars($mes);
                 // We often use '<>' in the server to remove embeds, or '()' in the commands
                 $mes = preg_replace("/<(\S+)>/", "$1", $mes);
                 $mes = preg_replace("/\((\S+)\)/", "$1", $mes);
