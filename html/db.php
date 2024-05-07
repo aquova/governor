@@ -74,7 +74,7 @@
                 // Strip out any HTML tags, to prevent injection
                 $mes = htmlspecialchars($mes);
                 // We often use '<>' in the server to remove embeds, or '()' in the commands
-                $mes = preg_replace("/<(\S+)>/", "$1", $mes);
+                $mes = preg_replace("/&lt;(\S+)&gt;/", "$1", $mes);
                 $mes = preg_replace("/\((\S+)\)/", "$1", $mes);
                 // Convert URLs to hyperlinks
                 $mes = preg_replace(URL_REGEX, "<a href=$1>$1</a>", $mes);
