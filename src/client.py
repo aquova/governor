@@ -3,7 +3,7 @@ from typing import cast
 import discord
 from discord.ext import commands
 
-from config import CMD_PREFIX, LOG_CHAN
+from config import CMD_PREFIX, LOG_CHAN, RESOLVED_TAG
 from platforms import PlatformWidget
 from slowmode import Thermometer
 from timestamp import calculate_timestamps
@@ -189,6 +189,16 @@ async def ranks_context(interaction: discord.Interaction):
 async def remove_context(interaction: discord.Interaction, name: str):
     response = await custom.remove_cmd(name, interaction.user)
     await interaction.response.send_message(response)
+
+@client.tree.command(name="resolve", description="Mark this thread as resovled")
+async def resolve_context(interaction: discord.Interaction):
+    if interaction.channel is not None and interaction.channel.type == discord.ChannelType.public_thread:
+        tag = interaction.channel.parent.get_tag(RESOLVED_TAG)
+        tags = []
+        if tag is not None:
+            tags = [tag]
+        await interaction.channel.edit(locked=True, applied_tags=tags)
+        await interaction.response.send_message("Thread resolved!", ephemeral=True)
 
 @client.tree.command(name="say", description="Open a window to post a message as the bot")
 @discord.app_commands.describe(channel="Channel to post in")
