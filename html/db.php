@@ -86,7 +86,7 @@
             $limited = $flags & LIMIT_FLAG;
 
             echo "<details>";
-            echo "<summary>$cmd</summary>";
+            echo "<summary id=$cmd>$cmd</summary>";
             if ($title) {
                 echo "<h2>$title</h2>";
             }
