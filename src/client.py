@@ -190,7 +190,7 @@ async def remove_context(interaction: discord.Interaction, name: str):
     response = await custom.remove_cmd(name, interaction.user)
     await interaction.response.send_message(response)
 
-@client.tree.command(name="resolve", description="Mark this thread as resovled")
+@client.tree.command(name="resolve", description="Mark this thread as resovlde")
 async def resolve_context(interaction: discord.Interaction):
     if interaction.channel is not None and interaction.channel.type == discord.ChannelType.public_thread:
         tag = interaction.channel.parent.get_tag(RESOLVED_TAG)
