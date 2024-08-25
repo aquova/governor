@@ -194,9 +194,9 @@ async def remove_context(interaction: discord.Interaction, name: str):
 async def resolve_context(interaction: discord.Interaction):
     if interaction.channel is not None and interaction.channel.type == discord.ChannelType.public_thread:
         tag = interaction.channel.parent.get_tag(RESOLVED_TAG)
-        tags = []
+        tags = interaction.channel.applied_tags
         if tag is not None:
-            tags = [tag]
+            tags.append(tag)
         await interaction.channel.edit(locked=True, applied_tags=tags)
         await interaction.response.send_message("Thread resolved!", ephemeral=True)
 
