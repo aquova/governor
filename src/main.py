@@ -38,6 +38,10 @@ Occurs when a new thread is created in the server
 @client.event
 async def on_thread_create(thread: discord.Thread):
     await thread.join()
+    if thread.starter_message != None:
+        await log.check_log_link(thread.starter_message)
+        await log.check_attachments(thread.starter_message)
+        await log.check_xnb_mods(thread.starter_message)
 
 """
 On Guild Available
