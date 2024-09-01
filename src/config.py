@@ -30,6 +30,7 @@ XP_OFF = cfg['channels']['xp_disabled']
 LOG_CHAN = cfg['channels']['log']
 LIMIT_CHANS = cfg['channels']['limited']
 RESOLVED_TAG = cfg['tags']['resolved']
+OPEN_TAGS = cfg['tags']['open']
 
 GAME_ANNOUNCEMENT_CHANNEL = cfg['games']['announcement_channel']
 AUTO_ADD_EPIC_GAMES = cfg['games']['auto_add_epic_games']

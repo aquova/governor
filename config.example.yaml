@@ -29,6 +29,11 @@ channels:
     limited:
         - 1234567890123456789                                       # List of channels where flagged custom commands aren't allowed
 
+tags:
+    resolved: 1234567890123456789                                   # Forum Tag ID for resolved threads
+    open:                                                           # List of Forum Tag IDs to remove when resolving
+        - 1234567890123456789
+
 ranks:                                                              # List of configurations for awarding roles to users based on XP. Each entry needs to have the following items
     - name: "Example"                                               # Name of role
       level: 1                                                      # Level at which role is earned

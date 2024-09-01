@@ -3,7 +3,7 @@ from typing import cast
 import discord
 from discord.ext import commands
 
-from config import CMD_PREFIX, LOG_CHAN, RESOLVED_TAG
+from config import CMD_PREFIX, LOG_CHAN, RESOLVED_TAG, OPEN_TAGS
 from platforms import PlatformWidget
 from slowmode import Thermometer
 from timestamp import calculate_timestamps
@@ -193,10 +193,13 @@ async def remove_context(interaction: discord.Interaction, name: str):
 @client.tree.command(name="resolve", description="Mark this thread as resolved")
 async def resolve_context(interaction: discord.Interaction):
     if interaction.channel is not None and interaction.channel.type == discord.ChannelType.public_thread:
-        tag = interaction.channel.parent.get_tag(RESOLVED_TAG)
-        tags = interaction.channel.applied_tags
-        if tag is not None:
-            tags.append(tag)
+        resolve_tag = interaction.channel.parent.get_tag(RESOLVED_TAG)
+        tags = []
+        if resolve_tag is not None:
+            tags.append(resolve_tag)
+        for tag in interaction.channel.applied_tags:
+            if tag is not None and tag.id not in OPEN_TAGS:
+                tags.append(tag)
         await interaction.channel.edit(locked=True, applied_tags=tags)
         await interaction.response.send_message("Thread resolved!", ephemeral=True)
 
