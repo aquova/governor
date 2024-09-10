@@ -3,7 +3,8 @@ from typing import cast
 import discord
 from discord.ext import commands
 
-from config import CMD_PREFIX, LOG_CHAN, RESOLVED_TAG, OPEN_TAGS
+from config import CMD_PREFIX, LOG_CHAN
+from forum import resolve_thread
 from platforms import PlatformWidget
 from slowmode import Thermometer
 from timestamp import calculate_timestamps
@@ -32,6 +33,9 @@ HELP_MESSAGE = (
     "`/remove` - Remove a custom command or alias\n"
     "`/list` - List the custom commands\n"
     "`/limit` - Limit usage of a custom command\n"
+    "## Forum Moderation\n"
+    "`/resolve` - Closes the thread and changes the tag to Resovled\n"
+    "`/inactive` - Changes the thread tag to Inactive\n"
     "## Misc.\n"
     "`/say` - Say a message as the bot\n"
     "`/edit` - Edit a message sent by the bot\n"
@@ -124,6 +128,12 @@ async def getgames_context(interaction: discord.Interaction):
 async def help_context(interaction: discord.Interaction):
     await interaction.response.send_message(HELP_MESSAGE)
 
+@client.tree.command(name="inactive", description="Marks this thread as inactive")
+async def inactive_context(interaction: discord.Interaction):
+    if interaction.channel is not None and interaction.channel.type == discord.ChannelType.public_thread:
+        await resolve_thread(interaction.channel)
+        await interaction.response.send_message("Resolving for inactivity. Please feel free to make a new post if you have continuing issues. For further support on this issue, please copy and paste the link to this thread in your new post to help volunteers restart where you left off.")
+
 @client.tree.command(name="info", description="Print info about bot settings")
 async def info_context(interaction: discord.Interaction):
     response = utils.get_bot_info()
@@ -193,14 +203,7 @@ async def remove_context(interaction: discord.Interaction, name: str):
 @client.tree.command(name="resolve", description="Mark this thread as resolved")
 async def resolve_context(interaction: discord.Interaction):
     if interaction.channel is not None and interaction.channel.type == discord.ChannelType.public_thread:
-        resolve_tag = interaction.channel.parent.get_tag(RESOLVED_TAG)
-        tags = []
-        if resolve_tag is not None:
-            tags.append(resolve_tag)
-        for tag in interaction.channel.applied_tags:
-            if tag is not None and tag.id not in OPEN_TAGS:
-                tags.append(tag)
-        await interaction.channel.edit(locked=True, applied_tags=tags)
+        await resolve_thread(interaction.channel)
         await interaction.response.send_message("Thread resolved!", ephemeral=True)
 
 @client.tree.command(name="say", description="Open a window to post a message as the bot")
