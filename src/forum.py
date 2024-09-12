@@ -10,4 +10,4 @@ async def resolve_thread(channel: discord.Thread):
     for tag in channel.applied_tags:
         if tag is not None and tag.id not in OPEN_TAGS:
             tags.append(tag)
-    await channel.edit(locked=True, applied_tags=tags)
+    await channel.edit(locked=True, archived=True, applied_tags=tags)
