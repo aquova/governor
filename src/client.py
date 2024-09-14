@@ -131,8 +131,8 @@ async def help_context(interaction: discord.Interaction):
 @client.tree.command(name="inactive", description="Marks this thread as inactive")
 async def inactive_context(interaction: discord.Interaction):
     if interaction.channel is not None and interaction.channel.type == discord.ChannelType.public_thread:
-        await resolve_thread(interaction.channel)
         await interaction.response.send_message("Resolving for inactivity. Please feel free to make a new post if you have continuing issues. For further support on this issue, please copy and paste the link to this thread in your new post to help volunteers restart where you left off.")
+        await resolve_thread(interaction.channel)
 
 @client.tree.command(name="info", description="Print info about bot settings")
 async def info_context(interaction: discord.Interaction):
@@ -203,8 +203,8 @@ async def remove_context(interaction: discord.Interaction, name: str):
 @client.tree.command(name="resolve", description="Mark this thread as resolved")
 async def resolve_context(interaction: discord.Interaction):
     if interaction.channel is not None and interaction.channel.type == discord.ChannelType.public_thread:
-        await resolve_thread(interaction.channel)
         await interaction.response.send_message("Thread resolved!", ephemeral=True)
+        await resolve_thread(interaction.channel)
 
 @client.tree.command(name="say", description="Open a window to post a message as the bot")
 @discord.app_commands.describe(channel="Channel to post in")
