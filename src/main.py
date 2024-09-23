@@ -7,6 +7,7 @@ import discord
 import custom, log
 from client import client
 from config import CMD_PREFIX, DISCORD_KEY, XP_OFF
+from forum import apply_open_tag
 
 """
 Update User Count
@@ -38,6 +39,7 @@ Occurs when a new thread is created in the server
 @client.event
 async def on_thread_create(thread: discord.Thread):
     await thread.join()
+    await apply_open_tag(thread)
 
 """
 On Guild Available
