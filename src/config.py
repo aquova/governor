@@ -33,7 +33,7 @@ LIMIT_CHANS = cfg['channels']['limited']
 FORUM_CHAN = cfg['channels']['forum']
 RESOLVED_TAG = cfg['tags']['resolved']
 OPEN_TAG = cfg['tags']['open']
-PROGRESS_TAGS = cfg['tags']['open']
+PROGRESS_TAGS = cfg['tags']['progress']
 
 GAME_ANNOUNCEMENT_CHANNEL = cfg['games']['announcement_channel']
 AUTO_ADD_EPIC_GAMES = cfg['games']['auto_add_epic_games']
