@@ -62,6 +62,7 @@ Runs when a user joins the server
 @client.event
 async def on_member_join(user: discord.Member):
     await update_user_count(user.guild)
+    await client.tracker.bring_up_user(user)
 
 """
 On Member Remove
@@ -85,16 +86,16 @@ async def on_message(message: discord.Message):
         return
 
     # Completely ignore DMs
-    if isinstance(message.channel, discord.channel.DMChannel):
+    if isinstance(message.channel, discord.channel.DMChannel) or isinstance(message.author, discord.User):
         return
 
     # Keep track of the user's message for dynamic slowmode
     await client.thermometer.user_spoke(message)
     # Check if we need to congratulate a user on getting a new role
     # Don't award XP if posting in specified disabled channels
-    if message.channel.id not in XP_OFF and message.guild is not None:
-        lvl_up_message = await client.tracker.give_xp(message.author)
-        if lvl_up_message:
+    if message.channel.id not in XP_OFF:
+        lvl_up_message = await client.tracker.give_default_xp(message.author)
+        if lvl_up_message != "":
             await message.channel.send(lvl_up_message)
 
     # Check if the user has uploaded SMAPI diagnostic info
