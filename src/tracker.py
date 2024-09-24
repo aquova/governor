@@ -66,7 +66,7 @@ class Tracker(commands.Cog):
         user_id = user.id
         xp = 0
         monthly_xp = 0
-        next_role = None
+        next_role = 0
         curr_time = datetime.now()
         out_message = None
 
@@ -140,9 +140,9 @@ class Tracker(commands.Cog):
 
     Make sure the user has the correct roles, given their XP
     """
-    async def _check_roles(self, user: discord.Member | discord.User, xp: int) -> int | None:
+    async def _check_roles(self, user: discord.Member | discord.User, xp: int) -> int:
         if isinstance(user, discord.User):
-            return None
+            return 0
 
         try:
             user_roles = user.roles
@@ -152,7 +152,7 @@ class Tracker(commands.Cog):
             user_role_ids = []
 
         new_roles = []
-        lowest_missing_xp = None
+        lowest_missing_xp = 0
 
         # This doesn't require RANKS to be in order
         for rank in RANKS:
@@ -164,7 +164,7 @@ class Tracker(commands.Cog):
                 if role_xp <= xp:
                     new_roles.append(role_id)
                 # Otherwise, keep track if this should be the next role to earn
-                elif lowest_missing_xp is None or role_xp < lowest_missing_xp:
+                elif role_xp < lowest_missing_xp:
                     lowest_missing_xp = role_xp
 
         if new_roles:
