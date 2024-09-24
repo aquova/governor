@@ -42,9 +42,8 @@ Get XP
 Returns the given user's XP value, as a formatted string
 """
 def get_xp(user: discord.Member) -> str:
-    xp = db.fetch_user_xp(user.id)
-    monthly_xp = db.fetch_user_monthly_xp(user.id)
-    return f"{xp} XP all-time, {monthly_xp} XP this month"
+    data = db.fetch_user_data(user.id)
+    return f"{data.xp} XP all-time, {data.monthly_xp} XP this month"
 
 """
 Render level image
@@ -56,15 +55,13 @@ async def render_lvl_image(user: discord.Member | discord.User) -> Optional[str]
     if not os.path.exists(TMP_PATH):
         os.makedirs(TMP_PATH)
 
-    userid = user.id
-    username = user.name
-    xp = db.fetch_user_xp(userid)
-    lvl = floor(xp / XP_PER_LVL)
+    data = db.fetch_user_data(user.id)
+    lvl = floor(data.xp / XP_PER_LVL)
     # Calculate what percentage we are to the next level, as a range from 0-10
-    bar_num = ceil(10 * (xp - (lvl * XP_PER_LVL)) / XP_PER_LVL)
-    rank = db.get_rank(userid)
+    bar_num = ceil(10 * (data.xp - (lvl * XP_PER_LVL)) / XP_PER_LVL)
+    rank = db.get_rank(user.id)
 
-    out_filename = os.path.join(TMP_PATH, f"{userid}.png")
+    out_filename = os.path.join(TMP_PATH, f"{user.id}.png")
     avatar_filename = out_filename
 
     if user.avatar is None:
@@ -101,8 +98,8 @@ async def render_lvl_image(user: discord.Member | discord.User) -> Optional[str]
     font_22 = ImageFont.truetype(FONT, 22)
 
     # Draw shadow one pixel down and left
-    draw.text(USERNAME_POS.shadow_tuple(), username, BACK_COLOR, font=font_22)
-    draw.text(USERNAME_POS.as_tuple(), username, FONT_COLOR, font=font_22)
+    draw.text(USERNAME_POS.shadow_tuple(), str(user), BACK_COLOR, font=font_22)
+    draw.text(USERNAME_POS.as_tuple(), str(user), FONT_COLOR, font=font_22)
 
     draw.text(LEVEL_POS.shadow_tuple(), f"Level {lvl}", BACK_COLOR, font=font_22)
     draw.text(LEVEL_POS.as_tuple(), f"Level {lvl}", FONT_COLOR, font=font_22)
@@ -142,12 +139,11 @@ def create_user_info_embed(user: discord.Member) -> discord.Embed:
     embed.description = str(user.id)
     embed.set_thumbnail(url=user.display_avatar.url)
 
-    xp = db.fetch_user_xp(user.id)
-    lvl = floor(xp / XP_PER_LVL)
-    monthly = db.fetch_user_monthly_xp(user.id)
+    data = db.fetch_user_data(user.id)
+    lvl = floor(data.xp / XP_PER_LVL)
     embed.add_field(name="Level", value=lvl)
-    embed.add_field(name="Total XP", value=xp)
-    embed.add_field(name="Monthly XP", value=monthly)
+    embed.add_field(name="Total XP", value=data.xp)
+    embed.add_field(name="Monthly XP", value=data.monthly_xp)
 
     # Only bother accessing and parsing the wiki if they have the modder role
     if MODDER_ROLE in [x.id for x in user.roles]:
