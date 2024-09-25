@@ -69,6 +69,8 @@ class Tracker(commands.Cog):
             user_data.monthly_xp += xp_add
 
         ret = await self._check_missing_roles(user, user_data, True)
+
+        user_data.timestamp = curr_time
         self.user_cache[user.id] = user_data
         db.set_user_data(user, user_data)
         return ret
