@@ -4,13 +4,6 @@ command_prefix: "?"                                                 # Prefix for
 roles:
     admin_access:
         - 1234567890123456789                                       # List of role IDs the bot should treat as administrator
-    platforms:
-        pc: 1234567890123456789                                     # ID for cosmetic PC player role
-        xbox: 1234567890123456789                                   # ID for cosmetic Xbox player role
-        ps: 1234567890123456789                                     # ID for cosmetic PlayStation player role
-        ns: 1234567890123456789                                     # ID for cosmetic Nintendo Switch player role
-        mobile: 1234567890123456789                                 # ID for cosmetic mobile player role
-        vita: 1234567890123456789                                   # ID for cosmetic PS Vita player role
     modder: 1234567890123456789                                     # Role ID for those who have created mods, fetches URLs to their contributions
 
 server_url: "https://example.com"                                   # URL for hosted webpage, for leaderboard and custom command list

@@ -38,10 +38,3 @@ PROGRESS_TAGS = cfg['tags']['progress']
 GAME_ANNOUNCEMENT_CHANNEL = cfg['games']['announcement_channel']
 AUTO_ADD_EPIC_GAMES = cfg['games']['auto_add_epic_games']
 GAME_ANNOUNCE_TIME = datetime.strptime(cfg['games']['announcement_time'], "%I:%M %p").time()
-
-PC_PLATFORM = cfg['roles']['platforms']['pc']
-XBOX_PLATFORM = cfg['roles']['platforms']['xbox']
-PS_PLATFORM = cfg['roles']['platforms']['ps']
-NS_PLATFORM = cfg['roles']['platforms']['ns']
-MOBILE_PLATFORM = cfg['roles']['platforms']['mobile']
-VITA_PLATFORM = cfg['roles']['platforms']['vita']

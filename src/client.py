@@ -5,7 +5,6 @@ from discord.ext import commands
 
 from config import CMD_PREFIX, LOG_CHAN
 from forum import resolve_thread
-from platforms import PlatformWidget
 from slowmode import Thermometer
 from timestamp import calculate_timestamps
 from tracker import Tracker
@@ -39,7 +38,6 @@ HELP_MESSAGE = (
     "## Misc.\n"
     "`/say` - Say a message as the bot\n"
     "`/edit` - Edit a message sent by the bot\n"
-    "`/postplatforms` - Post the platform role selection buttons\n"
     "`/info` - Print info about bot settings\n"
     "`/timestamp` - Convert a time into a Discord timestamp\n"
 )
@@ -68,7 +66,6 @@ class DiscordClient(commands.Bot):
         await self.add_cog(self.game_timer)
         await self.add_cog(self.thermometer)
         await self.add_cog(self.tracker)
-        self.add_view(PlatformWidget())
 
     async def sync_guild(self, guild: discord.Guild):
         self.tree.copy_global_to(guild=guild)
@@ -182,12 +179,6 @@ async def list_context(interaction: discord.Interaction):
 async def postgames_context(interaction: discord.Interaction):
     response = await client.game_timer.post_games()
     await interaction.response.send_message(response)
-
-@client.tree.command(name="postplatforms", description="Post the platform selection buttons")
-@discord.app_commands.describe(channel="Channel to post in")
-async def postplatforms_context(interaction: discord.Interaction, channel: discord.TextChannel):
-    await channel.send("Assign yourself any of the platforms you use!", view=PlatformWidget())
-    await interaction.response.send_message("Widget posted!")
 
 @client.tree.command(name="ranks", description="List the earnable ranks for the server")
 async def ranks_context(interaction: discord.Interaction):
