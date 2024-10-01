@@ -64,9 +64,15 @@ def set_user_data(user: discord.Member, data: UserData):
 
 def get_leaders() -> list[UserData]:
     curr_time = datetime.now(timezone.utc)
-    query = ("SELECT id, xp, monthly FROM xp WHERE username IS NOT NULL ORDER BY xp DESC LIMIT 100",)
+    query = ("SELECT id, xp, monthly, month, year FROM xp WHERE username IS NOT NULL ORDER BY xp DESC LIMIT 100",)
     leaders = _db_read(query)
-    return [UserData(x[0], x[1], x[2], curr_time) for x in leaders]
+    ret = []
+    for leader in leaders:
+        monthly = leader[2]
+        if leader[3] != curr_time.month or leader[4] != curr_time.year:
+            monthly = 0
+        ret.append(UserData(leader[0], leader[1], monthly, curr_time))
+    return ret
 
 def get_monthly_leaders() -> list[UserData]:
     curr_time = datetime.now(timezone.utc)
