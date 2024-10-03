@@ -1,27 +1,16 @@
 services:
     web:
-        image: nginx:latest
+        image: dunglas/frankenphp:latest
         restart: unless-stopped
         ports:
-            - "48080:80"
+            - 8080:8080
         volumes:
-            - ./html:/html
-            - ./site.conf:/etc/nginx/conf.d/default.conf
-        networks:
-          - internal
-    php:
-        image: php:fpm-alpine
-        restart: unless-stopped
-        volumes:
-            - ./html:/html
+            - ./html:/app/public
             - ./private:/private
-        networks:
-          - internal
+        environment:
+            - SERVER_NAME=:8080
     governor:
         image: aquova/governor:latest
         restart: unless-stopped
         volumes:
             - ./private:/governor/private
-networks:
-  internal:
-    driver: bridge
