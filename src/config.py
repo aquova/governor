@@ -1,19 +1,23 @@
-import yaml
 from datetime import datetime
+import os
+
+import yaml
+
+CURRENT_DIR = os.path.dirname(__file__)
 
 XP_PER_MINUTE = 10
 XP_PER_LVL = 300
 STARTING_XP = XP_PER_LVL
 
 # Read values from config file
-CONFIG_PATH = "private/config.yaml"
+CONFIG_PATH = os.path.join(CURRENT_DIR, "private/config.yaml")
 with open(CONFIG_PATH) as config_file:
     cfg = yaml.safe_load(config_file)
 
 DISCORD_KEY = cfg['discord']
 DB_PATH = "./private/governor.db"
-ASSETS_PATH = "./assets"
-FONTS_PATH = "./fonts"
+ASSETS_PATH = os.path.join(CURRENT_DIR, "assets")
+FONTS_PATH = os.path.join(CURRENT_DIR, "fonts")
 TMP_PATH = "./private/tmp"
 CMD_PREFIX = cfg['command_prefix']
 NEXUS_API_KEY = cfg['nexus_key']
