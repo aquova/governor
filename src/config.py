@@ -10,7 +10,7 @@ XP_PER_LVL = 300
 STARTING_XP = XP_PER_LVL
 
 # Read values from config file
-CONFIG_PATH = os.path.join(CURRENT_DIR, "private/config.yaml")
+CONFIG_PATH = "private/config.yaml"
 with open(CONFIG_PATH) as config_file:
     cfg = yaml.safe_load(config_file)
 
