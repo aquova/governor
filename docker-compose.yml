@@ -14,7 +14,7 @@ services:
         restart: unless-stopped
         volumes:
             - ./html:/html
-            - ./src/private:/private
+            - ./private:/private
         networks:
           - internal
     governor:
