@@ -21,7 +21,7 @@ services:
         image: aquova/governor:latest
         restart: unless-stopped
         volumes:
-            - ./src:/governor
+            - ./private:/governor/private
 networks:
   internal:
     driver: bridge
