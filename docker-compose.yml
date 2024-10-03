@@ -1,16 +1,17 @@
 services:
-    web:
-        image: dunglas/frankenphp:latest
+    bot:
+        image: aquova/governor:latest
         restart: unless-stopped
+        container_name: governor
+        volumes:
+            - ./private:/governor/private
+    web:
+        image: aquova/stardew-chat:latest
+        restart: unless-stopped
+        container_name: stardew-chat
         ports:
             - 8080:8080
         volumes:
-            - ./html:/app/public
             - ./private:/private
         environment:
             - SERVER_NAME=:8080
-    governor:
-        image: aquova/governor:latest
-        restart: unless-stopped
-        volumes:
-            - ./private:/governor/private

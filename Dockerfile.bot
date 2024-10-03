@@ -6,7 +6,7 @@ RUN apk update && apk add \
     jpeg-dev \
     zlib-dev
 
-ADD . /governor
+COPY . /governor
 WORKDIR /governor
 RUN uv sync --frozen
 CMD ["uv", "run", "src/main.py"]

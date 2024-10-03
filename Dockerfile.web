@@ -1,0 +1,3 @@
+FROM dunglas/frankenphp
+
+COPY html/* /app/public
