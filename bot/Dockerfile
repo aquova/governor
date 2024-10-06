@@ -9,4 +9,4 @@ RUN apk update && apk add \
 COPY . /governor
 WORKDIR /governor
 RUN uv sync --frozen
-CMD ["uv", "run", "main.py"]
+CMD ["uv", "run", "--", "python", "-u", "main.py"]
