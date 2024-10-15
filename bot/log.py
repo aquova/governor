@@ -20,11 +20,21 @@ smapi_suggested_fixes_template = string.Template(
 )
 
 async def check_log_link(message: discord.Message):
+    """
+    Check log link
+
+    Checks if a Discord Message object contains a smapi.io URL, and if so parses the content
+    """
     for log_link in re.findall(r"https://smapi.io/log/[a-zA-Z0-9]{32}", message.content):
         log_info = _parse_log(log_link)
         await message.channel.send(log_info)
 
 async def check_attachments(message: discord.Message):
+    """
+    Check attachments
+
+    Checks if a Discord Message objects contains attachments titled 'SMAPI-latest.txt' or 'SMAPI-crash.txt'. If so, it automatically uploads them to smapi.io
+    """
     for attachment in message.attachments:
         if attachment.filename == "SMAPI-latest.txt" or attachment.filename == "SMAPI-crash.txt":
             r = requests.get(attachment.url)
@@ -38,6 +48,13 @@ async def check_attachments(message: discord.Message):
             await message.channel.send("Log found, uploaded to: " + logurl)
 
 async def check_xnb_mods(message: discord.Message):
+    """
+    Check XNB mods
+
+    Checks if a Discord Message object contains a SDV Nexus Mods URL. If so, uses the Nexus API to determine if the linked mod is using outdated technologies
+
+    The 'xnbzola' custom command *must* still exist, if not this function should be changed
+    """
     for mod_id in re.findall(r"https://www\.nexusmods\.com/stardewvalley/mods/(\d+)", message.content.replace("<", "").replace(">", "")):
         mod_id = mod_id.strip()
         files_endpoint = f'https://api.nexusmods.com/v1/games/stardewvalley/mods/{mod_id}/files.json"'
@@ -69,7 +86,12 @@ async def check_xnb_mods(message: discord.Message):
             continue
         break
 
-def _parse_log(url):
+def _parse_log(url: str) -> str:
+    """
+    Parse log
+
+    Private function. Parses a smapi.io log to extract its recommendations and statistics.
+    """
     r = requests.get(url)
     soup = bs4.BeautifulSoup(r.text, "html.parser")
     soup.encode("utf-8")

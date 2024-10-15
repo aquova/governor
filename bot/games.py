@@ -40,6 +40,13 @@ class GameTimer(commands.Cog):
         self._should_add_epic_games = AUTO_ADD_EPIC_GAMES
 
     def setup(self, guild: discord.Guild):
+        """
+        GameTimer setup
+
+        Sets up the GameTimer object once the guild is ready
+
+        *Must* only be called on or after the guild ready event has fired
+        """
         # TODO: If we want to fix this, make announcement channels a list in config.json, and add a server ID column to DB
         game_channel = discord.utils.get(guild.text_channels, id=GAME_ANNOUNCEMENT_CHANNEL)
         if game_channel is not None:
@@ -53,16 +60,33 @@ class GameTimer(commands.Cog):
         self._announce_games.cancel()
 
     async def post_games(self) -> str:
+        """
+        Post games
+
+        Posts any awaiting game giveaways to the specified channels
+
+        Is a public wrapper for _send_message, for users to manually call and receive a feedback message
+        """
         await self._send_message()
         return "Games posted"
 
     @tasks.loop(time=GAME_ANNOUNCE_TIME)
     async def _announce_games(self):
+        """
+        Announce games
+
+        Private function. Recurring task. Posts the game giveaways once every GAME_ANNOUNCE_TIME
+        """
         if self._should_add_epic_games:
             self._add_epic_games()
         await self._send_message()
 
     async def _send_message(self):
+        """
+        Send message
+
+        Private function. If there are awaiting giveaways to post, it does so. Also randomly chooses some flavor text to go with it.
+        """
         games = db.get_games()
 
         if len(games) != 0:
@@ -75,6 +99,11 @@ class GameTimer(commands.Cog):
             self._last_announcement_message = announcement
 
     def _add_epic_games(self):
+        """
+        Add Epic games
+
+        Private function. Adds any currently free games from the EGS to the giveaway list
+        """
         games_to_add = self._get_epic_games()
         existing_games = db.get_games()
 

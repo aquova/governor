@@ -36,21 +36,21 @@ RANK_POS = Point(385, 68)
 BAR_X = [133, 153, 173, 193, 213, 247, 267, 287, 307, 327]
 BAR_Y = 37
 
-"""
-Get XP
-
-Returns the given user's XP value, as a formatted string
-"""
 def get_xp(user: discord.Member) -> str:
+    """
+    Get XP
+
+    Returns the given user's XP value, as a formatted string
+    """
     data = db.fetch_user_data(user.id)
     return f"{data.xp} XP all-time, {data.monthly_xp} XP this month"
 
-"""
-Render level image
-
-Creates a customized image for the user, showing avatar image, level, name, and rank
-"""
 async def render_lvl_image(user: discord.Member | discord.User) -> Optional[str]:
+    """
+    Render level image
+
+    Creates a customized image for the user, showing avatar image, level, name, and rank
+    """
     # Make image tmp folder if needed
     if not os.path.exists(TMP_PATH):
         os.makedirs(TMP_PATH)
@@ -132,6 +132,11 @@ def _find_modder_info(uid: str) -> list[tuple[str, str]]:
     return mods
 
 def create_user_info_embed(user: discord.Member) -> discord.Embed:
+    """
+    Create User info embed
+
+    Formats information about the given user into a Discord Embed message
+    """
     username = str(user)
     if user.nick is not None:
         username += f" aka {user.nick}"
@@ -169,6 +174,13 @@ def create_user_info_embed(user: discord.Member) -> discord.Embed:
 
 @to_thread
 def download_avatar(url: str, filename: str) -> bool:
+    """
+    Download avatar
+
+    Downloads a user's avatar image, saving it as the specified filename
+
+    Runs as its own thread. Returns true if operation successful
+    """
     try:
         response = requests.get(url, stream=True)
         with open(filename, 'wb') as outfile:

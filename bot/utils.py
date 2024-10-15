@@ -15,12 +15,12 @@ class CustomCommandFlags:
     ADMIN =     0b0001     # Created by an admin
     LIMITED =   0b0010     # Usage can be limited to some channels
 
-"""
-Check Roles
-
-Checks if the user has any of the roles in the list (by ID)
-"""
 def check_roles(user: discord.Member | discord.User, valid_roles: list[int]) -> bool:
+    """
+    Check Roles
+
+    Checks if the user has any of the roles in the list (by ID)
+    """
     if isinstance(user, discord.User):
         return False
     for role in valid_roles:
@@ -28,31 +28,31 @@ def check_roles(user: discord.Member | discord.User, valid_roles: list[int]) -> 
             return True
     return False
 
-"""
-Show leaderboard
-
-Posts the URL for the online leaderboard
-"""
 def show_lb() -> str:
+    """
+    Show leaderboard
+
+    Posts the URL for the online leaderboard
+    """
     return f"{SERVER_URL}/leaderboard.php"
 
-"""
-List ranks
-
-Lists the available earnable rank roles, and their levels
-"""
 def list_ranks() -> str:
+    """
+    List ranks
+
+    Lists the available earnable rank roles, and their levels
+    """
     output = ""
     for rank in RANKS:
         output += f"Level {rank['level']}: {rank['name']}\n"
     return output
 
-"""
-Get Bot Info
-
-Get info about bot settings
-"""
 def get_bot_info() -> str:
+    """
+    Get Bot Info
+
+    Get info about bot settings
+    """
     slow_c = ", ".join([f"<#{x}>" for x in NO_SLOWMODE])
     xp_c = ", ".join([f"<#{x}>" for x in XP_OFF])
     limit_c = ", ".join([f"<#{x}>" for x in LIMIT_CHANS])
@@ -64,6 +64,11 @@ def get_bot_info() -> str:
     return response
 
 def split_message(message: str) -> list[str]:
+    """
+    Split message
+
+    Splits a string into a list so none of the substrings breaks Discord's character limit
+    """
     messages = message.split('\n')
     to_send = [messages[0]]
     for msg in messages[1:]:
@@ -76,6 +81,13 @@ def split_message(message: str) -> list[str]:
     return to_send
 
 async def send_message(message: str, channel: discord.TextChannel | discord.Thread) -> discord.Message | None:
+    """
+    Send Message
+
+    Helper function to send a string into a Discord chat. Will break up the message into pieces as to not break the character limit, if needed.
+
+    Returns the Discord Message object for the first posted
+    """
     messages = split_message(message)
     first_id = None
     for msg in messages:
@@ -85,17 +97,22 @@ async def send_message(message: str, channel: discord.TextChannel | discord.Thre
     return first_id
 
 def to_thread(func: Callable) -> Coroutine:
+    """
+    To thread
+
+    Utility function to convert a callable function to run in a coroutine
+    """
     @functools.wraps(func)
     async def wrapper(*args, **kwargs):
         return await asyncio.to_thread(func, *args, **kwargs)
     return wrapper
 
-"""
-Flatten Nexus Files Index
-
-Flattens the Nexusmods file index to be a single array of files with no directories or sub-arrays.
-"""
 def flatten_index(index: list) -> list:
+    """
+    Flatten Nexus Files Index
+
+    Flattens the Nexusmods file index to be a single array of files with no directories or sub-arrays.
+    """
     result = []
 
     def _flatten(node):

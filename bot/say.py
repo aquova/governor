@@ -1,6 +1,11 @@
 import discord
 
 class SayModal(discord.ui.Modal):
+    """
+    Say Modal
+
+    Subclass of discord.ui.Modal to provide a modal for users to speak 'as the bot'
+    """
     def __init__(self, channel: discord.TextChannel | discord.Thread):
         super().__init__(title="Say a message as the bot")
         self.channel = channel
@@ -17,6 +22,11 @@ class SayModal(discord.ui.Modal):
         await interaction.response.send_message("Message sent!")
 
 class EditModal(discord.ui.Modal):
+    """
+    Edit Modal
+
+    Subclass of discord.ui.Modal to provide users a way to edit a message posted 'as the bot'
+    """
     def __init__(self, channel: discord.TextChannel | discord.Thread, message_id: str):
         super().__init__(title="Edit a bot message")
         self.channel = channel

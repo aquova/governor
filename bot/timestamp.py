@@ -44,6 +44,11 @@ TZ = {
 }
 
 def calculate_timestamps(date: str, time: str, tz: str) -> str:
+    """
+    Calculate timestamp
+
+    Receives information from the user regarding a date, time, and timezone, and returns a series of options for that timestamp formatted in Discord's style
+    """
     if tz.upper() in TZ:
         tz_offset = TZ[tz.upper()]
         combined_time = f"{date} {time} {tz_offset}"

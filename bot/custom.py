@@ -7,10 +7,15 @@ from err import InvalidInputError
 from utils import CustomCommandFlags, CHAR_LIMIT, check_roles, send_message
 
 class DefineModal(discord.ui.Modal):
+    """
+    Define Modal
+
+    Modal for adding a new custom command
+
+    Accessed via the `/define` slash command
+    """
     def __init__(self, command_name: str):
         super().__init__(title="Define a new custom command.")
-
-
         default_title = None
         default_response = None
         default_img = None
@@ -52,6 +57,11 @@ class DefineModal(discord.ui.Modal):
         self.add_item(self.img)
 
     async def on_submit(self, interaction: discord.Interaction):
+        """
+        DefineModal on_submit
+
+        Overloads discord.ui.Modal's on_submit function to handle when the modal is accepted
+        """
         name = self.name.value.lower()
         title = self.embed_title.value
         response = self.response.value
@@ -74,12 +84,12 @@ class DefineModal(discord.ui.Modal):
         await send_message(f"{str(interaction.user)} has changed the `{name}` command", client.log)
         await interaction.response.send_message(output_message)
 
-"""
-Is allowed
-
-Checks if the given command is allowed to be sent in the given channel
-"""
 def is_allowed(cmd: str, channel_id: int) -> bool:
+    """
+    Is Allowed
+
+    Checks if the given custom command is allowed to be sent in the given channel
+    """
     commands = db.get_custom_cmds()
     if cmd not in commands:
         return False
@@ -91,12 +101,12 @@ def is_allowed(cmd: str, channel_id: int) -> bool:
         return False
     return True
 
-"""
-Parse Response
-
-Return the specified response for a custom command
-"""
 def parse_response(command) -> discord.Embed:
+    """
+    Parse Response
+
+    Return the specified response for a custom command
+    """
     commands = db.get_custom_cmds()
     response = commands[command]
     embed = discord.Embed(title=response.title, description=response.response)
@@ -105,24 +115,24 @@ def parse_response(command) -> discord.Embed:
     embed.set_footer(text=f"To use this command, type {CMD_PREFIX}{command}.")
     return embed
 
-"""
-Add Alias
-
-Adds an alias to a pre-existing command
-"""
 def add_alias(command: str, alias: str) -> str:
+    """
+    Add Alias
+
+    Adds an alias to a pre-existing command
+    """
     cmds = db.get_custom_cmds(False)
     if command not in cmds:
         return "I cannot make an alias for a command that does not exist"
     db.set_new_alias(alias, command)
     return f"`{alias}` is now an alias for `{command}`!"
 
-"""
-Remove command
-
-Removes a user-defined command
-"""
 async def remove_cmd(name: str, author: discord.User | discord.Member) -> str:
+    """
+    Remove Command
+
+    Removes a user-defined command
+    """
     # First check if the command was an alias, as that is simpler to remove
     aliases = db.get_aliases()
     if name in aliases:
@@ -140,12 +150,12 @@ async def remove_cmd(name: str, author: discord.User | discord.Member) -> str:
         return f"`{name}` removed as a custom command!"
     return f"`{name}` was never a command..."
 
-"""
-Limit command
-
-Toggles limiting a command from being used in certain channels
-"""
 def limit_cmd(name: str) -> str:
+    """
+    Limit command
+
+    Toggles limiting a command from being used in certain channels
+    """
     commands = db.get_custom_cmds()
     if name in commands:
         response = commands[name]
@@ -157,10 +167,10 @@ def limit_cmd(name: str) -> str:
         return f"`{name}` is now {toggle_txt} to certain channels"
     return f"`{name}` is not a known command."
 
-"""
-List commands
-
-Give a list of all user-defined commands
-"""
 def list_cmds() -> str:
+    """
+    List commands
+
+    Returns a list of all user-defined commands
+    """
     return f"You can see a full list of commands and their responses here: {SERVER_URL}/commands.php"

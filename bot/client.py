@@ -43,6 +43,9 @@ HELP_MESSAGE = (
 )
 
 class DiscordClient(commands.Bot):
+    """
+    Subclass of Discord.py Bot class containing extra behavior
+    """
     def __init__(self):
         my_intents = discord.Intents.all()
         super().__init__(command_prefix=CMD_PREFIX, intents=my_intents)
@@ -53,6 +56,13 @@ class DiscordClient(commands.Bot):
         self.tracker = Tracker()
 
     async def setup(self, guild: discord.Guild):
+        """
+        DiscordClient setup
+
+        Sets up the client using elements from the passed in guild
+
+        *Must* only be called after the guild is made available
+        """
         self.log = cast(discord.TextChannel, self.get_channel(LOG_CHAN))
 
         try:
@@ -68,6 +78,11 @@ class DiscordClient(commands.Bot):
         await self.add_cog(self.tracker)
 
     async def sync_guild(self, guild: discord.Guild):
+        """
+        DiscordClient sync guild
+
+        Syncs slash and context commands with the guild
+        """
         self.tree.copy_global_to(guild=guild)
         await self.tree.sync(guild=guild)
 

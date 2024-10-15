@@ -21,12 +21,22 @@ class Tracker(commands.Cog):
 
     @tasks.loop(hours=24)
     async def _refresh_db(self):
+        """
+        Refresh Database
+
+        Private function. Repeating task. Once every 24 hours prunes inactive users from appearing on either leaderboard
+        """
         all_leaders = db.get_leaders()
         self._refresh_helper(all_leaders)
         monthly_leaders = db.get_monthly_leaders()
         self._refresh_helper(monthly_leaders)
 
     def _refresh_helper(self, leaders: list[db.UserData]):
+        """
+        Refresh Helper
+
+        Private Function. Helper function that performs leaderboard pruning on the input list
+        """
         # Iterate thru every leader on the leaderboard and collect data
         for leader_data in leaders:
             user = discord.utils.get(self.server.members, id=leader_data.uid)
@@ -39,13 +49,30 @@ class Tracker(commands.Cog):
                 db.prune_leader(leader_data.uid)
 
     async def add_xp(self, user: discord.Member, xp: int) -> str:
+        """
+        Add XP
+
+        Grants the specified user the specified amount of XP. Can be negative. Does *not* take the XP multiplier into account.
+        """
         await self._give_xp(user, xp, True)
         return f"{xp} XP given to {str(user)}"
 
     async def give_default_xp(self, user: discord.Member) -> str:
+        """
+        Give Default XP
+
+        Function which awards users the default XP value per message, as defined by XP_PER_MINUTE. *Does* take the XP multiplier into account.
+        """
         return await self._give_xp(user, XP_PER_MINUTE * self.xp_multiplier, False)
 
     async def _give_xp(self, user: discord.Member, xp_add: int, manual: bool) -> str:
+        """
+        Give XP
+
+        Private function. Awards the specified XP to the user.
+
+        `xp_add` can be negative. `manual` is a boolean flag for whether this is a manual intervention and thus shouldn't be counted in the monthly leaderboard.
+        """
         curr_time = datetime.now(timezone.utc)
 
         if user.id not in self.user_cache:
@@ -76,11 +103,23 @@ class Tracker(commands.Cog):
         return ret
 
     async def bring_up_user(self, user: discord.Member):
+        """
+        Bring up user
+
+        Checks if the user is missing any roles. Should be called when a user joins the server so they are given any roles they need or may have previously had
+        """
         # When a user joins the server, give them any roles they need
         user_data = db.fetch_user_data(user.id)
         await self._check_missing_roles(user, user_data, False)
 
     async def _check_missing_roles(self, user: discord.Member, data: db.UserData, post_messages: bool) -> str:
+        """
+        Check missing roles
+
+        Private function. Uses the passed in UserData to determine if the user should be given missing roles.
+
+        If `post_messages` is true, level up messages are posted in chat. Can be turned off if just catching user up
+        """
         roles = user.roles
         role_ids = [x.id for x in user.roles]
         ret = ""
@@ -106,10 +145,20 @@ class Tracker(commands.Cog):
         return ret
 
     def remove_from_cache(self, uid: int):
+        """
+        Remove from cache
+
+        Removes a user and their data from the cache
+        """
         if uid in self.user_cache:
             del self.user_cache[uid]
 
     async def set_bonus_xp(self, enabled: bool) -> str:
+        """
+        Set Bonus XP
+
+        If true, sets XP multiplier to 2x. Otherwise, resets it to 1x
+        """
         if enabled:
             self.xp_multiplier = 2
             return "XP multiplier is now x2!"

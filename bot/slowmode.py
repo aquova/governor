@@ -23,6 +23,11 @@ class Thermometer(commands.Cog):
         self._calc_slowmode.cancel()
 
     async def user_spoke(self, message: discord.Message):
+        """
+        User Spoke
+
+        Informs the Thermometer object that a Discord message has been posted
+        """
         channel = message.channel.id
         user_id = message.author.id
         if channel in self.channel_dict:
@@ -32,6 +37,11 @@ class Thermometer(commands.Cog):
 
     @tasks.loop(seconds=WAIT_TIME)
     async def _calc_slowmode(self):
+        """
+        Calculate slowmode
+
+        Private function. Repeating task. Fires once every WAIT_TIME, recalculating what the present slowmode should be for every channel.
+        """
         # Iterate thru each channel, generating weighted value for each channel and adjusting slowmode if necessary
         for channel in self.channels:
             channel_id = channel.id
