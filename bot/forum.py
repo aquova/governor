@@ -17,6 +17,7 @@ async def apply_open_tag(thread: discord.Thread):
         tags = thread.applied_tags
         tags.append(open_tag)
         await thread.edit(applied_tags=tags)
+    await thread.send("Hi! While you’re waiting for support, please ensure you have uploaded your SMAPI log. Instructions can be found [here](https://smapi.io/log).\nThreads posted are subject to the posting guidelines.")
 
 async def resolve_thread(channel: discord.Thread):
     """
