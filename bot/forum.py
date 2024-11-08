@@ -1,3 +1,5 @@
+import asyncio
+
 import discord
 
 from config import RESOLVED_TAG, PROGRESS_TAGS, OPEN_TAG, FORUM_CHAN
@@ -9,6 +11,8 @@ async def apply_open_tag(thread: discord.Thread):
     Applies the "Open" tag to new posts in the help forum channel
 
     The open tag ID is defined as the OPEN_TAG config item, and the help forum channel ID is defined as FORUM_CHAN
+
+    This function also posts a helpful introductory message to the thread as well
     """
     if not thread.parent_id == FORUM_CHAN:
         return
@@ -17,6 +21,9 @@ async def apply_open_tag(thread: discord.Thread):
         tags = thread.applied_tags
         tags.append(open_tag)
         await thread.edit(applied_tags=tags)
+
+    # We aren't allowed to be the first post in a thread. Sleep briefly so the user's post has a chance to go through
+    await asyncio.sleep(2)
     await thread.send("Hi! While you’re waiting for support, please ensure you have uploaded your SMAPI log. Instructions can be found [here](https://smapi.io/log).\nThreads posted are subject to the posting guidelines.")
 
 async def resolve_thread(channel: discord.Thread):
