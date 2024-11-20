@@ -1,3 +1,4 @@
+from random import choice
 from typing import cast
 
 import discord
@@ -239,7 +240,20 @@ async def getxp_context(interaction: discord.Interaction, user: discord.Member):
     response = xp.get_xp(user)
     await interaction.response.send_message(response, ephemeral=True)
 
-### Member Context Commands ###
+### Context Commands ###
+@client.tree.context_menu(name="Choose Winner")
+async def choose_winner_context(interaction: discord.Interaction, message: discord.Message):
+    if len(message.reactions) == 0:
+        await interaction.response.send_message("No one has responded to this post, I have no winners to declare...", ephemeral=True)
+        return
+    users = []
+    for reaction in message.reactions:
+        async for user in reaction.users():
+            if user not in users:
+                users.append(user)
+    winner = choice(users)
+    await interaction.response.send_message(f"The winner is :drum:...{winner.mention}", ephemeral=True)
+
 @client.tree.context_menu(name="Level")
 async def lvl_member(interaction: discord.Interaction, user: discord.Member):
     filename = await xp.render_lvl_image(user)
