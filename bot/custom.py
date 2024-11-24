@@ -81,7 +81,7 @@ class DefineModal(discord.ui.Modal):
         # Format confirmation to the user
         output_message = f"New command added! You can use it like `{CMD_PREFIX}{name}`. "
 
-        await send_message(f"{str(interaction.user)} has changed the `{name}` command", client.log)
+        await send_message(f"{str(interaction.user)} has changed the `{name}` command. New content: ```{response.replace('`','\\`')}```", client.log)
         await interaction.response.send_message(output_message)
 
 def is_allowed(cmd: str, channel_id: int) -> bool:
