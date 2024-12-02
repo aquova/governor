@@ -247,12 +247,14 @@ async def choose_winner_context(interaction: discord.Interaction, message: disco
         await interaction.response.send_message("No one has responded to this post, I have no winners to declare...", ephemeral=True)
         return
     users = []
+    reaction_map = {}
     for reaction in message.reactions:
         async for user in reaction.users():
             if user not in users:
                 users.append(user)
+                reaction_map[user] = reaction
     winner = choice(users)
-    await interaction.response.send_message(f"The winner is :drum:...{winner.mention}", ephemeral=True)
+    await interaction.response.send_message(f"The winner is :drum:...{winner.mention} who reacted with {str(reaction_map[winner])}", ephemeral=True)
 
 @client.tree.context_menu(name="Level")
 async def lvl_member(interaction: discord.Interaction, user: discord.Member):
