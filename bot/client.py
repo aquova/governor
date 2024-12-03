@@ -246,6 +246,7 @@ async def choose_winner_context(interaction: discord.Interaction, message: disco
     if len(message.reactions) == 0:
         await interaction.response.send_message("No one has responded to this post, I have no winners to declare...", ephemeral=True)
         return
+    await interaction.response.defer()
     users = []
     reaction_map = {}
     for reaction in message.reactions:
@@ -254,11 +255,9 @@ async def choose_winner_context(interaction: discord.Interaction, message: disco
                 users.append(user)
                 reaction_map[user] = reaction
     winner = choice(users)
-    # Some Discord channels throw "Missing Permissions" errors when attempting to choose a winner.
-    # Instead, DM the winner to the invoker, and send a dummy message so the bot doesn't hang
-    # TODO: This is a bit of a hack
+    # Ideally, this would just post the results in chat. However, the bot seems to inherit the permissions of the invoker when trying to post a response
+    # If the channel is locked to the user who invokes it, this has caused problems. Instead, just DM the results to the invoker
     await interaction.user.send(f"The winner is :drum:...{winner.mention} who reacted with {str(reaction_map[winner])}")
-    await interaction.response.send_message("Winner chosen!", ephemeral=True)
 
 @client.tree.context_menu(name="Level")
 async def lvl_member(interaction: discord.Interaction, user: discord.Member):
