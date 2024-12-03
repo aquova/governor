@@ -254,7 +254,11 @@ async def choose_winner_context(interaction: discord.Interaction, message: disco
                 users.append(user)
                 reaction_map[user] = reaction
     winner = choice(users)
-    await interaction.response.send_message(f"The winner is :drum:...{winner.mention} who reacted with {str(reaction_map[winner])}", ephemeral=True)
+    # Some Discord channels throw "Missing Permissions" errors when attempting to choose a winner.
+    # Instead, DM the winner to the invoker, and send a dummy message so the bot doesn't hang
+    # TODO: This is a bit of a hack
+    await interaction.user.send(f"The winner is :drum:...{winner.mention} who reacted with {str(reaction_map[winner])}")
+    await interaction.response.send_message("Winner chosen!", ephemeral=True)
 
 @client.tree.context_menu(name="Level")
 async def lvl_member(interaction: discord.Interaction, user: discord.Member):
