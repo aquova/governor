@@ -24,7 +24,7 @@ async def apply_open_tag(thread: discord.Thread):
 
     # We aren't allowed to be the first post in a thread. Sleep briefly so the user's post has a chance to go through
     await asyncio.sleep(2)
-    await thread.send("Hi! While you’re waiting for support, please ensure you have uploaded your SMAPI log. Instructions can be found [here](https://smapi.io/log).\nThreads posted are subject to the posting guidelines.")
+    await thread.send("Hi! While you’re waiting for support, please ensure you have uploaded your SMAPI log. Instructions can be found [here](https://smapi.io/log).\nThreads posted are subject to the posting guidelines.\nIf your issue is resolved or you no longer need help, please do NOT delete or close your post. Instead, just add the Mark As Resolved tag or leave a message stating you no longer need help.")
 
 async def resolve_thread(channel: discord.Thread):
     """
