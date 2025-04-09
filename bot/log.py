@@ -92,49 +92,43 @@ def _parse_log(url: str) -> str:
 
     Private function. Parses a smapi.io log to extract its recommendations and statistics.
     """
-    r = requests.get(url)
-    soup = bs4.BeautifulSoup(r.text, "html.parser")
-    soup.encode("utf-8")
-    data = soup.find("table", {"id": "metadata"})
-
-    if not isinstance(data, bs4.Tag):
+    json_url = url + '?format=RawDownload'
+    r = requests.get(json_url)
+    
+    try:
+        data = r.json()
+    except:
         return "Oops, couldn't parse that file. Make sure you share a valid SMAPI log."
 
+    if not data['IsValid'] or data['Error'] != None:
+        return "Oops, couldn't parse that file. Make sure you share a valid SMAPI log."
+
+    mods = data.get('Mods') or []
+
     log_info = {
-        "StardewVersion": data.get("data-game-version"),
-        "SMAPI_ver": data.get("data-smapi-version"),
-        "SMAPIMods": data.get("data-code-mods"),
-        "ContentPacks": data.get("data-content-packs"),
-        "OS": data.get("data-os"),
-        "gamepath": data.get("data-game-path"),
+        "StardewVersion": data.get("GameVersion"),
+        "SMAPI_ver": data.get("ApiVersion"),
+        "SMAPIMods": data.get("TotalCodeMods"),
+        "ContentPacks": data.get("TotalContentPacks"),
+        "OS": data.get("OperatingSystem"),
+        "gamepath": data.get("GamePath"),
         "suggested_fixes": "",
         "success": True,
     }
+    
     for key in log_info:
         if log_info[key] == None:
             log_info["success"] = False
 
-    try:
-        fix_list = soup.find("ul", {"id": "fix-list"})
-        if isinstance(fix_list, bs4.Tag):
-            fix_elems = fix_list.find_all("li")
-            fixes = []
-            for fix in fix_elems:
-                innerHTML = fix.decode_contents()
-                if "PyTK 1.23.* or earlier isn't compatible with newer SMAPI performance" in innerHTML:
-                    fixes.append("Pytk isn't compatible with newer SMAPI performance optimizations, consider removing it")
-                elif "Consider updating these mods to fix problems:" in innerHTML:
-                    fixes.append("One or more mods are out of date, consider updating them")
-                elif "PyTK's image scaling isn't compatible with SMAPI strict mode" in innerHTML:
-                    fixes.append("Pytk's image scaling isn't compatible with SMAPI strict mode, disable it")
-                elif "You don't have the " in innerHTML and "Error Handler" in innerHTML:
-                    fixes.append("You don't have the Error Handler mod installed, reinstall SMAPI to get it")
-                elif "which removes all deprecated APIs. This can significantly improve performance, but some mods may not work." in innerHTML:
-                    fixes.append("SMAPI is running in strict mode, which removes all deprecated APIs. This can significantly improve performance, but some mods may not work.")
-            fixes_human = ", ".join(fixes)
-            log_info["suggested_fixes"] = fixes_human
-    except AttributeError:
-        pass
+    fixes = []
+
+    if data.get("HasModUpdates"):
+        fixes.append("One or more mods are out of date, consider updating them")
+    if data.get("HasApiUpdate"):
+        fixes.append("SMAPI is out of date, consider updating it")
+        
+    fixes_human = ", ".join(fixes)
+    log_info["suggested_fixes"] = fixes_human
 
     output = smapi_log_message_template.substitute(log_info)
     if log_info["suggested_fixes"] != "":
