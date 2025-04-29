@@ -14,7 +14,7 @@ async def apply_open_tag(thread: discord.Thread):
 
     This function also posts a helpful introductory message to the thread as well
     """
-    if not thread.parent_id == FORUM_CHAN:
+    if thread.parent_id != FORUM_CHAN:
         return
     open_tag = thread.parent.get_tag(OPEN_TAG)
     if open_tag not in thread.applied_tags and open_tag is not None:
