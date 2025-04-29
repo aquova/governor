@@ -94,16 +94,14 @@ def _parse_log(url: str) -> str:
     """
     json_url = url + '?format=RawDownload'
     r = requests.get(json_url)
-    
+
     try:
         data = r.json()
     except:
         return "Oops, couldn't parse that file. Make sure you share a valid SMAPI log."
 
-    if not data['IsValid'] or data['Error'] != None:
+    if not data['IsValid'] or 'Error' in data:
         return "Oops, couldn't parse that file. Make sure you share a valid SMAPI log."
-
-    mods = data.get('Mods') or []
 
     log_info = {
         "StardewVersion": data.get("GameVersion"),
@@ -115,9 +113,9 @@ def _parse_log(url: str) -> str:
         "suggested_fixes": "",
         "success": True,
     }
-    
+
     for key in log_info:
-        if log_info[key] == None:
+        if log_info[key] is None:
             log_info["success"] = False
 
     fixes = []
@@ -126,7 +124,7 @@ def _parse_log(url: str) -> str:
         fixes.append("One or more mods are out of date, consider updating them")
     if data.get("HasApiUpdate"):
         fixes.append("SMAPI is out of date, consider updating it")
-        
+
     fixes_human = ", ".join(fixes)
     log_info["suggested_fixes"] = fixes_human
 
