@@ -1,8 +1,9 @@
+from typing import cast, override
+
 import discord
 
 import db
-from client import client
-from config import (ADMIN_ACCESS, CMD_PREFIX, LIMIT_CHANS, SERVER_URL)
+from config import ADMIN_ACCESS, CMD_PREFIX, LIMIT_CHANS, LOG_CHAN, SERVER_URL
 from err import InvalidInputError
 from utils import CustomCommandFlags, CHAR_LIMIT, check_roles, send_message
 
@@ -56,12 +57,15 @@ class DefineModal(discord.ui.Modal):
         self.add_item(self.response)
         self.add_item(self.img)
 
+    @override
     async def on_submit(self, interaction: discord.Interaction):
         """
         DefineModal on_submit
 
         Overloads discord.ui.Modal's on_submit function to handle when the modal is accepted
         """
+        if interaction.guild is None:
+            return
         name = self.name.value.lower()
         title = self.embed_title.value
         response = self.response.value
@@ -81,7 +85,8 @@ class DefineModal(discord.ui.Modal):
         # Format confirmation to the user
         output_message = f"New command added! You can use it like `{CMD_PREFIX}{name}`. "
 
-        await send_message(f"{str(interaction.user)} has changed the `{name}` command. New content: ```{response.replace('`','\\`')}```", client.log)
+        log = cast(discord.TextChannel, interaction.guild.get_channel(LOG_CHAN))
+        await send_message(f"{str(interaction.user)} has changed the `{name}` command. New content: ```{response.replace('`','\\`')}```", log)
         await interaction.response.send_message(output_message)
 
 def is_allowed(cmd: str, channel_id: int) -> bool:
@@ -101,7 +106,7 @@ def is_allowed(cmd: str, channel_id: int) -> bool:
         return False
     return True
 
-def parse_response(command) -> discord.Embed:
+def parse_response(command: str) -> discord.Embed:
     """
     Parse Response
 
@@ -133,12 +138,16 @@ async def remove_cmd(name: str, author: discord.User | discord.Member) -> str:
 
     Removes a user-defined command
     """
+    if type(author) is not discord.Member:
+        return "Error! Unable to find which server you're in!"
+
+    log = cast(discord.TextChannel, author.guild.get_channel(LOG_CHAN))
     # First check if the command was an alias, as that is simpler to remove
     aliases = db.get_aliases()
     if name in aliases:
         db.remove_alias(name)
         log_msg = f"{str(author)} has removed the `{name}` alias. It used to point to `{aliases[name]}`."
-        await client.log.send(log_msg)
+        await log.send(log_msg)
         return f"The `{name}` alias has been removed!"
 
     # If the command exists, remove both it and any aliases pointing to it
@@ -146,7 +155,7 @@ async def remove_cmd(name: str, author: discord.User | discord.Member) -> str:
     if name in commands:
         db.remove_custom_cmd(name)
         log_msg = f"{str(author)} has removed the `{name}` command, and any aliases it had. It used to say `{commands[name]}`."
-        await client.log.send(log_msg)
+        await log.send(log_msg)
         return f"`{name}` removed as a custom command!"
     return f"`{name}` was never a command..."
 

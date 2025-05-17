@@ -1,7 +1,6 @@
 import os
 import shutil
 from math import ceil, floor
-from typing import Optional
 
 from bs4 import BeautifulSoup, Tag
 import discord
@@ -14,8 +13,8 @@ from utils import to_thread
 
 class Point:
     def __init__(self, x: int, y: int):
-        self.x = x
-        self.y = y
+        self.x: int = x
+        self.y: int = y
 
     def as_tuple(self) -> tuple[int, int]:
         return (self.x, self.y)
@@ -45,7 +44,7 @@ def get_xp(user: discord.Member) -> str:
     data = db.fetch_user_data(user.id)
     return f"{data.xp} XP all-time, {data.monthly_xp} XP this month"
 
-async def render_lvl_image(user: discord.Member | discord.User) -> Optional[str]:
+async def render_lvl_image(user: discord.Member | discord.User) -> str | None:
     """
     Render level image
 

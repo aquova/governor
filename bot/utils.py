@@ -44,7 +44,7 @@ def list_ranks() -> str:
     """
     output = ""
     for rank in RANKS:
-        output += f"Level {rank['level']}: {rank['name']}\n"
+        output += f"Level {rank.level}: {rank.name}\n"
     return output
 
 def get_bot_info() -> str:

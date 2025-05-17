@@ -1,6 +1,7 @@
 import sqlite3
 from dataclasses import dataclass
 from datetime import datetime, timezone
+from typing import Any
 
 import discord
 
@@ -36,7 +37,7 @@ def initialize():
     sqlconn.commit()
     sqlconn.close()
 
-def _db_read(query: tuple) -> list[tuple]:
+def _db_read(query: str, params: list[Any] = []) -> list[tuple[Any, ...]]:
     """
     Database read
 
@@ -45,13 +46,12 @@ def _db_read(query: tuple) -> list[tuple]:
     `query` needs to be a tuple object, even if the query has no parameters it should be a tuple of one
     """
     sqlconn = sqlite3.connect(DB_PATH)
-    # The * operator in Python expands a tuple into function params
-    results = sqlconn.execute(*query).fetchall()
+    results = sqlconn.execute(query, params).fetchall()
     sqlconn.close()
 
     return results
 
-def _db_write(query: tuple[str, list]):
+def _db_write(query: str, params: list[Any] = []):
     """
     Database write
 
@@ -60,7 +60,7 @@ def _db_write(query: tuple[str, list]):
     `query` needs to be a tuple object, even if the query has no parameters it should be a tuple of one
     """
     sqlconn = sqlite3.connect(DB_PATH)
-    sqlconn.execute(*query)
+    sqlconn.execute(query, params)
     sqlconn.commit()
     sqlconn.close()
 
@@ -70,8 +70,8 @@ def fetch_user_data(uid: int) -> UserData:
 
     Returns the stored data about a user, given a user id
     """
-    query = ("SELECT xp, monthly, month, year FROM xp WHERE id=?", [uid])
-    result = _db_read(query)
+    query = "SELECT xp, monthly, month, year FROM xp WHERE id=?"
+    result: list[tuple[int, int, int, int]] = _db_read(query, [uid])
 
     curr_time = datetime.now(timezone.utc)
     if len(result) > 0:
@@ -88,8 +88,8 @@ def set_user_data(user: discord.Member, data: UserData):
     Saves the UserData object into the database
     """
     avatar = user.display_avatar.replace(size=64, format="gif", static_format="webp")
-    query = ("INSERT OR REPLACE INTO xp (id, xp, username, avatar, monthly, month, year, color) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", [user.id, data.xp, str(user), avatar.url, data.monthly_xp, data.timestamp.month, data.timestamp.year, str(user.color)])
-    _db_write(query)
+    query = "INSERT OR REPLACE INTO xp (id, xp, username, avatar, monthly, month, year, color) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
+    _db_write(query, [user.id, data.xp, str(user), avatar.url, data.monthly_xp, data.timestamp.month, data.timestamp.year, str(user.color)])
 
 def get_leaders() -> list[UserData]:
     """
@@ -98,9 +98,9 @@ def get_leaders() -> list[UserData]:
     Returns the top 100 global XP leaders, that haven't been hidden for inactivity
     """
     curr_time = datetime.now(timezone.utc)
-    query = ("SELECT id, xp, monthly, month, year FROM xp WHERE username IS NOT NULL ORDER BY xp DESC LIMIT 100",)
-    leaders = _db_read(query)
-    ret = []
+    query = "SELECT id, xp, monthly, month, year FROM xp WHERE username IS NOT NULL ORDER BY xp DESC LIMIT 100"
+    leaders: list[tuple[int, int, int, int, int]] = _db_read(query)
+    ret: list[UserData] = []
     for leader in leaders:
         monthly = leader[2]
         if leader[3] != curr_time.month or leader[4] != curr_time.year:
@@ -115,8 +115,8 @@ def get_monthly_leaders() -> list[UserData]:
     Returns the top 100 monthly leaders for the current Month/Year
     """
     curr_time = datetime.now(timezone.utc)
-    query = ("SELECT id, xp, monthly FROM xp WHERE month=? AND year=? AND username IS NOT NULL ORDER BY monthly DESC LIMIT 100", [curr_time.month, curr_time.year])
-    leaders = _db_read(query)
+    query = "SELECT id, xp, monthly FROM xp WHERE month=? AND year=? AND username IS NOT NULL ORDER BY monthly DESC LIMIT 100"
+    leaders: list[tuple[int, int, int]] = _db_read(query, [curr_time.month, curr_time.year])
     return [UserData(x[0], x[1], x[2], curr_time) for x in leaders]
 
 def prune_leader(uid: int):
@@ -125,8 +125,8 @@ def prune_leader(uid: int):
 
     Marks a user as ineligable for the leaderboard by setting their username, avatar, and color blank
     """
-    query = ("UPDATE xp SET username = NULL, avatar = NULL, color = NULL WHERE id=?", [uid])
-    _db_write(query)
+    query = "UPDATE xp SET username = NULL, avatar = NULL, color = NULL WHERE id=?"
+    _db_write(query, [uid])
 
 def get_custom_cmds(include_aliases: bool = True) -> dict[str, CommandEntry]:
     """
@@ -136,10 +136,10 @@ def get_custom_cmds(include_aliases: bool = True) -> dict[str, CommandEntry]:
 
     Dictionary maps command name to their response, including metadata
     """
-    query = ("SELECT * FROM commands",)
-    cmds = _db_read(query)
+    query = "SELECT * FROM commands"
+    cmds: list[tuple[str, str, str, str, int]] = _db_read(query)
 
-    cmd_dict = {}
+    cmd_dict: dict[str, CommandEntry] = {}
     for cmd in cmds:
         entry = CommandEntry(cmd[0].lower(), cmd[1], cmd[2], cmd[3], cmd[4])
         cmd_dict[cmd[0].lower()] = entry
@@ -159,10 +159,10 @@ def get_aliases() -> dict[str, str]:
 
     If a command has more than one alias, then each alias is a separate entry
     """
-    query = ("SELECT * FROM aliases",)
-    aliases = _db_read(query)
+    query = "SELECT * FROM aliases"
+    aliases: list[tuple[str, str, str]] = _db_read(query)
 
-    alias_dict = {}
+    alias_dict: dict[str, str] = {}
     for alias in aliases:
         alias_dict[alias[0].lower()] = alias[1]
     return alias_dict
@@ -173,8 +173,8 @@ def remove_alias(alias: str):
 
     Removes a command alias from the database
     """
-    query = ("DELETE FROM aliases WHERE alias=?", [alias])
-    _db_write(query)
+    query = "DELETE FROM aliases WHERE alias=?"
+    _db_write(query, [alias])
 
 def remove_custom_cmd(name: str):
     """
@@ -182,8 +182,8 @@ def remove_custom_cmd(name: str):
 
     Removes a custom command and all its aliases from the database
     """
-    query = ("DELETE FROM commands WHERE name=?", [name])
-    _db_write(query)
+    query = "DELETE FROM commands WHERE name=?"
+    _db_write(query, [name])
 
     aliases = get_aliases()
     for k, v in aliases.items():
@@ -201,8 +201,8 @@ def set_new_custom_cmd(name: str, title: str | None, response: str | None, img: 
     if response is None and img is None:
         raise InvalidInputError
 
-    query = ("INSERT OR REPLACE INTO commands (name, title, response, img, flag) VALUES (?, ?, ?, ?, ?)", [name, title, response, img, flag])
-    _db_write(query)
+    query = "INSERT OR REPLACE INTO commands (name, title, response, img, flag) VALUES (?, ?, ?, ?, ?)"
+    _db_write(query, [name, title, response, img, flag])
 
 def set_new_alias(alias: str, command: str):
     """
@@ -210,23 +210,23 @@ def set_new_alias(alias: str, command: str):
 
     Sets a new alias for the existing command
     """
-    query = ("INSERT OR REPLACE INTO aliases (alias, command) VALUES (?, ?)", [alias, command])
-    _db_write(query)
+    query = "INSERT OR REPLACE INTO aliases (alias, command) VALUES (?, ?)"
+    _db_write(query, [alias, command])
 
-def get_rank(userid: int) -> int:
+def get_rank(uid: int) -> int:
     """
     Get rank
 
     Returns the rank the user of the given ID is on the leaderboard
     """
-    xp_query = ("SELECT xp FROM xp WHERE id=?", [userid])
-    xp_res = _db_read(xp_query)
+    xp_query = "SELECT xp FROM xp WHERE id=?"
+    xp_res: list[tuple[int]] = _db_read(xp_query, [uid])
     xp = 0
     if xp_res:
         xp = xp_res[0][0]
 
-    count_query = ("SELECT COUNT()+1 FROM xp WHERE xp > ? and username IS NOT NULL", [xp])
-    results = _db_read(count_query)
+    count_query = "SELECT COUNT()+1 FROM xp WHERE xp > ? and username IS NOT NULL"
+    results: list[tuple[int]] = _db_read(count_query, [xp])
 
     return results[0][0]
 
@@ -236,8 +236,8 @@ def add_game(game: str):
 
     Adds a URL for a video game giveaway into the database
     """
-    query = ("INSERT INTO games (game) VALUES (?)", [game])
-    _db_write(query)
+    query = "INSERT INTO games (game) VALUES (?)"
+    _db_write(query, [game])
 
 def get_games() -> list[str]:
     """
@@ -245,9 +245,8 @@ def get_games() -> list[str]:
 
     Gets a list of games giveaways to be posted in chat
     """
-    # get games as a list of 1-tuples
-    query = ("SELECT game FROM games",)
-    raw_results = _db_read(query)
+    query = "SELECT game FROM games"
+    raw_results: list[tuple[str]] = _db_read(query)
 
     # convert games into a list of strings
     results = [game[0] for game in raw_results]
@@ -260,5 +259,5 @@ def clear_games():
 
     Deletes all the games from the upcoming game giveaway post
     """
-    query = ("DELETE FROM games", [])
+    query = "DELETE FROM games"
     _db_write(query)

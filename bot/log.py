@@ -2,7 +2,6 @@ import re
 import string
 import urllib.parse
 
-import bs4
 import discord
 import requests
 

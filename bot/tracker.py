@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta, timezone
-from typing import cast
+from typing import override
 
 import discord
 from discord.ext import commands, tasks
@@ -10,12 +10,14 @@ from config import RANKS, XP_PER_LVL, XP_PER_MINUTE
 class Tracker(commands.Cog):
     def __init__(self):
         self.user_cache: dict[int, db.UserData] = {}
-        self.xp_multiplier = 1
+        self.xp_multiplier: int = 1
+        self.server: discord.Guild | None = None
 
     def setup(self, guild: discord.Guild):
         self.server = guild
         self._refresh_db.start()
 
+    @override
     def cog_unload(self) -> None:
         self._refresh_db.cancel()
 
@@ -38,15 +40,16 @@ class Tracker(commands.Cog):
         Private Function. Helper function that performs leaderboard pruning on the input list
         """
         # Iterate thru every leader on the leaderboard and collect data
-        for leader_data in leaders:
-            user = discord.utils.get(self.server.members, id=leader_data.uid)
+        if self.server is not None:
+            for leader_data in leaders:
+                user = discord.utils.get(self.server.members, id=leader_data.uid)
 
-            # Update users that are still in the server
-            if user is not None:
-                db.set_user_data(user, leader_data)
-            # Otherwise, prune their username/avatar so that they don't appear on the leaderboard
-            else:
-                db.prune_leader(leader_data.uid)
+                # Update users that are still in the server
+                if user is not None:
+                    db.set_user_data(user, leader_data)
+                # Otherwise, prune their username/avatar so that they don't appear on the leaderboard
+                else:
+                    db.prune_leader(leader_data.uid)
 
     async def add_xp(self, user: discord.Member, xp: int) -> str:
         """
@@ -124,23 +127,23 @@ class Tracker(commands.Cog):
         role_ids = [x.id for x in user.roles]
         ret = ""
         for rank in RANKS:
-            if data.xp < rank['level'] * XP_PER_LVL or rank['role_id'] in role_ids:
+            if data.xp < rank.level * XP_PER_LVL or rank.role_id in role_ids:
                 continue
 
-            new_role = discord.utils.get(user.guild.roles, id=rank['role_id'])
+            new_role = discord.utils.get(user.guild.roles, id=rank.role_id)
             if new_role is not None:
                 roles.append(new_role)
             if not post_messages:
                 continue
             # Some ranks have special messages, either for the user or for a new channel they've just unlocked
-            if rank['message'] != "":
+            if rank.message != "":
                 # We'll overwrite the messages for the lower ranks, so we don't spam the user
-                ret = f"<@{user.id}> {rank['message']}"
-            if rank['welcome']['message'] != "":
-                for welcome_id in rank['welcome']['channels']:
-                    chan = cast(discord.TextChannel, self.server.get_channel(welcome_id))
-                    if chan is not None:
-                        await chan.send(f"Hello <@{user.id}>! {rank['welcome']['message']}")
+                ret = f"<@{user.id}> {rank.message}"
+            if rank.welcome_message != "" and self.server is not None:
+                for welcome_id in rank.welcome_channels:
+                    chan = self.server.get_channel(welcome_id)
+                    if chan is not None and isinstance(chan, discord.TextChannel | discord.Thread):
+                        await chan.send(f"Hello <@{user.id}>! {rank.welcome_message}")
         await user.edit(roles=roles)
         return ret
 

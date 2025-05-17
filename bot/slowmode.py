@@ -1,5 +1,6 @@
 import discord
 from discord.ext import commands, tasks
+from typing import override
 
 from config import NO_SLOWMODE
 
@@ -13,12 +14,14 @@ DECREASE_MAX = 2
 
 class Thermometer(commands.Cog):
     def __init__(self):
-        self.channel_dict = {}
+        self.channel_dict: dict[int, list[int]] = {}
+        self.channels: list[discord.TextChannel] = []
 
     def setup(self, guild: discord.Guild):
         self.channels = guild.text_channels
         self._calc_slowmode.start()
 
+    @override
     def cog_unload(self):
         self._calc_slowmode.cancel()
 

@@ -1,10 +1,10 @@
 from random import choice
-from typing import cast
+from typing import Final
 
 import discord
 from discord.ext import commands
 
-from config import CMD_PREFIX, LOG_CHAN
+from config import CMD_PREFIX
 from forum import resolve_thread
 from slowmode import Thermometer
 from timestamp import calculate_timestamps
@@ -52,9 +52,9 @@ class DiscordClient(commands.Bot):
         super().__init__(command_prefix=CMD_PREFIX, intents=my_intents)
         db.initialize()
 
-        self.game_timer = games.GameTimer()
-        self.thermometer = Thermometer()
-        self.tracker = Tracker()
+        self.game_timer: Final = games.GameTimer()
+        self.thermometer: Final = Thermometer()
+        self.tracker: Final = Tracker()
 
     async def setup(self, guild: discord.Guild):
         """
@@ -64,8 +64,6 @@ class DiscordClient(commands.Bot):
 
         *Must* only be called after the guild is made available
         """
-        self.log = cast(discord.TextChannel, self.get_channel(LOG_CHAN))
-
         try:
             self.game_timer.setup(guild)
         except Exception as e:
@@ -246,8 +244,8 @@ async def choose_winner_context(interaction: discord.Interaction, message: disco
     if len(message.reactions) == 0:
         await interaction.response.send_message("No one has responded to this post, I have no winners to declare...", ephemeral=True)
         return
-    users = []
-    reaction_map = {}
+    users: list[discord.Member | discord.User] = []
+    reaction_map: dict[discord.Member | discord.User, discord.Reaction] = {}
     for reaction in message.reactions:
         async for user in reaction.users():
             if user not in users:

@@ -1,3 +1,5 @@
+from typing import override
+
 import discord
 
 class SayModal(discord.ui.Modal):
@@ -8,7 +10,7 @@ class SayModal(discord.ui.Modal):
     """
     def __init__(self, channel: discord.TextChannel | discord.Thread):
         super().__init__(title="Say a message as the bot")
-        self.channel = channel
+        self.channel: discord.TextChannel | discord.Thread = channel
         self.content = discord.ui.TextInput(
             label="Bot message",
             style=discord.TextStyle.long,
@@ -17,6 +19,7 @@ class SayModal(discord.ui.Modal):
         )
         self.add_item(self.content)
 
+    @override
     async def on_submit(self, interaction: discord.Interaction):
         await self.channel.send(self.content.value)
         await interaction.response.send_message("Message sent!")
@@ -29,8 +32,8 @@ class EditModal(discord.ui.Modal):
     """
     def __init__(self, channel: discord.TextChannel | discord.Thread, message_id: str):
         super().__init__(title="Edit a bot message")
-        self.channel = channel
-        self.message_id = message_id
+        self.channel: discord.TextChannel | discord.Thread = channel
+        self.message_id: str = message_id
         self.content = discord.ui.TextInput(
             label="New bot message",
             style=discord.TextStyle.long,
@@ -39,6 +42,7 @@ class EditModal(discord.ui.Modal):
         )
         self.add_item(self.content)
 
+    @override
     async def on_submit(self, interaction: discord.Interaction):
         from client import client
 
@@ -50,8 +54,9 @@ class EditModal(discord.ui.Modal):
             await interaction.response.send_message("That's not a valid ID", ephemeral=True)
             return
 
-        edit_message = await self.channel.fetch_message(message_int)
-        if edit_message is None:
+        try:
+            edit_message = await self.channel.fetch_message(message_int)
+        except discord.NotFound:
             await interaction.response.send_message("I was unable to find a message with that ID", ephemeral=True)
             return
 

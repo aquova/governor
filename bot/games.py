@@ -1,5 +1,6 @@
 import random
 from datetime import datetime, timedelta, timezone
+from typing import override
 
 import discord
 from discord.ext import commands, tasks
@@ -36,8 +37,9 @@ class GameTimer(commands.Cog):
     the auto retrieved games already posted will need to be remembered somehow.
     """
     def __init__(self):
-        self._last_announcement_message = None
-        self._should_add_epic_games = AUTO_ADD_EPIC_GAMES
+        self._last_announcement_message: str | None = None
+        self._channel: discord.TextChannel | None  = None
+        self._should_add_epic_games: bool = AUTO_ADD_EPIC_GAMES
 
     def setup(self, guild: discord.Guild):
         """
@@ -56,6 +58,7 @@ class GameTimer(commands.Cog):
         self._channel = game_channel
         self._announce_games.start()
 
+    @override
     def cog_unload(self):
         self._announce_games.cancel()
 
@@ -89,7 +92,7 @@ class GameTimer(commands.Cog):
         """
         games = db.get_games()
 
-        if len(games) != 0:
+        if len(games) != 0 and self._channel is not None:
             formatted_games = "\n".join(games)
             announcement = random.choice([msg for msg in ANNOUNCE_MESSAGES if msg != self._last_announcement_message])
             message = f"{announcement}\n\n{formatted_games}"
@@ -139,8 +142,8 @@ class GameTimer(commands.Cog):
         games_to_add = []
         for game in games:
             try:
-                name = game["title"]
-                url = game["productSlug"]
+                name: str | None = game["title"]
+                url: str | None = game["productSlug"]
 
                 # Sometimes product slug is None, in which case this other field looks right, but it also can be None
                 if url is None and len(game["catalogNs"]["mappings"]) > 0:
