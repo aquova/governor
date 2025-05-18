@@ -58,6 +58,11 @@
             $lvl = "Lvl " . $user_level;
             $role_color = $row['color'];
             $avatar_img = $row['avatar'];
+            // Single digit avatar images appear to be a randomly chosen default avatar
+            // We'll just check for small URLs
+            if (strlen($avatar_img) < 7) {
+                $avatar_img = "assets/default_avatar.png";
+            }
 
             $username = $row['username'];
             if ($username == "") {
