@@ -42,7 +42,7 @@ def get_xp(user: discord.Member) -> str:
     Returns the given user's XP value, as a formatted string
     """
     data = db.fetch_user_data(user.id)
-    return f"{data.xp} XP all-time, {data.monthly_xp} XP this month"
+    return f"{data.total_xp} XP all-time, {data.monthly_xp} XP this month, {data.weekly_xp} XP this week"
 
 async def render_lvl_image(user: discord.Member | discord.User) -> str | None:
     """
@@ -55,9 +55,9 @@ async def render_lvl_image(user: discord.Member | discord.User) -> str | None:
         os.makedirs(TMP_PATH)
 
     data = db.fetch_user_data(user.id)
-    lvl = floor(data.xp / XP_PER_LVL)
+    lvl = floor(data.total_xp / XP_PER_LVL)
     # Calculate what percentage we are to the next level, as a range from 0-10
-    bar_num = ceil(10 * (data.xp - (lvl * XP_PER_LVL)) / XP_PER_LVL)
+    bar_num = ceil(10 * (data.total_xp - (lvl * XP_PER_LVL)) / XP_PER_LVL)
     rank = db.get_rank(user.id)
 
     out_filename = os.path.join(TMP_PATH, f"{user.id}.png")
@@ -144,10 +144,11 @@ def create_user_info_embed(user: discord.Member) -> discord.Embed:
     embed.set_thumbnail(url=user.display_avatar.url)
 
     data = db.fetch_user_data(user.id)
-    lvl = floor(data.xp / XP_PER_LVL)
+    lvl = floor(data.total_xp / XP_PER_LVL)
     embed.add_field(name="Level", value=lvl)
-    embed.add_field(name="Total XP", value=data.xp)
+    embed.add_field(name="Total XP", value=data.total_xp)
     embed.add_field(name="Monthly XP", value=data.monthly_xp)
+    embed.add_field(name="Weekly XP", value=data.weekly_xp)
 
     # Only bother accessing and parsing the wiki if they have the modder role
     if MODDER_ROLE in [x.id for x in user.roles]:

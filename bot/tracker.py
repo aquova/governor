@@ -32,6 +32,8 @@ class Tracker(commands.Cog):
         self._refresh_helper(all_leaders)
         monthly_leaders = db.get_monthly_leaders()
         self._refresh_helper(monthly_leaders)
+        weekly_leaders = db.get_weekly_leaders()
+        self._refresh_helper(weekly_leaders)
 
     def _refresh_helper(self, leaders: list[db.UserData]):
         """
@@ -89,14 +91,18 @@ class Tracker(commands.Cog):
             if dt < timedelta(minutes=1):
                 return ""
 
-        # Check if we've rolled over to a new month
-        if user_data.timestamp.month != curr_time.month or user_data.timestamp.year != curr_time.year:
+        # Check if we've rolled over to a new month/week
+        if db.get_month(user_data.timestamp) != db.get_month(curr_time):
             user_data.monthly_xp = 0
 
-        user_data.xp += xp_add
+        if db.get_week(user_data.timestamp) != db.get_week(curr_time):
+            user_data.weekly_xp = 0
+
+        user_data.total_xp += xp_add
         if not manual:
             # We don't consider manually added XP as part of the monthly total
             user_data.monthly_xp += xp_add
+            user_data.weekly_xp += xp_add
 
         ret = await self._check_missing_roles(user, user_data, True)
 
@@ -127,7 +133,7 @@ class Tracker(commands.Cog):
         role_ids = [x.id for x in user.roles]
         ret = ""
         for rank in RANKS:
-            if data.xp < rank.level * XP_PER_LVL or rank.role_id in role_ids:
+            if data.total_xp < rank.level * XP_PER_LVL or rank.role_id in role_ids:
                 continue
 
             new_role = discord.utils.get(user.guild.roles, id=rank.role_id)

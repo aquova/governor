@@ -22,20 +22,28 @@
                 include 'db.php';
             ?>
             <div class="tab">
+                <button class="tabbtn" id="weeklybtn" onclick="opentab(event, 'weekly')">This Week</button>
                 <button class="tabbtn" id="monthlybtn" onclick="opentab(event, 'monthly')">This Month</button>
                 <button class="tabbtn" id="alltimebtn" onclick="opentab(event, 'alltime')">All-Time</button>
+            </div>
+            <div id="weekly" class="tabcontent">
+                <ul>
+                    <?php
+                        populate_leaderboard(LeaderboardType::Weekly);
+                    ?>
+                </ul>
             </div>
             <div id="monthly" class="tabcontent">
                 <ul>
                     <?php
-                        populate_leaderboard(true);
+                        populate_leaderboard(LeaderboardType::Monthly);
                     ?>
                 </ul>
             </div>
             <div id="alltime" class="tabcontent">
                 <ul>
                     <?php
-                        populate_leaderboard(false);
+                        populate_leaderboard(LeaderboardType::Total);
                     ?>
                 </ul>
             </div>

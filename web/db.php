@@ -5,17 +5,43 @@
     define("URL_REGEX", "/\b(https?:\/\/\S+)\b\/?/");
     define("LIMIT_FLAG", 2);
 
-    function populate_leaderboard($use_monthly) {
+    enum LeaderboardType {
+        case Total;
+        case Monthly;
+        case Weekly;
+    }
+
+    function get_month() {
+        $year = date('Y');
+        $month = date('m');
+        // Needs to match get_month() in db.py
+        return 12 * ($year - 2000) + $month - 1;
+    }
+
+    function get_week() {
+        $year = date('Y');
+        $week = date('W');
+        // Needs to match get_week() in db.py
+        return 52 * ($year - 2000) + $week;
+    }
+
+    function populate_leaderboard($type) {
         $db = new SQLite3(DB_PATH);
         $query;
-        if ($use_monthly) {
-            $month = date('m');
-            $year = date('Y');
-            $query = $db->prepare('SELECT * FROM xp WHERE username IS NOT NULL AND monthly <> 0 AND month = ? AND year = ? ORDER BY monthly DESC LIMIT 100');
-            $query->bindParam(1, $month, SQLITE3_INTEGER);
-            $query->bindParam(2, $year, SQLITE3_INTEGER);
-        } else {
-            $query = $db->prepare('SELECT * FROM xp WHERE username IS NOT NULL ORDER BY xp DESC LIMIT 100');
+        switch ($type) {
+            case LeaderboardType::Weekly:
+                $week = get_week();
+                $query = $db->prepare('SELECT * FROM xp WHERE username IS NOT NULL AND weekly <> 0 AND week = ? ORDER BY weekly DESC LIMIT 100');
+                $query->bindParam(1, $week, SQLITE3_INTEGER);
+                break;
+            case LeaderboardType::Monthly:
+                $month = get_month();
+                $query = $db->prepare('SELECT * FROM xp WHERE username IS NOT NULL AND monthly <> 0 AND month = ? ORDER BY monthly DESC LIMIT 100');
+                $query->bindParam(1, $month, SQLITE3_INTEGER);
+                break;
+            case LeaderboardType::Total:
+                $query = $db->prepare('SELECT * FROM xp WHERE username IS NOT NULL ORDER BY xp DESC LIMIT 100');
+                break;
         }
         $ret = $query->execute();
 
@@ -23,12 +49,11 @@
         while ($row = $ret->fetchArray()) {
             $rank += 1;
             $id = $row['id'];
-            $xp = "";
-            if ($use_monthly) {
-                $xp = $row['monthly'] . "xp this month";
-            } else {
-                $xp = $row['xp'] . "xp";
-            }
+            $xp = match($type) {
+                LeaderboardType::Weekly => $row['weekly'] . "xp this week",
+                LeaderboardType::Monthly => $row['monthly'] . "xp this month",
+                LeaderboardType::Total => $row['xp'] . "xp"
+            };
             $user_level = floor($row['xp'] / XP_PER_LVL);
             $lvl = "Lvl " . $user_level;
             $role_color = $row['color'];

@@ -19,8 +19,9 @@ class CommandEntry:
 @dataclass
 class UserData:
     uid: int
-    xp: int
+    total_xp: int
     monthly_xp: int
+    weekly_xp: int
     timestamp: datetime
 
 def initialize():
@@ -30,7 +31,7 @@ def initialize():
     Database initialization, runs at bot startup
     """
     sqlconn = sqlite3.connect(DB_PATH)
-    sqlconn.execute("CREATE TABLE IF NOT EXISTS xp (id INT PRIMARY KEY, xp INT, username TEXT, avatar TEXT, monthly INT, month INT, year INT, color TEXT)")
+    sqlconn.execute("CREATE TABLE IF NOT EXISTS xp (id INT PRIMARY KEY, xp INT, username TEXT, avatar TEXT, monthly INT, month INT, weekly INT, week INT, color TEXT)")
     sqlconn.execute("CREATE TABLE IF NOT EXISTS commands (name TEXT PRIMARY KEY, title TEXT, response TEXT, img TEXT, flag INT)")
     sqlconn.execute("CREATE TABLE IF NOT EXISTS aliases (alias TEXT PRIMARY KEY, command TEXT, FOREIGN KEY(command) REFERENCES commands(name))")
     sqlconn.execute("CREATE TABLE IF NOT EXISTS games (game TEXT)")
@@ -64,22 +65,50 @@ def _db_write(query: str, params: list[Any] = []):
     sqlconn.commit()
     sqlconn.close()
 
+def get_month(dt: datetime) -> int:
+    """
+    Get month
+
+    Converts a datetime object into a month index value
+    """
+    return 12 * (dt.year - 2000) + dt.month - 1
+
+def get_week(dt: datetime) -> int:
+    """
+    Get week
+
+    Converts a datetime object into a weekly index value
+    """
+    week = int(dt.strftime("%V"))
+    return 52 * (dt.year - 2000) + week
+
 def fetch_user_data(uid: int) -> UserData:
     """
     Fetch user data
 
     Returns the stored data about a user, given a user id
     """
-    query = "SELECT xp, monthly, month, year FROM xp WHERE id=?"
-    result: list[tuple[int, int, int, int]] = _db_read(query, [uid])
+    query = "SELECT xp, monthly, month, weekly, week FROM xp WHERE id=?"
+    result: list[tuple[int, int, int, int, int]] = _db_read(query, [uid])
 
     curr_time = datetime.now(timezone.utc)
+    curr_month = get_month(curr_time)
+    curr_week = get_week(curr_time)
+
     if len(result) > 0:
+        total = result[0][0]
         monthly = result[0][1]
-        if result[0][2] != curr_time.month or result[0][3] != curr_time.year:
+        month_idx = result[0][2]
+        if month_idx != curr_month:
             monthly = 0
-        return UserData(uid, result[0][0], monthly, curr_time)
-    return UserData(uid, STARTING_XP, STARTING_XP, curr_time)
+
+        weekly = result[0][3]
+        week_idx = result[0][4]
+        if week_idx != curr_week:
+            weekly = 0
+
+        return UserData(uid, total, monthly, weekly, curr_time)
+    return UserData(uid, STARTING_XP, STARTING_XP, STARTING_XP, curr_time)
 
 def set_user_data(user: discord.Member, data: UserData):
     """
@@ -88,8 +117,21 @@ def set_user_data(user: discord.Member, data: UserData):
     Saves the UserData object into the database
     """
     avatar = user.display_avatar.replace(size=64, format="gif", static_format="webp")
-    query = "INSERT OR REPLACE INTO xp (id, xp, username, avatar, monthly, month, year, color) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
-    _db_write(query, [user.id, data.xp, str(user), avatar.url, data.monthly_xp, data.timestamp.month, data.timestamp.year, str(user.color)])
+    query = "INSERT OR REPLACE INTO xp (id, xp, username, avatar, monthly, month, weekly, week, color) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
+    _db_write(
+        query,
+        [
+            user.id,
+            data.total_xp,
+            str(user),
+            avatar.url,
+            data.monthly_xp,
+            get_month(data.timestamp),
+            data.weekly_xp,
+            get_week(data.timestamp),
+            str(user.color)
+        ]
+    )
 
 def get_leaders() -> list[UserData]:
     """
@@ -97,27 +139,45 @@ def get_leaders() -> list[UserData]:
 
     Returns the top 100 global XP leaders, that haven't been hidden for inactivity
     """
-    curr_time = datetime.now(timezone.utc)
-    query = "SELECT id, xp, monthly, month, year FROM xp WHERE username IS NOT NULL ORDER BY xp DESC LIMIT 100"
-    leaders: list[tuple[int, int, int, int, int]] = _db_read(query)
+    query = "SELECT id, xp, monthly, month, weekly, week FROM xp WHERE username IS NOT NULL ORDER BY xp DESC LIMIT 100"
+    leaders: list[tuple[int, int, int, int, int, int]] = _db_read(query)
+
     ret: list[UserData] = []
+    curr_time = datetime.now(timezone.utc)
+    curr_month = get_month(curr_time)
+    curr_week = get_week(curr_time)
     for leader in leaders:
         monthly = leader[2]
-        if leader[3] != curr_time.month or leader[4] != curr_time.year:
+        if leader[3] != curr_month:
             monthly = 0
-        ret.append(UserData(leader[0], leader[1], monthly, curr_time))
+
+        weekly = leader[4]
+        if leader[5] != curr_week:
+            weekly = 0
+        ret.append(UserData(leader[0], leader[1], monthly, weekly, curr_time))
     return ret
 
 def get_monthly_leaders() -> list[UserData]:
     """
     Get monthly leaders
 
-    Returns the top 100 monthly leaders for the current Month/Year
+    Returns the top 100 monthly leaders for the current month
     """
     curr_time = datetime.now(timezone.utc)
-    query = "SELECT id, xp, monthly FROM xp WHERE month=? AND year=? AND username IS NOT NULL ORDER BY monthly DESC LIMIT 100"
-    leaders: list[tuple[int, int, int]] = _db_read(query, [curr_time.month, curr_time.year])
-    return [UserData(x[0], x[1], x[2], curr_time) for x in leaders]
+    query = "SELECT id, xp, monthly, weekly FROM xp WHERE month=? AND username IS NOT NULL ORDER BY monthly DESC LIMIT 100"
+    leaders: list[tuple[int, int, int, int]] = _db_read(query, [get_month(curr_time)])
+    return [UserData(x[0], x[1], x[2], x[3], curr_time) for x in leaders]
+
+def get_weekly_leaders() -> list[UserData]:
+    """
+    Get weekly leaders
+
+    Returns the top 100 weekly leaders for the current week
+    """
+    curr_time = datetime.now(timezone.utc)
+    query = "SELECT id, xp, monthly, weekly FROM xp WHERE week=? AND username IS NOT NULL ORDER BY weekly DESC LIMIT 100"
+    leaders: list[tuple[int, int, int, int]] = _db_read(query, [get_week(curr_time)])
+    return [UserData(x[0], x[1], x[2], x[3], curr_time) for x in leaders]
 
 def prune_leader(uid: int):
     """
@@ -247,10 +307,7 @@ def get_games() -> list[str]:
     """
     query = "SELECT game FROM games"
     raw_results: list[tuple[str]] = _db_read(query)
-
-    # convert games into a list of strings
     results = [game[0] for game in raw_results]
-
     return results
 
 def clear_games():
