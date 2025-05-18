@@ -128,7 +128,7 @@ async def define_context(interaction: discord.Interaction, command: str):
 @client.tree.command(name="edit", description="Edit a message sent by the bot")
 @discord.app_commands.describe(channel="Channel message is in", message_id="Message ID")
 async def edit_context(interaction: discord.Interaction, channel: discord.TextChannel, message_id: str):
-    await interaction.response.send_modal(say.EditModal(channel, message_id))
+    await interaction.response.send_modal(say.EditModal(interaction.client, channel, message_id))
 
 @client.tree.command(name="getgames", description="Get the list of giveaways to be announced")
 async def getgames_context(interaction: discord.Interaction):

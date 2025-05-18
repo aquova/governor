@@ -1,3 +1,5 @@
+# pyright: reportAny=false
+
 import random
 from datetime import datetime, timedelta, timezone
 from typing import override
@@ -59,7 +61,7 @@ class GameTimer(commands.Cog):
         self._announce_games.start()
 
     @override
-    def cog_unload(self):
+    async def cog_unload(self):
         self._announce_games.cancel()
 
     async def post_games(self) -> str:
@@ -124,25 +126,21 @@ class GameTimer(commands.Cog):
         """
         try:
             resp = requests.get("https://store-site-backend-static.ak.epicgames.com/freeGamesPromotions?country=US")
-        except Exception as e:
-            eg_print(f"Couldn't get data: {e}")
+        except Exception:
             return []
 
         if resp.status_code != 200:
-            eg_print(f"Couldn't get data: {resp.status_code}: {resp.text}")
             return []
 
         try:
             games = resp.json()["data"]["Catalog"]["searchStore"]["elements"]
-        except Exception as e:
-            eg_print(f"Couldn't parse data: {e}")
+        except Exception:
             return []
 
-        # eg_print(f"EG API returned {len(games)} games")
-        games_to_add = []
+        games_to_add: list[dict[str, str]] = []
         for game in games:
             try:
-                name: str | None = game["title"]
+                name: str = game["title"]
                 url: str | None = game["productSlug"]
 
                 # Sometimes product slug is None, in which case this other field looks right, but it also can be None
@@ -150,24 +148,20 @@ class GameTimer(commands.Cog):
                     url = game["catalogNs"]["mappings"][0]["pageSlug"]
 
                 if url is None:
-                    eg_print(f"{name}: Could not get URL, skipping")
                     continue
 
                 # Some urls have an extra /home at the end which leads to a 404 - remove it to get the right url
                 url = url.removesuffix("/home")
 
                 if game["price"]["totalPrice"]["discountPrice"] != 0:
-                    # eg_print(f"{name}: not free, skipping")
                     continue
 
                 if game["price"]["totalPrice"]["originalPrice"] == 0:
-                    # eg_print(f"{name}: always free, skipping")
                     continue
 
                 # Offer type returned by the API is (so far) one of BASE_GAME, DLC, or OTHERS
                 # It is unclear what OTHERS is - assume BASE_GAME is for full games that become free
                 if game["offerType"] != "BASE_GAME":
-                    # eg_print(f"{name}: not a full game, skipping")
                     continue
 
                 # When there is no promotion the promotions field can be different:
@@ -178,27 +172,17 @@ class GameTimer(commands.Cog):
                         game["promotions"]["promotionalOffers"][0]["promotionalOffers"][0]["startDate"],
                         "%Y-%m-%dT%H:%M:%S.%fZ")
                 except Exception:
-                    # eg_print(f"{name}: not on sale this week, skipping")
                     continue
             except Exception as e:
-                eg_print(f"Couldn't parse game: {e}")
                 continue
 
             # Check the current day against the day the game became free. If the game became free today, add it
-            if datetime.utcnow().date() != start_date.date():
-                # eg_print(f"{name}: not available today, is/was available on {start_date.date()}, skipping")
+            if datetime.now(timezone.utc).date() != start_date.date():
                 continue
 
             games_to_add.append({"name": name, "url": url})
 
         return games_to_add
-
-
-def eg_print(msg: str):
-    """
-    eg_print is equivalent to print except it adds an epic games prefix to make reading logs easier.
-    """
-    print(f"epic_games_auto_add: {msg}")
 
 
 def add_game(game: str) -> str:

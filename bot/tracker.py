@@ -18,7 +18,7 @@ class Tracker(commands.Cog):
         self._refresh_db.start()
 
     @override
-    def cog_unload(self) -> None:
+    async def cog_unload(self) -> None:
         self._refresh_db.cancel()
 
     @tasks.loop(hours=24)

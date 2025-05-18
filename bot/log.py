@@ -1,5 +1,6 @@
+# pyright: reportAny=false
+
 import re
-import string
 import urllib.parse
 
 import discord
@@ -8,15 +9,6 @@ import requests
 from config import NEXUS_API_KEY
 import custom
 from utils import flatten_index
-
-# Template for SMAPI log info messages
-smapi_log_message_template = string.Template(
-    "**Log Info:** SMAPI $SMAPI_ver with SDV $StardewVersion on $OS, "
-    "with $SMAPIMods C# mods and $ContentPacks content packs."
-)
-smapi_suggested_fixes_template = string.Template(
-    "\n**Suggested fixes:** $suggested_fixes"
-)
 
 async def check_log_link(message: discord.Message):
     """
@@ -117,8 +109,7 @@ def _parse_log(url: str) -> str:
         if log_info[key] is None:
             log_info["success"] = False
 
-    fixes = []
-
+    fixes: list[str] = []
     if data.get("HasModUpdates"):
         fixes.append("One or more mods are out of date, consider updating them")
     if data.get("HasApiUpdate"):
@@ -127,7 +118,7 @@ def _parse_log(url: str) -> str:
     fixes_human = ", ".join(fixes)
     log_info["suggested_fixes"] = fixes_human
 
-    output = smapi_log_message_template.substitute(log_info)
+    output = f"**Log Info:** SMAPI {log_info["SMAPI_ver"]} with SDV {log_info["StardewVersion"]} on {log_info["OS"]}, with {log_info["SMAPIMods"]} C# mods and {log_info["ContentPacks"]} content packs."
     if log_info["suggested_fixes"] != "":
-        output += smapi_suggested_fixes_template.substitute(log_info)
+        output += f"\n**Suggested fixes:** {log_info["suggested_fixes"]}"
     return output

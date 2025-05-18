@@ -27,26 +27,26 @@ class DefineModal(discord.ui.Modal):
             default_response = response.response
             default_img = response.img
 
-        self.name = discord.ui.TextInput(
+        self.name: discord.ui.TextInput[discord.ui.View] = discord.ui.TextInput(
             label="Command Name",
             default=command_name,
             style=discord.TextStyle.short,
             required=True
         )
-        self.embed_title = discord.ui.TextInput(
+        self.embed_title: discord.ui.TextInput[discord.ui.View] = discord.ui.TextInput(
             label="Embed Title (Optional)",
             style=discord.TextStyle.short,
             default=default_title,
             required=False,
         )
-        self.response = discord.ui.TextInput(
+        self.response: discord.ui.TextInput[discord.ui.View] = discord.ui.TextInput(
             label="Text Response (Needed if no image)",
             style=discord.TextStyle.long,
             max_length=CHAR_LIMIT,
             default=default_response,
             required=False,
         )
-        self.img = discord.ui.TextInput(
+        self.img: discord.ui.TextInput[discord.ui.View] = discord.ui.TextInput(
             label="Image URL (Needed if no text)",
             style=discord.TextStyle.short,
             default=default_img,

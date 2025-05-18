@@ -22,7 +22,7 @@ class Thermometer(commands.Cog):
         self._calc_slowmode.start()
 
     @override
-    def cog_unload(self):
+    async def cog_unload(self):
         self._calc_slowmode.cancel()
 
     async def user_spoke(self, message: discord.Message):

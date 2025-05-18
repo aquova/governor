@@ -1,3 +1,5 @@
+# pyright: reportAny=false
+
 from dataclasses import dataclass
 from datetime import datetime, time
 import os

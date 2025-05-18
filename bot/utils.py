@@ -1,7 +1,9 @@
+# pyright: reportAny=false, reportExplicitAny=false
+
 import asyncio
 import functools
 from textwrap import wrap
-from typing import Callable, Coroutine
+from typing import Any, Callable, final, TypeVar
 
 import discord
 
@@ -10,6 +12,7 @@ from config import LIMIT_CHANS, NO_SLOWMODE, RANKS, SERVER_URL, XP_OFF
 CHAR_LIMIT = 1990 # The actual limit is 2000, but we'll have a buffer
 
 
+@final
 class CustomCommandFlags:
     NONE =      0b0000     # No limitations
     ADMIN =     0b0001     # Created by an admin
@@ -96,26 +99,28 @@ async def send_message(message: str, channel: discord.TextChannel | discord.Thre
             first_id = mid if first_id is None else first_id
     return first_id
 
-def to_thread(func: Callable) -> Coroutine:
+# I don't understand this type annotation either, but the internet said it was right and it shut the linter up
+R = TypeVar('R')
+def to_thread(func: Callable[..., R]) -> Callable[..., Any]:
     """
     To thread
 
     Utility function to convert a callable function to run in a coroutine
     """
     @functools.wraps(func)
-    async def wrapper(*args, **kwargs):
+    async def wrapper(*args: ..., **kwargs: Any) -> R:
         return await asyncio.to_thread(func, *args, **kwargs)
     return wrapper
 
-def flatten_index(index: list) -> list:
+def flatten_index(index: list[Any]) -> list[Any]:
     """
     Flatten Nexus Files Index
 
     Flattens the Nexusmods file index to be a single array of files with no directories or sub-arrays.
     """
-    result = []
+    result: list[Any] = []
 
-    def _flatten(node):
+    def _flatten(node: Any):
         if 'children' in node:
             for child in node['children']:
                 _flatten(child)
