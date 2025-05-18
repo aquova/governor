@@ -58,9 +58,9 @@
             $lvl = "Lvl " . $user_level;
             $role_color = $row['color'];
             $avatar_img = $row['avatar'];
-            // Single digit avatar images appear to be a randomly chosen default avatar
-            // We'll just check for small URLs
-            if (strlen($avatar_img) < 7) {
+            // Single digit avatar images appear to be a randomly chosen default avatar, which don't resolve correctly
+            // The avatar URLs follow the pattern of "https://cdn.discordapp.com/embed/avatar/<ID>?size=64", which is 50 characters. We'll check if the given URL is only slightly over that
+            if (strlen($avatar_img) < 57) {
                 $avatar_img = "assets/default_avatar.png";
             }
 
