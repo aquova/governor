@@ -1,5 +1,4 @@
 from random import choice
-from typing import Final
 
 import discord
 from discord.ext import commands
@@ -9,6 +8,7 @@ from forum import resolve_thread
 from slowmode import Thermometer
 from timestamp import calculate_timestamps
 from tracker import Tracker
+from yapper import Yapper
 import custom, db, games, say, utils, xp
 
 HELP_MESSAGE = (
@@ -52,9 +52,10 @@ class DiscordClient(commands.Bot):
         super().__init__(command_prefix=CMD_PREFIX, intents=my_intents)
         db.initialize()
 
-        self.game_timer: Final = games.GameTimer()
-        self.thermometer: Final = Thermometer()
-        self.tracker: Final = Tracker()
+        self.game_timer: games.GameTimer = games.GameTimer()
+        self.thermometer: Thermometer = Thermometer()
+        self.tracker: Tracker = Tracker()
+        self.yapper: Yapper = Yapper()
 
     async def setup(self, guild: discord.Guild):
         """
@@ -71,10 +72,12 @@ class DiscordClient(commands.Bot):
             raise e
         self.thermometer.setup(guild)
         self.tracker.setup(guild)
+        self.yapper.setup(guild)
 
         await self.add_cog(self.game_timer)
         await self.add_cog(self.thermometer)
         await self.add_cog(self.tracker)
+        await self.add_cog(self.yapper)
 
     async def sync_guild(self, guild: discord.Guild):
         """

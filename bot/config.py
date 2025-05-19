@@ -37,6 +37,7 @@ NEXUS_API_KEY: str = cfg['nexus_key']
 ADMIN_ACCESS: list[int] = cfg['roles']['admin_access']
 MODDER_ROLE: int = cfg['roles']['modder']
 MODDER_URL: str = cfg['modder_wiki_url']
+YAPPER_ROLE: int = cfg['roles']['yapper']
 
 RANKS: list[RankData] = []
 for rank in cfg["ranks"]:

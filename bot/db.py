@@ -34,6 +34,7 @@ def initialize():
     """
     sqlconn = sqlite3.connect(DB_PATH)
     sqlconn.execute("CREATE TABLE IF NOT EXISTS xp (id INT PRIMARY KEY, xp INT, username TEXT, avatar TEXT, monthly INT, month INT, weekly INT, week INT, color TEXT)")
+    sqlconn.execute("CREATE TABLE IF NOT EXISTS yappers (FOREIGN KEY(id) REFERENCES xp(id), week INT)")
     sqlconn.execute("CREATE TABLE IF NOT EXISTS commands (name TEXT PRIMARY KEY, title TEXT, response TEXT, img TEXT, flag INT)")
     sqlconn.execute("CREATE TABLE IF NOT EXISTS aliases (alias TEXT PRIMARY KEY, command TEXT, FOREIGN KEY(command) REFERENCES commands(name))")
     sqlconn.execute("CREATE TABLE IF NOT EXISTS games (game TEXT)")
@@ -180,6 +181,41 @@ def get_weekly_leaders() -> list[UserData]:
     query = "SELECT id, xp, monthly, weekly FROM xp WHERE week=? AND username IS NOT NULL ORDER BY weekly DESC LIMIT 100"
     leaders: list[tuple[int, int, int, int]] = _db_read(query, [get_week(curr_time)])
     return [UserData(x[0], x[1], x[2], x[3], curr_time) for x in leaders]
+
+def add_yapper(uid: int, week: int):
+    """
+    Add Yapper
+
+    Adds a weekly yapper winner to the database
+    """
+    query = "INSERT OR REPLACE INTO yappers (id, week) VALUES (?, ?)"
+    _db_write(query, [uid, week])
+
+def get_old_yappers(week: int) -> list[int]:
+    """
+    Get Old Yappers
+
+    Gets the list of IDs for users who were the most talkative in the given week
+
+    The input week should be formatted with the `get_week` function
+    """
+    query = "SELECT id FROM yappers WHERE week=?"
+    result: list[tuple[int]] = _db_read(query, [week])
+    return [x[0] for x in result]
+
+def get_last_yapper_victory(uid: int) -> int | None:
+    """
+    Get Last Yapper Victory
+
+    Gets the week the given user was last a weekly talking winner
+
+    Returns a week formatted in the same fashion as the `get_week` function
+    """
+    query = "SELECT week FROM yappers WHERE id=?"
+    result: list[tuple[int]] = _db_read(query, [uid])
+    if len(result) > 0:
+        return result[0][0]
+    return None
 
 def prune_leader(uid: int):
     """
