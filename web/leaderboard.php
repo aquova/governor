@@ -12,6 +12,8 @@
         <meta property="og:url" content="https://stardew.chat/leaderboard.php" />
         <meta property="og:image" content="assets/cojiro.png" />
         <meta property="og:description" content="View the most active members of the Stardew Valley Discord server" />
+
+        <script src="js/tabs.js"></script>
     </head>
     <body>
         <header>
